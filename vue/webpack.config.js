@@ -32,7 +32,7 @@ module.exports = (env, options) => ({
   output: {
     publicPath: '/',
     filename: isProd ? 'js/[name].[contenthash].js' : 'js/[name].js',
-    path: path.resolve(__dirname, '../priv/static/')
+    path: path.resolve(__dirname, '../static/')
   },
   module: {
     rules: [
