@@ -1,8 +1,10 @@
 .vscode
+.DS_Store
 conf
 static
 
-vue/node_modules
-vue/yarn-error.log
+assets/node_modules
+assets/yarn-error.log
 
 information
+nohup.out

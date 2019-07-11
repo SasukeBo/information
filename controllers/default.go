@@ -4,12 +4,12 @@ import (
 	"github.com/astaxie/beego"
 )
 
+// MainController doc false
 type MainController struct {
 	beego.Controller
 }
 
+// Get http method
 func (c *MainController) Get() {
-	c.Data["Website"] = "beego.me"
-	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.html"
 }
