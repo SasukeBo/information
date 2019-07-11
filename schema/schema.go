@@ -37,9 +37,8 @@ func init() {
 	}
 
 	GraphqlHander = handler.New(&handler.Config{
-		Schema:     &schema,
-		Pretty:     true,
-		GraphiQL:   true,
-		Playground: true,
+		Schema:   &schema,
+		Pretty:   true,
+		GraphiQL: true,
 	})
 }
