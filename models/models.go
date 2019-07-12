@@ -9,6 +9,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+var repo orm.Ormer
+
 func init() {
 	env := beego.AppConfig.String
 	if env("runmode") == "dev" {
@@ -21,13 +23,23 @@ func init() {
 		env("dbport"), env("dbsslmode"),
 	)
 
-	orm.RegisterDataBase("default", "postgres", dbconfig)
-	orm.RegisterDriver("postgres", orm.DRPostgres)
+	err := orm.RegisterDataBase("default", "postgres", dbconfig)
+	handleError(err)
+	err = orm.RegisterDriver("postgres", orm.DRPostgres)
+	handleError(err)
 	// 注册 model
-	orm.RegisterModel(new(Account))
+	orm.RegisterModel(new(Role), new(UserProfile), new(User))
 
 	// 自动建表
 	if err := orm.RunSyncdb("default", false, true); err != nil {
 		logs.Error("Create table failed!", err)
+	}
+
+	repo = orm.NewOrm()
+}
+
+func handleError(err error) {
+	if err != nil {
+		logs.Error(err)
 	}
 }

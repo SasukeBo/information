@@ -8,6 +8,5 @@ import (
 
 func init() {
 	beego.Router("/", &controllers.MainController{})
-	beego.Router("/user", &controllers.AccountController{})
 	beego.Handler("/graphql", schema.GraphqlHander, true)
 }

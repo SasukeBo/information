@@ -14,8 +14,8 @@ var GraphqlHander *handler.Handler
 var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
 	Fields: graphql.Fields{
-		"testFoo": types.TestFoo,
-		"testBar": types.TestBar,
+		"sayHello":    types.SayHello,
+		"roleGetByID": types.RoleGetByID,
 	},
 })
 
@@ -23,7 +23,9 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
 	Fields: graphql.Fields{
-		"testFoo": types.TestFoo,
+		"userCreate": types.UserCreate,
+		"roleCreate": types.RoleCreate,
+		"roleUpdate": types.RoleUpdate,
 	},
 })
 
@@ -39,6 +41,6 @@ func init() {
 	GraphqlHander = handler.New(&handler.Config{
 		Schema:   &schema,
 		Pretty:   true,
-		GraphiQL: true,
+		GraphiQL: false,
 	})
 }
