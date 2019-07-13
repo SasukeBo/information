@@ -19,11 +19,7 @@ var RoleType = graphql.NewObject(graphql.ObjectConfig{
 // RoleCreate create a role
 var RoleCreate = &graphql.Field{
 	Type: RoleType,
-	Args: graphql.FieldConfigArgument{
-		"name": &graphql.ArgumentConfig{
-			Type: graphql.NewNonNull(graphql.String),
-		},
-	},
+	Args: graphql.FieldConfigArgument{"name": gNString},
 	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 		role := &models.Role{
 			Name: params.Args["name"].(string),
@@ -39,19 +35,13 @@ var RoleCreate = &graphql.Field{
 var RoleUpdate = &graphql.Field{
 	Type: RoleType,
 	Args: graphql.FieldConfigArgument{
-		"id": &graphql.ArgumentConfig{
-			Type: graphql.NewNonNull(graphql.Int),
-		},
-		"name": &graphql.ArgumentConfig{
-			Type: graphql.String,
-		},
-		"status": &graphql.ArgumentConfig{
-			Type: custom.BaseStatus,
-		},
+		"id":     gInt,
+		"name":   gString,
+		"status": gBaseStatus,
 	},
 	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 		role := &models.Role{
-			Id: params.Args["id"].(int),
+			ID: params.Args["id"].(int),
 		}
 		attr := map[string]interface{}{
 			"name":   params.Args["name"].(string),
@@ -68,11 +58,26 @@ var RoleUpdate = &graphql.Field{
 // RoleGetByID get role by id
 var RoleGetByID = &graphql.Field{
 	Type: RoleType,
-	Args: graphql.FieldConfigArgument{"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)}},
+	Args: graphql.FieldConfigArgument{"id": gNInt},
 	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 		id := params.Args["id"].(int)
-		role := &models.Role{Id: id}
+		role := &models.Role{ID: id}
 		if err := role.GetByID(); err != nil {
+			return nil, err
+		}
+
+		return role, nil
+	},
+}
+
+// RoleGetByName get role by name
+var RoleGetByName = &graphql.Field{
+	Type: RoleType,
+	Args: graphql.FieldConfigArgument{"name": gNString},
+	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+		name := params.Args["name"].(string)
+		role := &models.Role{Name: name}
+		if err := role.GetByName(); err != nil {
 			return nil, err
 		}
 

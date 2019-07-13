@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/astaxie/beego/logs"
 	"time"
 )
 
@@ -10,7 +9,8 @@ import (
 // User 用户模型
 type User struct {
 	Password    string
-	Uuid        string       `orm:"pk"`
+	ID          int          `orm:"auto;pk;column(id)"`
+	UUID        string       `orm:"column(uuid);unique;index"`
 	Account     string       `orm:"unique"`
 	UserProfile *UserProfile `orm:"rel(one)"`
 	Role        *Role        `orm:"rel(fk)"`
@@ -20,10 +20,33 @@ type User struct {
 }
 
 // Insert 创建用户
-func (a *User) Insert() {
-	if n, err := repo.Insert(a); err != nil {
-		logs.Error("User insert failed:", err)
-	} else {
-		logs.Info("User insert success: ", n)
+func (a *User) Insert() error {
+	hasError := make(chan bool, 1)
+
+	defer func() {
+		if has := <-hasError; has {
+			repo.Rollback()
+			return
+		}
+		repo.Commit()
+	}()
+
+	if err := repo.Begin(); err != nil {
+		hasError <- true
+		return err
 	}
+	if err := a.Role.GetByID(); err != nil {
+		hasError <- true
+		return err
+	}
+	if err := a.UserProfile.Insert(); err != nil {
+		hasError <- true
+		return err
+	}
+	if _, err := repo.Insert(a); err != nil {
+		hasError <- true
+		return err
+	}
+	hasError <- false
+	return nil
 }

@@ -14,8 +14,9 @@ var GraphqlHander *handler.Handler
 var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
 	Fields: graphql.Fields{
-		"sayHello":    types.SayHello,
-		"roleGetByID": types.RoleGetByID,
+		"sayHello":      types.SayHello,
+		"roleGetByID":   types.RoleGetByID,
+		"roleGetByName": types.RoleGetByName,
 	},
 })
 

@@ -2,8 +2,19 @@ package types
 
 import (
 	"fmt"
-	"github.com/graphql-go/graphql"
 	"time"
+
+	"github.com/SasukeBo/information/schema/custom"
+	"github.com/graphql-go/graphql"
+)
+
+var (
+	// 减少重复代码
+	gBaseStatus = &graphql.ArgumentConfig{Type: custom.BaseStatus}
+	gNString    = &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)}
+	gString     = &graphql.ArgumentConfig{Type: graphql.String}
+	gNInt       = &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)}
+	gInt        = &graphql.ArgumentConfig{Type: graphql.Int}
 )
 
 type response struct {
