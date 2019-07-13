@@ -11,6 +11,20 @@ import (
 
 var repo orm.Ormer
 
+// BaseStatus 基础状态类型
+type BaseStatus int
+
+const (
+	// Default 初始状态
+	Default BaseStatus = iota
+	// Publish 发布状态
+	Publish
+	// Block 屏蔽状态
+	Block
+	// Deleted 删除状态
+	Deleted
+)
+
 func init() {
 	env := beego.AppConfig.String
 	if env("runmode") == "dev" {

@@ -1,11 +1,9 @@
 package types
 
 import (
-	"fmt"
-
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/schema/custom"
 	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/language/ast"
 )
 
 // RoleType 用户类型
@@ -14,44 +12,7 @@ var RoleType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"id":     &graphql.Field{Type: graphql.Int},
 		"name":   &graphql.Field{Type: graphql.String, Description: "role name"},
-		"status": &graphql.Field{Type: roleStatus, Description: "role status, can be default, publish, block and deleted"},
-	},
-})
-
-var roleStatus = graphql.NewScalar(graphql.ScalarConfig{
-	Name: "roleStatus",
-	Description: `roleStatus is represent role current status,
-	it convert string to int for DB,
-	and convert int to string for output`,
-	Serialize: func(value interface{}) interface{} {
-		switch value := value.(type) {
-		case models.RoleStatus:
-			fmt.Println("Serialize value:", value)
-			return int(value)
-		case *models.RoleStatus:
-			fmt.Println("Serialize value:", value)
-			return int(*value)
-		}
-		return nil
-	},
-	ParseValue: func(value interface{}) interface{} {
-		switch value := value.(type) {
-		case string:
-			fmt.Println("ParseValue value:", value)
-			return value
-		case *string:
-			fmt.Println("ParseValue value:", value)
-			return value
-		}
-		return nil
-	},
-	ParseLiteral: func(valueAST ast.Value) interface{} {
-		switch valueAST := valueAST.(type) {
-		case *ast.StringValue:
-			fmt.Println("valueAST.Value:", valueAST.Value)
-			return valueAST.Value
-		}
-		return nil
+		"status": &graphql.Field{Type: custom.BaseStatus, Description: "role status, can be default, publish, block and deleted"},
 	},
 })
 
@@ -85,7 +46,7 @@ var RoleUpdate = &graphql.Field{
 			Type: graphql.String,
 		},
 		"status": &graphql.ArgumentConfig{
-			Type: graphql.Int,
+			Type: custom.BaseStatus,
 		},
 	},
 	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
@@ -94,7 +55,7 @@ var RoleUpdate = &graphql.Field{
 		}
 		attr := map[string]interface{}{
 			"name":   params.Args["name"].(string),
-			"status": params.Args["status"].(int),
+			"status": params.Args["status"].(models.BaseStatus),
 		}
 
 		if err := role.Update(attr); err != nil {

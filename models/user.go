@@ -5,16 +5,7 @@ import (
 	"time"
 )
 
-// userStatus 标识用户账号状态
-type userStatus int
-
 // Enum the User status
-const (
-	UDefault userStatus = iota // 初始状态
-	UPublish                   // 发布状态
-	UBlock                     // 屏蔽状态
-	UDeleted                   // 删除状态
-)
 
 // User 用户模型
 type User struct {
@@ -23,7 +14,7 @@ type User struct {
 	Account     string       `orm:"unique"`
 	UserProfile *UserProfile `orm:"rel(one)"`
 	Role        *Role        `orm:"rel(fk)"`
-	Status      userStatus   `orm:"default(0)"`
+	Status      BaseStatus   `orm:"default(0)"`
 	CreatedAt   time.Time    `orm:"auto_now_add;type(datetime)"`
 	UpdatedAt   time.Time    `orm:"auto_now;type(datetime)"`
 }
