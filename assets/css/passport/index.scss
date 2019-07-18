@@ -1,0 +1,105 @@
+@import "css/vars.scss";
+
+.main-passport {
+  .title {
+    height: 25%;
+
+    .title-main {
+      text-align: center;
+      color: $--color-theme__white;
+      font-size: 34px;
+      padding-top: 100px;
+      line-height: 34px;
+    }
+
+    .title-sub {
+      text-align: center;
+      color: $--color-theme__white;
+      padding-top: 16px;
+    }
+  }
+
+  .link {
+    text-align: center;
+    color: $--color-font__gray;
+  }
+}
+
+.main-passport .passport-form {
+  left: 0;
+  right: 0;
+  width: 480px;
+  min-height: 484px;
+  background: $--color-theme__white;
+  position: absolute;
+  margin: auto;
+  border-radius: 4px;
+  padding: 36px 56px 48px;
+}
+
+.main-passport .passport-form .form-item {
+  margin-bottom: 25px;
+}
+
+.main-passport .passport-form .el-input {
+  .el-input__inner {
+    padding-left: 50px;
+    height: 55px;
+    font-size: 18px;
+  }
+
+  .el-icon-view {
+    margin-right: 16px;
+  }
+
+  .el-input__prefix {
+    left: 0;
+    width: 50px;
+  }
+
+  .el-input__icon {
+    font-size: 27px;
+    line-height: 55px;
+    color: darken($color: $--color-theme__main, $amount: 20);
+  }
+}
+
+.main-passport .passport-form .form-title {
+  text-align: center;
+  font-size: 30px;
+  color: $--color-font__gray;
+  line-height: 50px;
+}
+
+.main-passport .passport-form .el-button {
+  width: 100%;
+  font-size: 18px;
+  transition: all 0.5s ease;
+}
+
+.main-passport .passport-form .form-alert {
+  height: 50px;
+  font-size: 14px;
+  border-left: 5px solid $--color-theme__danger;
+  color: $--color-theme__danger;
+  line-height: 50px;
+  padding-left: 20px;
+  box-shadow: 0 8px 16px 0px rgba(10, 14, 29, 0.04), 0px 8px 64px 0px rgba(10, 14, 29, 0.08);
+}
+
+.main-passport {
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: all 0.3s ease;
+  }
+
+  .fade-leave-to {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+
+  .fade-enter {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+}

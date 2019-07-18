@@ -1,6 +1,6 @@
 <template>
-  <div class="passport-form register-form">
-    <div class="form-title form-item">注册账号</div>
+  <div class="passport-form forget-form">
+    <div class="form-title form-item">找回密码</div>
     <div class="form-alert form-item" v-if="show">{{ message }}</div>
     <div class="form-body">
       <el-input
@@ -20,15 +20,18 @@
       </div>
       <el-input
         class="form-item"
-        placeholder="密码"
+        placeholder="新密码"
         v-model="password"
         type="password"
         show-password
         prefix-icon="iconfont icon-mima"
       ></el-input>
-      <el-button class="form-item" type="primary" size="large" @click="show = !show">注册</el-button>
+      <el-button class="form-item" type="primary" size="large" @click="show = !show">重置密码</el-button>
       <div class="link form-item">
-        已有账号，<a href="/login" @click.prevent="$router.push({path: 'login'})">直接登录</a>
+        <a href="/login" @click.prevent="$router.push({path: 'login'})">
+          <i class="iconfont icon-fanhui"></i>
+          <span>返回登录</span>
+        </a>
       </div>
     </div>
   </div>
