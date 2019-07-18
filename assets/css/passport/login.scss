@@ -1,0 +1,101 @@
+@import "css/vars";
+
+.main-login {
+  height: 100%;
+  background: linear-gradient(darken($--color-theme__main, 20%), $--color-theme__white);
+  position: relative;
+
+  .title {
+    height: 25%;
+
+    .title-main {
+      text-align: center;
+      color: $--color-theme__white;
+      font-size: 34px;
+      padding-top: 100px;
+      line-height: 34px;
+    }
+
+    .title-sub {
+      text-align: center;
+      color: $--color-theme__white;
+      padding-top: 16px;
+    }
+  }
+
+  .login-form {
+    left: 0;
+    right: 0;
+    width: 480px;
+    min-height: 484px;
+    background: $--color-theme__white;
+    position: absolute;
+    margin: auto;
+    border-radius: 4px;
+    padding: 36px 56px 48px;
+  }
+}
+
+.main-login .login-form .form-title {
+  text-align: center;
+  font-size: 30px;
+  color: $--color-font__gray;
+  line-height: 50px;
+}
+
+.main-login .login-form .el-input {
+  .el-input__inner {
+    padding-left: 50px;
+    height: 55px;
+    font-size: 18px;
+  }
+
+  .el-input__prefix {
+    left: 0;
+    width: 50px;
+  }
+
+  .el-input__icon {
+    font-size: 27px;
+    line-height: 55px;
+    color: darken($color: $--color-theme__main, $amount: 20);
+  }
+}
+
+.main-login .login-form .form-item {
+  margin-bottom: 25px;
+}
+
+.main-login .login-form .forget-password {
+  text-align: right;
+  a {
+    color: $--color-font__light;
+  }
+}
+
+.main-login .login-form .el-button {
+  width: 100%;
+  font-size: 18px;
+  transition: all 0.5s ease;
+}
+
+.main-login .login-form .to-register {
+  text-align: center;
+}
+
+.main-login .login-form a {
+  transition: all 0.5s linear;
+  &:hover {
+    color: lighten($color: $--color-theme__main, $amount: 20);
+  }
+}
+
+.main-login .login-form .form-alert {
+  height: 50px;
+  font-size: 14px;
+  border-left: 5px solid $--color-theme__danger;
+  color: $--color-theme__danger;
+  line-height: 50px;
+  padding-left: 20px;
+  box-shadow: 0 8px 16px 0px rgba(10, 14, 29, 0.04), 0px 8px 64px 0px rgba(10, 14, 29, 0.08);
+}
