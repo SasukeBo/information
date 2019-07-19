@@ -1,7 +1,7 @@
 <template>
   <div class="passport-form register-form">
     <div class="form-title form-item">注册账号</div>
-    <div class="form-alert form-item" v-if="show">{{ message }}</div>
+    <div class="form-alert form-item" v-if="message">{{ message }}</div>
     <div class="form-body">
       <el-input
         class="form-item"
@@ -16,7 +16,7 @@
           v-model="securityCode"
           prefix-icon="iconfont icon-securityCode-b"
         ></el-input>
-        <el-button type="success" round class="securitycode-btn" @click="show = !show">获取验证码(60s)</el-button>
+        <el-button type="success" round class="securitycode-btn" @click="showCaptcha = true">获取验证码(60s)</el-button>
       </div>
       <el-input
         class="form-item"
@@ -26,22 +26,34 @@
         show-password
         prefix-icon="iconfont icon-mima"
       ></el-input>
-      <el-button class="form-item" type="primary" size="large" @click="show = !show">注册</el-button>
+      <el-button class="form-item" type="primary" size="large" @click="message = '账号或密码不正确!'">注册</el-button>
       <div class="link form-item">
-        已有账号，<a href="/login" @click.prevent="$router.push({path: 'login'})">直接登录</a>
+        已有账号，
+        <a href="/login" @click.prevent="$router.push({path: 'login'})">直接登录</a>
       </div>
     </div>
+
+    <in-slide-captcha
+      :showCaptcha.sync="showCaptcha"
+      v-if="showCaptcha"
+      @verified="message = '手机号不正确!'"
+    ></in-slide-captcha>
   </div>
 </template>
 <script>
+import InSlideCaptcha from './slide-captcha';
+
 export default {
+  components: {
+    InSlideCaptcha
+  },
   data() {
     return {
-      show: false,
+      showCaptcha: false,
       phone: '',
       securityCode: '',
       password: '',
-      message: '账号或密码不正确!'
+      message: ''
     };
   }
 };

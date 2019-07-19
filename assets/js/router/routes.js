@@ -4,7 +4,7 @@ function defaultRoutes() {
   return [
     {
       path: '/',
-      redirect: { name: 'login' }
+      redirect: { path: '/login' }
     },
     {
       path: '/passport',
