@@ -19,7 +19,8 @@ func init() {
 		},
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			phone := p.Args["phone"].(string)
-			response, err := utils.SendSmsCode(phone, "12345")
+			smsCode := utils.GenSmsCode()
+			response, err := utils.SendSmsCode(phone, smsCode)
 			return response.GetHttpContentString(), err
 		},
 	}
