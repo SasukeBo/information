@@ -24,7 +24,7 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
 	Fields: graphql.Fields{
-		"userCreate": types.UserCreate,
+		// "userCreate": types.UserCreate,
 		"roleCreate": types.RoleCreate,
 		"roleUpdate": types.RoleUpdate,
 	},
@@ -36,7 +36,7 @@ func init() {
 		Mutation: MutateRoot,
 	})
 	if err != nil {
-		log.Fatal("failed to create new schema, err:", err)
+		log.Fatal("failed to create new schema, err: ", err)
 	}
 
 	GraphqlHander = handler.New(&handler.Config{

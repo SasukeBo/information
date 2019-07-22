@@ -14,6 +14,9 @@ var repo orm.Ormer
 // BaseStatus 基础状态类型
 type BaseStatus int
 
+// PrivType 权限类型
+type PrivType int
+
 const (
 	// Default 初始状态
 	Default BaseStatus = iota
@@ -42,7 +45,13 @@ func init() {
 	err = orm.RegisterDriver("postgres", orm.DRPostgres)
 	handleError(err)
 	// 注册 model
-	orm.RegisterModel(new(Role), new(UserProfile), new(User))
+	orm.RegisterModel(
+		new(Role),
+		new(UserExtend),
+		new(User),
+		new(RolePriv),
+		new(Privilege),
+	)
 
 	// 自动建表
 	if err := orm.RunSyncdb("default", false, true); err != nil {

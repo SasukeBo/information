@@ -7,20 +7,8 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-// UserType 用户类型
-var UserType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "User",
-	Fields: graphql.Fields{
-		"uuid":        &graphql.Field{Type: graphql.String},
-		"account":     &graphql.Field{Type: graphql.String},
-		"password":    &graphql.Field{Type: graphql.String},
-		"userProfile": &graphql.Field{Type: UserProfileType},
-		"role":        &graphql.Field{Type: RoleType},
-		"status":      &graphql.Field{Type: custom.BaseStatus},
-		"createdAt":   &graphql.Field{Type: graphql.DateTime},
-		"updatedAt":   &graphql.Field{Type: graphql.DateTime},
-	},
-})
+// User 用户类型
+var User graphql.Type
 
 var (
 	// account non null argument config
@@ -32,7 +20,7 @@ var (
 
 // UserCreate create a user
 var UserCreate = &graphql.Field{
-	Type: UserType,
+	Type: User,
 	Args: graphql.FieldConfigArgument{
 		"account":  gNString,
 		"password": gNString,
@@ -43,15 +31,34 @@ var UserCreate = &graphql.Field{
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 		_uuid := uuid.New().String()
 		user := models.User{
-			UUID:        _uuid,
-			Account:     p.Args["account"].(string),
-			Password:    p.Args["password"].(string),
-			Role:        &models.Role{ID: p.Args["roleID"].(int)},
-			UserProfile: &models.UserProfile{UUID: _uuid, RealName: p.Args["realName"].(string)},
-			Status:      p.Args["status"].(models.BaseStatus),
+			UUID:       _uuid,
+			Phone:      p.Args["account"].(string),
+			Password:   p.Args["password"].(string),
+			Role:       &models.Role{ID: p.Args["roleID"].(int)},
+			UserExtend: &models.UserExtend{Name: p.Args["realName"].(string)},
+			Status:     p.Args["status"].(models.BaseStatus),
 		}
 
 		err := user.Insert()
 		return user, err
 	},
+}
+
+func init() {
+	User = graphql.NewObject(graphql.ObjectConfig{
+		Name: "User",
+		Fields: graphql.FieldsThunk(func() graphql.Fields {
+			return graphql.Fields{
+				"id":         &graphql.Field{Type: graphql.Int},
+				"uuid":       &graphql.Field{Type: graphql.String, Description: "通用唯一标识"},
+				"phone":      &graphql.Field{Type: graphql.String, Description: "手机号"},
+				"password":   &graphql.Field{Type: graphql.String},
+				"role":       &graphql.Field{Type: Role, Description: "用户角色"},
+				"userExtend": &graphql.Field{Type: UserExtend, Description: "用户拓展信息"},
+				"status":     &graphql.Field{Type: custom.BaseStatus, Description: "基础状态"},
+				"createdAt":  &graphql.Field{Type: graphql.DateTime},
+				"updatedAt":  &graphql.Field{Type: graphql.DateTime},
+			}
+		}),
+	})
 }

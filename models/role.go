@@ -1,10 +1,17 @@
 package models
 
+import (
+	"time"
+)
+
 // Role 角色模型
 type Role struct {
-	ID     int        `orm:"auto;pk;column(id)"`
-	Name   string     `orm:"unique"`
-	Status BaseStatus `orm:"default(0)"`
+	ID        int         `orm:"auto;pk;column(id)"`
+	RoleName  string      `orm:"unique"`
+	Status    BaseStatus  `orm:"default(0)"`
+	RolePriv  []*RolePriv `orm:"reverse(many)"`
+	CreatedAt time.Time   `orm:"auto_now_add;type(datetime)"`
+	UpdatedAt time.Time   `orm:"auto_now;type(datetime)"`
 }
 
 // Insert 创建一个角色
@@ -26,7 +33,7 @@ func (r *Role) Update(params map[string]interface{}) error {
 		return err
 	}
 	if params["name"] != nil {
-		r.Name = params["name"].(string)
+		r.RoleName = params["name"].(string)
 	}
 	if params["status"] != nil {
 		r.Status = params["status"].(BaseStatus)
