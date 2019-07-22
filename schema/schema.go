@@ -24,9 +24,10 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
 	Fields: graphql.Fields{
-		// "userCreate": types.UserCreate,
-		"roleCreate": types.RoleCreate,
-		"roleUpdate": types.RoleUpdate,
+		"register":    types.UserCreate,
+		"roleCreate":  types.RoleCreate,
+		"roleUpdate":  types.RoleUpdate,
+		"sendSmsCode": types.SendSmsCode,
 	},
 })
 

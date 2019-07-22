@@ -11,7 +11,7 @@ type User struct {
 	Phone      string `orm:"unique"`
 	Password   string
 	AvatarURL  string      `orm:"column(avatar_url);null"`
-	Role       *Role       `orm:"rel(fk)"`
+	Role       *Role       `orm:"rel(fk);null"`
 	UserExtend *UserExtend `orm:"rel(one)"`
 	Status     BaseStatus  `orm:"default(0)"`
 	CreatedAt  time.Time   `orm:"auto_now_add;type(datetime)"`
@@ -30,10 +30,12 @@ func (a *User) Insert() error {
 		repo.Commit()
 	}()
 
+	// 开始事务
 	if err := repo.Begin(); err != nil {
 		hasError <- true
 		return err
 	}
+
 	if err := a.Role.GetByID(); err != nil {
 		hasError <- true
 		return err

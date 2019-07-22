@@ -17,10 +17,6 @@ var (
 	gInt        = &graphql.ArgumentConfig{Type: graphql.Int}
 )
 
-type response struct {
-	Message string
-}
-
 // Response 消息体
 var Response = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "response",
@@ -51,6 +47,6 @@ var SayHello = &graphql.Field{
 			now.Minute(),
 			now.Second(),
 		)
-		return &response{Message: message}, nil
+		return struct{ Message string }{Message: message}, nil
 	},
 }

@@ -10,39 +10,8 @@ import (
 // User 用户类型
 var User graphql.Type
 
-var (
-	// account non null argument config
-	accountNAC  = &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)}
-	passwordNAC = &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)}
-	roleIDAC    = &graphql.ArgumentConfig{Type: graphql.Int}
-	realNameNAC = &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)}
-)
-
 // UserCreate create a user
-var UserCreate = &graphql.Field{
-	Type: User,
-	Args: graphql.FieldConfigArgument{
-		"account":  gNString,
-		"password": gNString,
-		"roleID":   gInt,
-		"status":   gBaseStatus,
-		"realName": gNString,
-	},
-	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		_uuid := uuid.New().String()
-		user := models.User{
-			UUID:       _uuid,
-			Phone:      p.Args["account"].(string),
-			Password:   p.Args["password"].(string),
-			Role:       &models.Role{ID: p.Args["roleID"].(int)},
-			UserExtend: &models.UserExtend{Name: p.Args["realName"].(string)},
-			Status:     p.Args["status"].(models.BaseStatus),
-		}
-
-		err := user.Insert()
-		return user, err
-	},
-}
+var UserCreate *graphql.Field
 
 func init() {
 	User = graphql.NewObject(graphql.ObjectConfig{
@@ -61,4 +30,26 @@ func init() {
 			}
 		}),
 	})
+
+	UserCreate = &graphql.Field{
+		Type: User,
+		Args: graphql.FieldConfigArgument{
+			"phone":    &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String), Description: "手机号"},
+			"password": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String), Description: "密码"},
+			"msgCode":  &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String), Description: "手机短信验证码"},
+		},
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			_uuid := uuid.New().String()
+			// TODO validate msgCode by session
+			// msgCode := p.Args["msgCode"].(string)
+			user := models.User{
+				UUID:     _uuid,
+				Phone:    p.Args["phone"].(string),
+				Password: p.Args["password"].(string),
+			}
+
+			err := user.Insert()
+			return user, err
+		},
+	}
 }
