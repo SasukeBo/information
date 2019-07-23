@@ -26,6 +26,20 @@ var Response = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+// WhoAmI 测试获取context中存储的current_user
+var WhoAmI = &graphql.Field{
+	Type: Response,
+	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+		rootValue := p.Info.RootValue.(map[string]interface{})
+		currentUser, ok := rootValue["currentUser"].(string)
+		if !ok {
+			currentUser = ""
+		}
+		rootValue["currentUser"] = "wangbo"
+		return struct{ Message string }{Message: currentUser}, nil
+	},
+}
+
 // SayHello 测试接口
 var SayHello = &graphql.Field{
 	Type: Response,
