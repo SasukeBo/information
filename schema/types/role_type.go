@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/resolvers/role"
 	"github.com/SasukeBo/information/schema/custom"
 	"github.com/graphql-go/graphql"
 )
@@ -15,8 +15,8 @@ var RoleCreate *graphql.Field
 // RoleUpdate create a role
 var RoleUpdate *graphql.Field
 
-// RoleGetByID get role by id
-var RoleGetByID *graphql.Field
+// RoleGet get role by id
+var RoleGet *graphql.Field
 
 // RoleGetByName get role by name
 var RoleGetByName *graphql.Field
@@ -36,68 +36,37 @@ func init() {
 		}),
 	})
 
-	RoleGetByID = &graphql.Field{
-		Type: Role,
-		Args: graphql.FieldConfigArgument{"id": gNInt},
-		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-			id := params.Args["id"].(int)
-			role := &models.Role{ID: id}
-			if err := role.GetByID(); err != nil {
-				return nil, err
-			}
-
-			return role, nil
-		},
-	}
-
-	RoleGetByName = &graphql.Field{
-		Type: Role,
-		Args: graphql.FieldConfigArgument{"name": gNString},
-		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-			name := params.Args["name"].(string)
-			role := &models.Role{RoleName: name}
-			if err := role.GetByName(); err != nil {
-				return nil, err
-			}
-
-			return role, nil
-		},
-	}
-
 	RoleCreate = &graphql.Field{
 		Type: Role,
-		Args: graphql.FieldConfigArgument{"name": gNString},
-		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-			role := &models.Role{
-				RoleName: params.Args["name"].(string),
-			}
-			if err := role.Insert(); err != nil {
-				return nil, err
-			}
-			return role, nil
+		Args: graphql.FieldConfigArgument{
+			"roleName": GenArg(graphql.String, "角色名称", false),
 		},
+		Resolve: role.Create,
 	}
 
 	RoleUpdate = &graphql.Field{
 		Type: Role,
 		Args: graphql.FieldConfigArgument{
-			"id":     gInt,
-			"name":   gString,
-			"status": gBaseStatus,
+			"id":       GenArg(graphql.Int, "角色ID", false),
+			"roleName": GenArg(graphql.String, "角色名称"),
+			"status":   gBaseStatus,
 		},
-		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-			role := &models.Role{
-				ID: params.Args["id"].(int),
-			}
-			attr := map[string]interface{}{
-				"name":   params.Args["name"].(string),
-				"status": params.Args["status"].(models.BaseStatus),
-			}
+		Resolve: role.Update,
+	}
 
-			if err := role.Update(attr); err != nil {
-				return nil, err
-			}
-			return role, nil
+	RoleGet = &graphql.Field{
+		Type: Role,
+		Args: graphql.FieldConfigArgument{
+			"id": GenArg(graphql.Int, "角色ID", false),
 		},
+		Resolve: role.Get,
+	}
+
+	RoleGetByName = &graphql.Field{
+		Type: Role,
+		Args: graphql.FieldConfigArgument{
+			"roleName": GenArg(graphql.String, "角色名称", false),
+		},
+		Resolve: role.GetByName,
 	}
 }

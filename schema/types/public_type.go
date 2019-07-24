@@ -4,18 +4,19 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/SasukeBo/information/models"
+	// "github.com/SasukeBo/information/resolvers"
 	"github.com/SasukeBo/information/schema/custom"
 	"github.com/graphql-go/graphql"
 )
 
-var (
-	// 减少重复代码
-	gBaseStatus = &graphql.ArgumentConfig{Type: custom.BaseStatus}
-	gNString    = &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)}
-	gString     = &graphql.ArgumentConfig{Type: graphql.String}
-	gNInt       = &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)}
-	gInt        = &graphql.ArgumentConfig{Type: graphql.Int}
-)
+var gBaseStatus = &graphql.ArgumentConfig{Type: custom.BaseStatus, Description: `
+		基础状态
+		- default 默认状态
+		- publish 发布状态
+		- block   屏蔽（禁用）状态
+		- deleted 删除状态
+	`}
 
 // Response 消息体
 var Response = graphql.NewObject(graphql.ObjectConfig{
@@ -23,20 +24,36 @@ var Response = graphql.NewObject(graphql.ObjectConfig{
 	Description: "测试graphql",
 	Fields: graphql.Fields{
 		"message": &graphql.Field{Type: graphql.String},
+		"uuid":    &graphql.Field{Type: graphql.String},
+		"name":    &graphql.Field{Type: graphql.String},
 	},
 })
+
+type whoAmIResponse struct {
+	Message string
+	UUID    string
+	Name    string
+}
 
 // WhoAmI 测试获取context中存储的current_user
 var WhoAmI = &graphql.Field{
 	Type: Response,
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 		rootValue := p.Info.RootValue.(map[string]interface{})
-		currentUser, ok := rootValue["currentUser"].(string)
-		if !ok {
-			currentUser = ""
+		currentUserUUID := rootValue["currentUserUUID"]
+		if currentUserUUID == nil {
+			return whoAmIResponse{Message: "not authenticated!"}, nil
 		}
-		rootValue["currentUser"] = "wangbo"
-		return struct{ Message string }{Message: currentUser}, nil
+
+		user := models.User{UUID: currentUserUUID.(string)}
+		if err := models.Repo.Read(&user, "uuid"); err != nil {
+			return nil, err
+		}
+
+		if err := models.Repo.Read(user.UserExtend); err != nil {
+			return nil, err
+		}
+		return whoAmIResponse{UUID: user.UUID, Name: user.UserExtend.Name}, nil
 	},
 }
 
@@ -63,4 +80,16 @@ var SayHello = &graphql.Field{
 		)
 		return struct{ Message string }{Message: message}, nil
 	},
+}
+
+// GenArg 简化gql参数定义
+func GenArg(gqlType graphql.Input, des string, opts ...interface{}) *graphql.ArgumentConfig {
+	if len(opts) > 0 && !opts[0].(bool) {
+		gqlType = graphql.NewNonNull(gqlType)
+	}
+
+	return &graphql.ArgumentConfig{
+		Type:        gqlType,
+		Description: des,
+	}
 }

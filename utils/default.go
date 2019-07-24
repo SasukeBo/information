@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"crypto/md5"
+	"encoding/base64"
 	"fmt"
 	"math"
 	"math/rand"
@@ -23,4 +25,13 @@ func GenSmsCode() string {
 		return strings.Join([]string{prefixZero, strCode}, "")
 	}
 	return strCode
+}
+
+// Encrypt md5 + base64
+func Encrypt(data string) string {
+	r := md5.Sum([]byte(data))
+	rs := fmt.Sprintf("%x", r)
+	str := base64.StdEncoding.EncodeToString([]byte(rs))
+
+	return str
 }
