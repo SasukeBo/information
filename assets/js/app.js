@@ -3,6 +3,7 @@ import 'css/theme/index.css';
 import ElementUI from 'element-ui';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import apolloProvider from './apollo-provider';
 
 Vue.use(VueRouter);
 Vue.use(ElementUI);
@@ -17,7 +18,7 @@ if (info) {
 
     new Vue({
       el: info,
-      // apolloProvider,
+      apolloProvider,
       render: h => h(entry),
       router,
       // store

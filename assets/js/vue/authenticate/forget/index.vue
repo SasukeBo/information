@@ -39,7 +39,7 @@
   </div>
 </template>
 <script>
-import InSlideCaptcha from './slide-captcha';
+import InSlideCaptcha from '../slide-captcha';
 
 export default {
   components: {

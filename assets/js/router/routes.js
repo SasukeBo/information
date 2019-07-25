@@ -7,26 +7,26 @@ function defaultRoutes() {
       redirect: { path: '/login' }
     },
     {
-      path: '/passport',
-      component: load('passport/index.vue'),
+      path: '/auth',
+      component: load('authenticate/index'),
       children: [
         {
           path: 'register',
           alias: '/register',
           name: 'register',
-          component: load('passport/register.vue')
+          component: load('authenticate/register')
         },
         {
           path: 'login',
           alias: '/login',
           name: 'login',
-          component: load('passport/login.vue')
+          component: load('authenticate/login')
         },
         {
           path: 'forget_password',
           alias: '/forget_password',
           name: 'forget_password',
-          component: load('passport/forget.vue')
+          component: load('authenticate/forget')
         }
       ]
     }
