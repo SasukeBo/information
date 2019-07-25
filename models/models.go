@@ -54,6 +54,7 @@ func init() {
 		new(User),
 		new(RolePriv),
 		new(Privilege),
+		new(UserLogin),
 	)
 
 	// 自动建表
@@ -72,16 +73,31 @@ func handleError(err error) {
 
 // User 用户模型
 type User struct {
-	ID         int    `orm:"auto;pk;column(id)"`
-	UUID       string `orm:"column(uuid);unique;index"`
-	Phone      string `orm:"unique"`
 	Password   string
+	ID         int         `orm:"auto;pk;column(id)"`
+	UUID       string      `orm:"column(uuid);unique;index"`
+	Phone      string      `orm:"unique"`
 	AvatarURL  string      `orm:"column(avatar_url);null"`
 	Role       *Role       `orm:"rel(fk);null"`
 	UserExtend *UserExtend `orm:"rel(one)"`
 	Status     BaseStatus  `orm:"default(0)"`
 	CreatedAt  time.Time   `orm:"auto_now_add;type(datetime)"`
 	UpdatedAt  time.Time   `orm:"auto_now;type(datetime)"`
+}
+
+// UserLogin 用户登录模型
+// 用户请求到达服务器时，
+type UserLogin struct {
+	EncryptedPasswd string
+	UserAgent       string
+	ID              int       `orm:"auto;pk;column(id)"`
+	UserUUID        string    `orm:"column(user_uuid)"`
+	RemoteIP        string    `orm:"column(remote_ip)"`
+	SessionID       string    `orm:"column(session_id);unique"`
+	Remembered      bool      `orm:"default(true)"`
+	Logout          bool      `orm:"default(false)"`
+	CreatedAt       time.Time `orm:"auto_now_add;type(datetime)"`
+	UpdatedAt       time.Time `orm:"auto_now;type(datetime)"`
 }
 
 // UserExtend 用户信息模型
