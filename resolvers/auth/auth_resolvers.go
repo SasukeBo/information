@@ -27,24 +27,40 @@ func LoginByPassword(params graphql.ResolveParams) (interface{}, error) {
 		}
 	}
 
-	userLogin := models.UserLogin{}
-	userLogin.UserUUID = user.UUID
-	userLogin.Remembered = remember
-	userLogin.EncryptedPasswd = user.Password
+	sessionID := rootValue["session_id"]
+	if sessionID == nil {
+		return nil, utils.LogicError{
+			Message: "missing session_id",
+		}
+	}
 
-	if sessionID := rootValue["session_id"]; sessionID != nil {
+	var userLogin models.UserLogin
+
+	if err := models.Repo.QueryTable("user_login").Filter("user_uuid", user.UUID).Filter("session_id", sessionID).One(&userLogin); err == orm.ErrNoRows {
+		// 不存在 user_uuid 和 session_id 匹配的 user_login
+		// 创建一个 user_login
+		userLogin.UserUUID = user.UUID
+		userLogin.Remembered = remember
+		userLogin.EncryptedPasswd = user.Password
 		userLogin.SessionID = sessionID.(string)
-	}
 
-	if remoteIP := rootValue["remote_ip"]; remoteIP != nil {
-		userLogin.RemoteIP = remoteIP.(string)
-	}
+		if remoteIP := rootValue["remote_ip"]; remoteIP != nil {
+			userLogin.RemoteIP = remoteIP.(string)
+		}
 
-	if userAgent := rootValue["user_agent"]; userAgent != nil {
-		userLogin.UserAgent = userAgent.(string)
-	}
+		if userAgent := rootValue["user_agent"]; userAgent != nil {
+			userLogin.UserAgent = userAgent.(string)
+		}
 
-	if _, err := models.Repo.Insert(&userLogin); err != nil {
+		if _, err := models.Repo.Insert(&userLogin); err != nil {
+			return nil, err
+		}
+	} else if err == nil {
+		// 存在 user_uuid 和 session_id 匹配的 user_login
+		// 更新此 user_login logout 字段为 false
+		userLogin.Logout = false
+		models.Repo.Update(&userLogin)
+	} else {
 		return nil, err
 	}
 
@@ -59,7 +75,7 @@ func LoginByPassword(params graphql.ResolveParams) (interface{}, error) {
 func Logout(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
 	currentUserUUID := rootValue["currentUserUUID"]
-	sessionID := rootValue["currentUserUUID"]
+	sessionID := rootValue["session_id"]
 	if currentUserUUID == nil {
 		return nil, utils.LogicError{
 			Message: "user not authenticated.",
@@ -79,6 +95,7 @@ func Logout(params graphql.ResolveParams) (interface{}, error) {
 		}
 	}
 	userLogin.Logout = true
+	models.Repo.Update(&userLogin, "logout")
 
 	rootValue["currentUserUUID"] = nil
 	rootValue["setSession"] = []string{"currentUserUUID"}

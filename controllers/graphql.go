@@ -132,14 +132,14 @@ func authenticate(conn *GQLController, obj gqlRootObject, name string) error {
 	if currentUserUUID := conn.GetSession("currentUserUUID"); currentUserUUID == nil {
 		// 如果没有currentUserUUID
 		// 通过sessionID获取userLogin
-		if !userLogin.Remembered {
-			return utils.LogicError{
-				Message: "user login not remembered.",
-			}
-		}
 		if userLogin.Logout {
 			return utils.LogicError{
 				Message: "user already logout.",
+			}
+		}
+		if !userLogin.Remembered {
+			return utils.LogicError{
+				Message: "user login not remembered.",
 			}
 		}
 		user := models.User{UUID: userLogin.UserUUID}
@@ -152,7 +152,7 @@ func authenticate(conn *GQLController, obj gqlRootObject, name string) error {
 		if user.Password != userLogin.EncryptedPasswd {
 			// 登录记录的密码与用户密码不匹配，验证失败
 			return utils.LogicError{
-				Message: "password unmatch.",
+				Message: "password unmatch, maybe changed.",
 			}
 		}
 		userLogin.SessionID = currentSessionID
@@ -182,7 +182,7 @@ func authenticate(conn *GQLController, obj gqlRootObject, name string) error {
 func setSession(conn *GQLController, obj gqlRootObject) {
 	if fields := obj["setSession"]; fields != nil {
 		for _, field := range fields.([]string) {
-			conn.SetSession(field, obj[field].(string))
+			conn.SetSession(field, obj[field])
 		}
 	}
 	if remember := obj["remember"]; remember != nil {
