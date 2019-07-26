@@ -58,6 +58,9 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	// 事务提交
 	models.Repo.Commit()
 
+	rootValue["smsCode"] = nil
+	rootValue["setSession"] = []string{"smsCode"}
+
 	return user, nil
 }
 
@@ -96,6 +99,10 @@ func ResetPassword(params graphql.ResolveParams) (interface{}, error) {
 	if _, err := models.Repo.Update(&user, "password"); err != nil {
 		return nil, err
 	}
+
+	rootValue["currentUserUUID"] = nil
+	rootValue["smsCode"] = nil
+	rootValue["setSession"] = []string{"currentUserUUID", "smsCode"}
 
 	return user, nil
 }

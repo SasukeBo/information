@@ -26,6 +26,7 @@ var Response = graphql.NewObject(graphql.ObjectConfig{
 		"message": &graphql.Field{Type: graphql.String},
 		"uuid":    &graphql.Field{Type: graphql.String},
 		"name":    &graphql.Field{Type: graphql.String},
+		"phone":   &graphql.Field{Type: graphql.String},
 	},
 })
 
@@ -33,6 +34,7 @@ type whoAmIResponse struct {
 	Message string
 	UUID    string
 	Name    string
+	Phone   string
 }
 
 // WhoAmI 测试获取context中存储的current_user
@@ -53,7 +55,7 @@ var WhoAmI = &graphql.Field{
 		if err := models.Repo.Read(user.UserExtend); err != nil {
 			return nil, err
 		}
-		return whoAmIResponse{UUID: user.UUID, Name: user.UserExtend.Name}, nil
+		return whoAmIResponse{UUID: user.UUID, Name: user.UserExtend.Name, Phone: user.Phone}, nil
 	},
 }
 
