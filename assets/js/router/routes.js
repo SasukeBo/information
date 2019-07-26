@@ -7,8 +7,13 @@ function defaultRoutes() {
       redirect: { path: '/login' }
     },
     {
+      path: '/home',
+      name: 'home',
+      component: load('home')
+    },
+    {
       path: '/auth',
-      component: load('authenticate/index'),
+      component: load('authenticate'),
       children: [
         {
           path: 'register',
@@ -23,10 +28,10 @@ function defaultRoutes() {
           component: load('authenticate/login')
         },
         {
-          path: 'forget_password',
-          alias: '/forget_password',
-          name: 'forget_password',
-          component: load('authenticate/forget')
+          path: 'reset_password',
+          alias: '/reset_password',
+          name: 'reset_password',
+          component: load('authenticate/reset')
         }
       ]
     }

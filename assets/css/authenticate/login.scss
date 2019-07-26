@@ -1,7 +1,9 @@
 @import "css/vars";
 
 .login-form .forget-password {
-  text-align: right;
+  float: right;
+  line-height: 19px;
+
   a {
     color: $--color-font__light;
   }

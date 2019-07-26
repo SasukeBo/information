@@ -31,6 +31,7 @@
     "apollo-client": "^2.6.3",
     "apollo-link-context": "^1.0.18",
     "apollo-link-http": "^1.5.15",
+    "async-validator": "^1.11.5",
     "babel-polyfill": "^6.26.0",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",

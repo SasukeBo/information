@@ -87,6 +87,19 @@
   box-shadow: 0 8px 16px 0px rgba(10, 14, 29, 0.04), 0px 8px 64px 0px rgba(10, 14, 29, 0.08);
 }
 
+.passport-form {
+  .expand-enter-active,
+  .expand-leave-active {
+    transition: all 0.3s ease;
+  }
+
+  .expand-enter,
+  .expand-leave-to {
+    margin-bottom: 0 !important;
+    height: 0 !important;
+  }
+}
+
 .main-passport {
   .fade-enter-active,
   .fade-leave-active {

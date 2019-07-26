@@ -102,7 +102,7 @@ func authenticate(conn *GQLController, obj gqlRootObject, name string) error {
 	currentSessionID := conn.Ctx.Input.CruSession.SessionID()
 
 	switch name {
-	case "IntrospectionQuery":
+	case "IntrospectionQuery", "sendSmsCode":
 		// graphiql schema query
 		return nil
 	case "register":

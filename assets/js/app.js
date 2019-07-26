@@ -8,6 +8,7 @@ import apolloProvider from './apollo-provider';
 Vue.use(VueRouter);
 Vue.use(ElementUI);
 
+
 const info = document.querySelector('#vue-entry');
 
 if (info) {

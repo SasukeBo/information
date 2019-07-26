@@ -1,8 +1,8 @@
 <template>
   <div class="main-passport">
     <div class="title">
-      <div class="title-main">设备资讯化</div>
-      <div class="title-sub">普创智控</div>
+      <div class="title-main">普创智控设备云平台</div>
+      <div class="title-sub">Protron</div>
     </div>
 
     <transition name="fade" mode="out-in">
@@ -10,6 +10,12 @@
     </transition>
   </div>
 </template>
+<script>
+export default {
+  name: 'authenticate'
+};
+</script>
+
 <style lang="scss">
-@import 'css/passport/index.scss';
+@import 'css/authenticate/index.scss';
 </style>

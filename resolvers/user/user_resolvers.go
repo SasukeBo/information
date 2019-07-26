@@ -52,6 +52,8 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	user.UserExtend = &userExtend
 	if _, err := models.Repo.Insert(&user); err != nil {
 		models.Repo.Rollback()
+
+		return nil, err
 	}
 	// 事务提交
 	models.Repo.Commit()
