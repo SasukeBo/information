@@ -12,6 +12,9 @@ var User graphql.Type
 // UserCreate create a user
 var UserCreate *graphql.Field
 
+// ResetPassword reset user password
+var ResetPassword *graphql.Field
+
 func init() {
 	User = graphql.NewObject(graphql.ObjectConfig{
 		Name: "User",
@@ -37,5 +40,15 @@ func init() {
 			"smsCode":  GenArg(graphql.String, "验证码", false),
 		},
 		Resolve: user.Create,
+	}
+
+	ResetPassword = &graphql.Field{
+		Type: User,
+		Args: graphql.FieldConfigArgument{
+			"phone":    GenArg(graphql.String, "手机号", false),
+			"password": GenArg(graphql.String, "密码", false),
+			"smsCode":  GenArg(graphql.String, "验证码", false),
+		},
+		Resolve: user.ResetPassword,
 	}
 }

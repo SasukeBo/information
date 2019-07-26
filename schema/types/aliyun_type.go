@@ -1,23 +1,18 @@
 package types
 
 import (
-	"encoding/json"
-	"github.com/SasukeBo/information/utils"
+	"github.com/SasukeBo/information/resolvers/aliyun"
 	"github.com/graphql-go/graphql"
 )
 
 // SendSmsCode 发送短信验证码调用接口
 var SendSmsCode *graphql.Field
 
+// GetSmsCode 获取测试环境下未真正发送验证码短信时的短信验证码
+var GetSmsCode *graphql.Field
+
 // SendSmsCodeResponse response type of SendSmsCode
 var SendSmsCodeResponse graphql.Type
-
-type sendSmsCodeResponse struct {
-	Message   string `json:"Message"`
-	RequestID string `json:"RequestID"`
-	Code      string `json:"Code"`
-	BizID     string `json:"BizID"`
-}
 
 func init() {
 	// SendSmsCodeResponse 短信验证码response消息体
@@ -41,27 +36,12 @@ func init() {
 		Args: graphql.FieldConfigArgument{
 			"phone": GenArg(graphql.String, "手机号", false),
 		},
-		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			rootValue := p.Info.RootValue.(map[string]interface{})
-			var response sendSmsCodeResponse
+		Resolve: aliyun.SendSmsCode,
+	}
 
-			phone := p.Args["phone"].(string)
-			smsCode := utils.GenSmsCode()
-			smsRsp, err := utils.SendSmsCode(phone, smsCode)
-			if err != nil {
-				return nil, err
-			}
-
-			err = json.Unmarshal([]byte(smsRsp.GetHttpContentString()), &response)
-			if err != nil {
-				return nil, err
-			}
-
-			rootValue["phone"] = phone
-			rootValue["smsCode"] = smsCode
-			rootValue["setSession"] = []string{"phone", "smsCode"}
-
-			return response, nil
-		},
+	GetSmsCode = &graphql.Field{
+		Type:        graphql.String,
+		Description: `当配置中 DisableSend 设置为true时，发送短信功能将不会真的发送短信，可以调用该接口获取验证码，该功能只适用于测试环境。`,
+		Resolve:     aliyun.GetSmsCode,
 	}
 }

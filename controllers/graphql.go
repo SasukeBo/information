@@ -105,7 +105,7 @@ func authenticate(conn *GQLController, obj gqlRootObject, name string) error {
 	case "IntrospectionQuery", "sendSmsCode":
 		// graphiql schema query
 		return nil
-	case "register":
+	case "register", "resetPassword", "getSmsCode":
 		obj["phone"] = conn.GetSession("phone")
 		obj["smsCode"] = conn.GetSession("smsCode")
 		return nil
@@ -187,6 +187,7 @@ func setSession(conn *GQLController, obj gqlRootObject) {
 	}
 	if remember := obj["remember"]; remember != nil {
 		if !remember.(bool) {
+			// 如果用户登录为不记住登录，则将cookie过期时间设置为 回话
 			currentSessionID := conn.Ctx.Input.CruSession.SessionID()
 			conn.Ctx.Output.Cookie(beego.AppConfig.String("SessionName"), currentSessionID, 0)
 		}

@@ -14,6 +14,7 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		"whoAmI":        types.WhoAmI,
 		"roleGet":       types.RoleGet,
 		"roleGetByName": types.RoleGetByName,
+		"getSmsCode":    types.GetSmsCode,
 	},
 })
 
@@ -22,6 +23,7 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
 	Fields: graphql.Fields{
 		"register":        types.UserCreate,
+		"resetPassword":   types.ResetPassword,
 		"loginByPassword": types.LoginByPassword,
 		"logout":          types.Logout,
 		"roleCreate":      types.RoleCreate,
