@@ -33,6 +33,14 @@ type gqlRootObject map[string]interface{}
 // 匹配 graphql query oprtationName
 var operationNameRegStr = `^query (\w+) {`
 
+// Options http method
+func (conn *GQLController) Options() {
+	conn.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:9080")
+	conn.Ctx.Output.Header("Access-Control-Allow-Methods", "POST, OPTIONS")
+	conn.Ctx.Output.Header("Access-Control-Allow-Headers", "content-type")
+	conn.TplName = ""
+}
+
 // Get http method
 func (conn *GQLController) Get() {
 	queryString := conn.Ctx.Input.Query("query")
@@ -88,6 +96,7 @@ func (conn *GQLController) Post() {
 		result = graphql.Do(gqlParams)
 		setSession(conn, gqlParams.RootObject)
 	}
+	conn.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:9080")
 	conn.Data["json"] = result
 	conn.ServeJSON()
 }
