@@ -151,8 +151,8 @@ func authenticate(conn *GQLController, obj gqlRootObject, name string) error {
 				Message: "user login not remembered.",
 			}
 		}
-		user := models.User{UUID: userLogin.UserUUID}
-		if err := models.Repo.Read(&user, "uuid"); err != nil {
+		user := userLogin.User
+		if err := models.Repo.Read(user); err != nil {
 			// 查找user失败后，返回身份验证失败
 			return utils.LogicError{
 				Message: "user not find.",

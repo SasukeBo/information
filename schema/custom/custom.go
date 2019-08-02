@@ -10,10 +10,10 @@ import (
 // BSMapType is base status as value and graphql output string as key map type
 type BSMapType map[interface{}]interface{}
 
-func (bsm BSMapType) rMap(value models.BaseStatus) interface{} {
+func (bsm BSMapType) rMap(value int) interface{} {
 	for k, v := range bsm {
 		switch vt := v.(type) {
-		case models.BaseStatus:
+		case int:
 			if value == vt {
 				return k
 			}
@@ -24,10 +24,10 @@ func (bsm BSMapType) rMap(value models.BaseStatus) interface{} {
 
 // StatusMap 主要用于做graphql自定义的BaseStatus类型转换
 var StatusMap = BSMapType{
-	"default": models.Default,
-	"publish": models.Publish,
-	"block":   models.Block,
-	"deleted": models.Deleted,
+	"default": models.BaseStatus.Default,
+	"publish": models.BaseStatus.Publish,
+	"block":   models.BaseStatus.Block,
+	"deleted": models.BaseStatus.Deleted,
 }
 
 // BaseStatus is a custom graphql type
@@ -38,7 +38,7 @@ var BaseStatus = graphql.NewScalar(graphql.ScalarConfig{
 	and convert int to string for output`,
 	// Serialize 用于将 BaseStatus 类型值转换为 string 类型从gql接口输出
 	Serialize: func(value interface{}) interface{} {
-		rs, ok := value.(models.BaseStatus)
+		rs, ok := value.(int)
 		if !ok {
 			return nil
 		}

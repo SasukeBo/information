@@ -38,7 +38,7 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	if status := params.Args["status"]; status != nil {
-		role.Status = status.(models.BaseStatus)
+		role.Status = status.(int)
 	}
 
 	_, err = models.Repo.Update(role)

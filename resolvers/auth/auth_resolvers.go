@@ -39,7 +39,7 @@ func LoginByPassword(params graphql.ResolveParams) (interface{}, error) {
 	if err := models.Repo.QueryTable("user_login").Filter("user_uuid", user.UUID).Filter("session_id", sessionID).One(&userLogin); err == orm.ErrNoRows {
 		// 不存在 user_uuid 和 session_id 匹配的 user_login
 		// 创建一个 user_login
-		userLogin.UserUUID = user.UUID
+		userLogin.User = &user
 		userLogin.Remembered = remember
 		userLogin.EncryptedPasswd = user.Password
 		userLogin.SessionID = sessionID.(string)
