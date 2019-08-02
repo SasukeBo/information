@@ -1,0 +1,27 @@
+@import '~css/vars.scss';
+@import '~css/fonts/iconfont.css';
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+.app {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(darken($--color-theme__main, 20%), $--color-theme__white);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: $--color-theme__main;
+  transition: all 0.5s linear;
+
+  &:hover {
+    color: lighten($color: $--color-theme__main, $amount: 20);
+  }
+}

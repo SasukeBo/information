@@ -1,0 +1,20 @@
+@import "css/vars";
+
+.passport-form .securitycode {
+  position: relative;
+
+  .securitycode-input .el-input__inner{
+    padding-right: 200px;
+  }
+
+  .securitycode-btn {
+    position: absolute;
+    width: unset;
+    font-size: 14px;
+    right: 7px;
+    padding: 12px;
+    top: 7px;
+    bottom: 5px;
+    line-height: 16px;
+  }
+}

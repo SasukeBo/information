@@ -2,12 +2,12 @@ package routers
 
 import (
 	"github.com/SasukeBo/information/controllers"
-	"github.com/SasukeBo/information/schema"
 	"github.com/astaxie/beego"
+	"golang.org/x/net/websocket"
 )
 
 func init() {
-	beego.Router("/", &controllers.MainController{})
-	beego.Router("/user", &controllers.AccountController{})
-	beego.Handler("/graphql", schema.GraphqlHander, true)
+	beego.Router("/*", &controllers.MainController{})
+	beego.Router("/graphql", &controllers.GQLController{})
+	beego.Handler("/websocket", websocket.Handler(controllers.Connect))
 }
