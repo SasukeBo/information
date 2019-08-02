@@ -121,6 +121,12 @@
 | device_user_id | int | 设备负责人关系ID |
 | priv_id | int | 权限ID |
 
+**权限**
+
+- 绑定设备
+- 查看设备
+- 指派设备负责人
+
 #### 设备参数表 device_params
 
 > 存储设备的参数内容

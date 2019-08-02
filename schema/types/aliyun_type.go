@@ -5,14 +5,18 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-// SendSmsCode 发送短信验证码调用接口
-var SendSmsCode *graphql.Field
-
-// GetSmsCode 获取测试环境下未真正发送验证码短信时的短信验证码
-var GetSmsCode *graphql.Field
+/*		object		*/
 
 // SendSmsCodeResponse response type of SendSmsCode
 var SendSmsCodeResponse graphql.Type
+
+/*		types		*/
+
+// SendSmsCodeType 发送短信验证码调用接口
+var SendSmsCodeType *graphql.Field
+
+// GetSmsCodeType 获取测试环境下未真正发送验证码短信时的短信验证码
+var GetSmsCodeType *graphql.Field
 
 func init() {
 	// SendSmsCodeResponse 短信验证码response消息体
@@ -31,17 +35,18 @@ func init() {
 		},
 	})
 
-	SendSmsCode = &graphql.Field{
+	SendSmsCodeType = &graphql.Field{
 		Type: SendSmsCodeResponse,
 		Args: graphql.FieldConfigArgument{
 			"phone": GenArg(graphql.String, "手机号", false),
 		},
-		Resolve: aliyun.SendSmsCode,
+		Resolve:     aliyun.SendSmsCode,
+		Description: "请求时需要加上 operationName",
 	}
 
-	GetSmsCode = &graphql.Field{
+	GetSmsCodeType = &graphql.Field{
 		Type:        graphql.String,
-		Description: `当配置中 DisableSend 设置为true时，发送短信功能将不会真的发送短信，可以调用该接口获取验证码，该功能只适用于测试环境。`,
+		Description: `请求时需要加上 operationName，当配置中 DisableSend 设置为true时，发送短信功能将不会真的发送短信，可以调用该接口获取验证码，该功能只适用于测试环境。`,
 		Resolve:     aliyun.GetSmsCode,
 	}
 }

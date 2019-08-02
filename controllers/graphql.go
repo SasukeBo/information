@@ -35,6 +35,7 @@ var operationNameRegStr = `^query (\w+) {`
 
 // Options http method
 func (conn *GQLController) Options() {
+	// TODO: 关闭跨域请求
 	conn.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:9080")
 	conn.Ctx.Output.Header("Access-Control-Allow-Methods", "POST, OPTIONS")
 	conn.Ctx.Output.Header("Access-Control-Allow-Headers", "content-type")
@@ -134,7 +135,7 @@ func authenticate(conn *GQLController, obj gqlRootObject, name string) error {
 	if err := models.Repo.Read(&userLogin, "session_id"); err != nil {
 		// 查找userLogin失败，返回身份验证失败
 		return utils.LogicError{
-			Message: "user login not find.",
+			Message: "user not authenticated.",
 		}
 	}
 

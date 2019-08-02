@@ -10,11 +10,14 @@ import (
 var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
 	Fields: graphql.Fields{
-		"sayHello":      types.SayHello,
-		"whoAmI":        types.WhoAmI,
-		"roleGet":       types.RoleGet,
-		"roleGetByName": types.RoleGetByName,
-		"getSmsCode":    types.GetSmsCode,
+		/*    test    */
+		"sayHello": types.SayHelloType,
+		"whoAmI":   types.WhoAmIType,
+		/*    role    */
+		"roleGet":       types.RoleGetType,
+		"roleGetByName": types.RoleGetByNameType,
+		/*    aliyun    */
+		"getSmsCode": types.GetSmsCodeType,
 	},
 })
 
@@ -22,13 +25,27 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
 	Fields: graphql.Fields{
-		"register":        types.UserCreate,
-		"resetPassword":   types.ResetPassword,
-		"loginByPassword": types.LoginByPassword,
-		"logout":          types.Logout,
-		"roleCreate":      types.RoleCreate,
-		"roleUpdate":      types.RoleUpdate,
-		"sendSmsCode":     types.SendSmsCode,
+		/*    user    */
+		"register":        types.UserCreateType,
+		"resetPassword":   types.ResetPasswordType,
+		"loginByPassword": types.LoginByPasswordType,
+		"logout":          types.LogoutType,
+
+		/*    role    */
+		"roleCreate": types.RoleCreateType,
+		"roleUpdate": types.RoleUpdateType,
+
+		/*    aliyun    */
+		"sendSmsCode": types.SendSmsCodeType,
+
+		/*    device    */
+		"deviceCreate": types.DeviceCreateType,
+		"deviceBind":   types.DeviceBindType,
+		"deviceCharge": types.DeviceChargeType,
+		// "deviceUNCharge": types.DeviceUNCharge,
+		// "deviceRECharge": types.DeviceRECharge,
+
+		/*    device    */
 	},
 })
 

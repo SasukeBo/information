@@ -9,11 +9,11 @@ import (
 // User 用户类型
 var User graphql.Type
 
-// UserCreate create a user
-var UserCreate *graphql.Field
+// UserCreateType create a user
+var UserCreateType *graphql.Field
 
-// ResetPassword reset user password
-var ResetPassword *graphql.Field
+// ResetPasswordType reset user password
+var ResetPasswordType *graphql.Field
 
 func init() {
 	User = graphql.NewObject(graphql.ObjectConfig{
@@ -32,23 +32,25 @@ func init() {
 		}),
 	})
 
-	UserCreate = &graphql.Field{
+	UserCreateType = &graphql.Field{
 		Type: User,
 		Args: graphql.FieldConfigArgument{
 			"phone":    GenArg(graphql.String, "手机号", false),
 			"password": GenArg(graphql.String, "密码", false),
 			"smsCode":  GenArg(graphql.String, "验证码", false),
 		},
-		Resolve: user.Create,
+		Resolve:     user.Create,
+		Description: "请求时需要加上 operationName",
 	}
 
-	ResetPassword = &graphql.Field{
+	ResetPasswordType = &graphql.Field{
 		Type: User,
 		Args: graphql.FieldConfigArgument{
 			"phone":    GenArg(graphql.String, "手机号", false),
 			"password": GenArg(graphql.String, "密码", false),
 			"smsCode":  GenArg(graphql.String, "验证码", false),
 		},
-		Resolve: user.ResetPassword,
+		Resolve:     user.ResetPassword,
+		Description: "请求时需要加上 operationName",
 	}
 }

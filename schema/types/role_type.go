@@ -9,17 +9,17 @@ import (
 // Role 用户类型
 var Role graphql.Type
 
-// RoleCreate create a role
-var RoleCreate *graphql.Field
+// RoleCreateType create a role
+var RoleCreateType *graphql.Field
 
-// RoleUpdate create a role
-var RoleUpdate *graphql.Field
+// RoleUpdateType create a role
+var RoleUpdateType *graphql.Field
 
-// RoleGet get role by id
-var RoleGet *graphql.Field
+// RoleGetType get role by id
+var RoleGetType *graphql.Field
 
-// RoleGetByName get role by name
-var RoleGetByName *graphql.Field
+// RoleGetByNameType get role by name
+var RoleGetByNameType *graphql.Field
 
 func init() {
 	Role = graphql.NewObject(graphql.ObjectConfig{
@@ -36,7 +36,7 @@ func init() {
 		}),
 	})
 
-	RoleCreate = &graphql.Field{
+	RoleCreateType = &graphql.Field{
 		Type: Role,
 		Args: graphql.FieldConfigArgument{
 			"roleName": GenArg(graphql.String, "角色名称", false),
@@ -44,7 +44,7 @@ func init() {
 		Resolve: role.Create,
 	}
 
-	RoleUpdate = &graphql.Field{
+	RoleUpdateType = &graphql.Field{
 		Type: Role,
 		Args: graphql.FieldConfigArgument{
 			"id":       GenArg(graphql.Int, "角色ID", false),
@@ -54,7 +54,7 @@ func init() {
 		Resolve: role.Update,
 	}
 
-	RoleGet = &graphql.Field{
+	RoleGetType = &graphql.Field{
 		Type: Role,
 		Args: graphql.FieldConfigArgument{
 			"id": GenArg(graphql.Int, "角色ID", false),
@@ -62,7 +62,7 @@ func init() {
 		Resolve: role.Get,
 	}
 
-	RoleGetByName = &graphql.Field{
+	RoleGetByNameType = &graphql.Field{
 		Type: Role,
 		Args: graphql.FieldConfigArgument{
 			"roleName": GenArg(graphql.String, "角色名称", false),

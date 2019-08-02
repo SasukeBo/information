@@ -37,8 +37,8 @@ type whoAmIResponse struct {
 	Phone   string
 }
 
-// WhoAmI 测试获取context中存储的current_user
-var WhoAmI = &graphql.Field{
+// WhoAmIType 测试获取context中存储的current_user
+var WhoAmIType = &graphql.Field{
 	Type: Response,
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 		rootValue := p.Info.RootValue.(map[string]interface{})
@@ -59,8 +59,8 @@ var WhoAmI = &graphql.Field{
 	},
 }
 
-// SayHello 测试接口
-var SayHello = &graphql.Field{
+// SayHelloType 测试接口
+var SayHelloType = &graphql.Field{
 	Type: Response,
 	Args: graphql.FieldConfigArgument{
 		"your_name": &graphql.ArgumentConfig{

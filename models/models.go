@@ -99,7 +99,7 @@ type Device struct {
 	Type        string    // 类型
 	Name        string    // 设备名称
 	Mac         string    // 设备Mac地址
-	Token       string    // 设备Token，用于数据加密
+	Token       string    `orm:"unique;index"`              // 设备Token，用于数据加密
 	Status      int       `orm:"default(0)"`                // 基础状态
 	ID          int       `orm:"auto;pk;column(id)"`        // PKey 主键
 	UUID        string    `orm:"column(uuid);unique;index"` // 通用唯一标识符

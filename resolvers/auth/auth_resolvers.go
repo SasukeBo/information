@@ -36,7 +36,7 @@ func LoginByPassword(params graphql.ResolveParams) (interface{}, error) {
 
 	var userLogin models.UserLogin
 
-	if err := models.Repo.QueryTable("user_login").Filter("user_uuid", user.UUID).Filter("session_id", sessionID).One(&userLogin); err == orm.ErrNoRows {
+	if err := models.Repo.QueryTable("user_login").Filter("user_id", user.ID).Filter("session_id", sessionID).One(&userLogin); err == orm.ErrNoRows {
 		// 不存在 user_uuid 和 session_id 匹配的 user_login
 		// 创建一个 user_login
 		userLogin.User = &user
@@ -82,8 +82,15 @@ func Logout(params graphql.ResolveParams) (interface{}, error) {
 		}
 	}
 
+	user := models.User{UUID: currentUserUUID.(string)}
+	if err := models.Repo.Read(&user, "uuid"); err != nil {
+		return nil, utils.LogicError{
+			Message: "user not find.",
+		}
+	}
+
 	var userLogin models.UserLogin
-	err := models.Repo.QueryTable("user_login").Filter("user_uuid", currentUserUUID.(string)).Filter("session_id", sessionID.(string)).One(&userLogin)
+	err := models.Repo.QueryTable("user_login").Filter("user_id", user.ID).Filter("session_id", sessionID.(string)).One(&userLogin)
 	if err == orm.ErrMultiRows {
 		return nil, utils.LogicError{
 			Message: "returned mutil rows not one.",
