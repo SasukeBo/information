@@ -38,7 +38,7 @@ func (conn *GQLController) Options() {
 	conn.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:9080")
 	conn.Ctx.Output.Header("Access-Control-Allow-Methods", "POST, OPTIONS")
 	conn.Ctx.Output.Header("Access-Control-Allow-Headers", "content-type")
-	conn.TplName = ""
+	conn.Ctx.Output.SetStatus(204)
 }
 
 // Get http method
