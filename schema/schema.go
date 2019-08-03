@@ -40,12 +40,23 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 
 		/*    device    */
 		"deviceCreate": types.DeviceCreateType,
-		"deviceBind":   types.DeviceBindType,
-		"deviceCharge": types.DeviceChargeType,
-		// "deviceUNCharge": types.DeviceUNCharge,
-		// "deviceRECharge": types.DeviceRECharge,
+		"deviceUpdate":   types.DeviceUpdateType,
+		// "deviceDelete":   types.DeviceDeleteType,
+		"deviceBind": types.DeviceBindType,
 
-		/*    device    */
+		/*    deviceCharge    */
+		"deviceChargeCreate": types.DeviceChargeCreateType,
+		"deviceChargeDelete": types.DeviceChargeDeleteType,
+		"deviceChargeUpdate": types.DeviceChargeUpdateType,
+
+		/*    deviceParam    */
+		// "deviceParamCreate": types.DeviceParamCreateType,
+		// "deviceParamUpdate": types.DeviceParamUpdateType,
+		// "deviceParamDelete": types.deviceParamDeleteType,
+
+		/*    deviceChargeAbility    */
+		// "deviceChargePrivCreate": types.DeviceChargePrivCreateType,
+		// "deviceChargePrivDelete": types.DeviceChargePrivDeleteType,
 	},
 })
 

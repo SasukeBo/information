@@ -22,11 +22,6 @@ var BaseStatus = struct {
 	Deleted int
 }{0, 1, 2, 3}
 
-// PrivType 权限类型
-var PrivType = struct {
-	Default int
-}{0}
-
 /* 									models begin
 ---------------------------------------------------- */
 
@@ -77,6 +72,11 @@ type Privilege struct {
 	UpdatedAt time.Time `orm:"auto_now;type(datetime)"`
 }
 
+// PrivType 权限类型
+var PrivType = struct {
+	Default int
+}{0}
+
 // RolePriv 角色权限关联关系模型
 type RolePriv struct {
 	ID        int        `orm:"auto;pk;column(id)"`
@@ -101,6 +101,7 @@ type Device struct {
 	Mac         string    // 设备Mac地址
 	Token       string    `orm:"unique;index"`              // 设备Token，用于数据加密
 	Status      int       `orm:"default(0)"`                // 基础状态
+	Bind        bool      `orm:"default(false)"`            // 是否已绑定物理机器
 	ID          int       `orm:"auto;pk;column(id)"`        // PKey 主键
 	UUID        string    `orm:"column(uuid);unique;index"` // 通用唯一标识符
 	User        *User     `orm:"rel(fk)"`                   // 注册人
@@ -108,6 +109,13 @@ type Device struct {
 	CreatedAt   time.Time `orm:"auto_now_add;type(datetime)"`
 	UpdatedAt   time.Time `orm:"auto_now;type(datetime)"`
 }
+
+// DeviceStatus 设备状态
+var DeviceStatus = struct {
+	Prod    int
+	Stop    int
+	OffLine int
+}{0, 1, 2}
 
 // DeviceCharge 设备负责人关系模型
 type DeviceCharge struct {
@@ -143,8 +151,8 @@ type DeviceParamValue struct {
 	CreatedAt   time.Time    `orm:"auto_now_add;type(datetime)"`
 }
 
-// DeviceStatus 设备运行状态变更模型
-type DeviceStatus struct {
+// DeviceStatusLog 设备运行状态变更模型
+type DeviceStatusLog struct {
 	Status   int       // 设备运行状态
 	ID       int       `orm:"auto;pk;column(id)"`
 	Device   *Device   `orm:"rel(fk);on_delete()"`
@@ -183,7 +191,7 @@ func init() {
 		new(DeviceChargeAbility),
 		new(DeviceParam),
 		new(DeviceParamValue),
-		new(DeviceStatus),
+		new(DeviceStatusLog),
 	)
 
 	// 自动建表

@@ -1,37 +1,22 @@
 package custom
 
+/*
+
 import (
 	"github.com/SasukeBo/information/models"
-	"github.com/astaxie/beego/logs"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/language/ast"
 )
 
-// BSMapType is base status as value and graphql output string as key map type
-type BSMapType map[interface{}]interface{}
-
-func (bsm BSMapType) rMap(value int) interface{} {
-	for k, v := range bsm {
-		switch vt := v.(type) {
-		case int:
-			if value == vt {
-				return k
-			}
-		}
-	}
-	return nil
-}
-
 // StatusMap 主要用于做graphql自定义的BaseStatus类型转换
-var StatusMap = BSMapType{
-	"default": models.BaseStatus.Default,
-	"publish": models.BaseStatus.Publish,
-	"block":   models.BaseStatus.Block,
-	"deleted": models.BaseStatus.Deleted,
+var StatusMap = VMap{
+	"unBind": models.DeviceStatus.Prod,
+	"binded": models.DeviceStatus.Stop,
 }
 
-// BaseStatus is a custom graphql type
-var BaseStatus = graphql.NewScalar(graphql.ScalarConfig{
+// DeviceStatus is a custom graphql type
+// TODO: complete this
+var DeviceStatus = graphql.NewScalar(graphql.ScalarConfig{
 	Name: "BaseStatus",
 	Description: `BaseStatus is represent role current status,
 	it convert string to int for DB,
@@ -70,3 +55,5 @@ var BaseStatus = graphql.NewScalar(graphql.ScalarConfig{
 		return nil
 	},
 })
+
+*/
