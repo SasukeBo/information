@@ -13,11 +13,35 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		/*    test    */
 		"sayHello": types.SayHelloType,
 		"whoAmI":   types.WhoAmIType,
+
 		/*    role    */
 		"roleGet":       types.RoleGetType,
 		"roleGetByName": types.RoleGetByNameType,
+
 		/*    aliyun    */
 		"getSmsCode": types.GetSmsCodeType,
+
+		/*    device    */
+		"deviceGet":  types.DeviceGetType,
+		"deviceList": types.DeviceListType,
+
+		/*    deviceCharge    */
+		"deviceChargeGet":  types.DeviceChargeGetType,
+		"deviceChargeList": types.DeviceChargeListType,
+
+		/*    deviceParam    */
+		"deviceParamGet":  types.DeviceParamGetType,
+		"deviceParamList": types.DeviceParamListType,
+
+		/*    deviceChargeAbility    */
+		"deviceChargePrivGet":  types.DeviceChargePrivGetType,
+		"deviceChargePrivList": types.DeviceChargePrivListType,
+
+		/*    deviceParamValue    */
+		"deviceParamValueList": types.DeviceParamValueListType,
+
+		/*    deviceStatusLog    */
+		"deviceStatusLogList": types.DeviceStatusLogListType,
 	},
 })
 
@@ -40,9 +64,9 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 
 		/*    device    */
 		"deviceCreate": types.DeviceCreateType,
-		"deviceUpdate":   types.DeviceUpdateType,
-		// "deviceDelete":   types.DeviceDeleteType,
-		"deviceBind": types.DeviceBindType,
+		"deviceUpdate": types.DeviceUpdateType,
+		"deviceDelete": types.DeviceDeleteType,
+		"deviceBind":   types.DeviceBindType,
 
 		/*    deviceCharge    */
 		"deviceChargeCreate": types.DeviceChargeCreateType,
@@ -50,13 +74,13 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		"deviceChargeUpdate": types.DeviceChargeUpdateType,
 
 		/*    deviceParam    */
-		// "deviceParamCreate": types.DeviceParamCreateType,
-		// "deviceParamUpdate": types.DeviceParamUpdateType,
-		// "deviceParamDelete": types.deviceParamDeleteType,
+		"deviceParamCreate": types.DeviceParamCreateType,
+		"deviceParamUpdate": types.DeviceParamUpdateType,
+		"deviceParamDelete": types.DeviceParamDeleteType,
 
 		/*    deviceChargeAbility    */
-		// "deviceChargePrivCreate": types.DeviceChargePrivCreateType,
-		// "deviceChargePrivDelete": types.DeviceChargePrivDeleteType,
+		"deviceChargePrivCreate": types.DeviceChargePrivCreateType,
+		"deviceChargePrivDelete": types.DeviceChargePrivDeleteType,
 	},
 })
 

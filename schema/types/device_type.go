@@ -6,12 +6,8 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-/*		object		*/
-
 // Device 设备类型
 var Device graphql.Type
-
-/*		types		*/
 
 // DeviceCreateType create a device
 var DeviceCreateType *graphql.Field
@@ -19,12 +15,19 @@ var DeviceCreateType *graphql.Field
 // DeviceUpdateType update a device
 var DeviceUpdateType *graphql.Field
 
+// DeviceDeleteType update a device
+var DeviceDeleteType *graphql.Field
+
+// DeviceGetType get a device by uuid
+var DeviceGetType *graphql.Field
+
+// DeviceListType get a device list by options
+var DeviceListType *graphql.Field
+
 // DeviceBindType bind a device
-// 设备注册后需要绑定物理机台，在客户端绑定机器
 var DeviceBindType *graphql.Field
 
 func init() {
-	/* 								object begin								*/
 	Device = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Device",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
@@ -44,9 +47,27 @@ func init() {
 		}),
 	})
 
-	/* 								objects end								*/
+	DeviceListType = &graphql.Field{
+		Type: graphql.NewList(Device),
+		Args: graphql.FieldConfigArgument{
+			"type":        GenArg(graphql.String, "设备类型"),
+			"namePattern": GenArg(graphql.String, "设备名称模糊匹配"),
+			"status":      GenArg(graphql.String, "设备状态"),
+			"userUUID":    GenArg(graphql.String, "注册人uuid"),
+		},
+		Description: "根据条件筛选device列表",
+		Resolve:     device.List,
+	}
 
-	/* 								types begin								*/
+	DeviceGetType = &graphql.Field{
+		Type: Device,
+		Args: graphql.FieldConfigArgument{
+			"uuid": GenArg(graphql.String, "设备UUID", false),
+		},
+		Description: "使用uuid获取device",
+		Resolve:     device.Get,
+	}
+
 	DeviceCreateType = &graphql.Field{
 		Type: Device,
 		Args: graphql.FieldConfigArgument{
@@ -63,10 +84,18 @@ func init() {
 			"uuid":        GenArg(graphql.String, "设备UUID", false),
 			"type":        GenArg(graphql.String, "设备类型"),
 			"name":        GenArg(graphql.String, "设备名称"),
-			"status":      GenArg(graphql.String, "设备状态"),
+			"status":      GenArg(custom.BaseStatus, "设备状态"),
 			"description": GenArg(graphql.String, "描述"),
 		},
-		Resolve: device.Create,
+		Resolve: device.Update,
+	}
+
+	DeviceDeleteType = &graphql.Field{
+		Type: graphql.String,
+		Args: graphql.FieldConfigArgument{
+			"uuid": GenArg(graphql.String, "设备UUID", false),
+		},
+		Resolve: device.Delete,
 	}
 
 	DeviceBindType = &graphql.Field{
@@ -75,8 +104,7 @@ func init() {
 			"token": GenArg(graphql.String, "设备token，用于数据加密", false),
 			"mac":   GenArg(graphql.String, "设备Mac地址", false),
 		},
-		Resolve: device.Bind,
+		Description: "绑定物理设备Mac地址",
+		Resolve:     device.Bind,
 	}
-
-	/* 							types end								*/
 }

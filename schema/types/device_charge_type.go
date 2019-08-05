@@ -5,25 +5,25 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-/*		object		*/
-
 // DeviceCharge 设备类型
 var DeviceCharge graphql.Type
 
-/*		types		*/
-
-// DeviceChargeCreateType bind a device
+// DeviceChargeCreateType doc false
 var DeviceChargeCreateType *graphql.Field
 
-// DeviceChargeDeleteType bind a device
+// DeviceChargeDeleteType doc false
 var DeviceChargeDeleteType *graphql.Field
 
-// DeviceChargeUpdateType bind a device
+// DeviceChargeUpdateType doc false
 var DeviceChargeUpdateType *graphql.Field
 
-func init() {
-	/* 								object begin								*/
+// DeviceChargeGetType doc false
+var DeviceChargeGetType *graphql.Field
 
+// DeviceChargeListType doc false
+var DeviceChargeListType *graphql.Field
+
+func init() {
 	DeviceCharge = graphql.NewObject(graphql.ObjectConfig{
 		Name: "DeviceCharge",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
@@ -37,17 +37,13 @@ func init() {
 		}),
 	})
 
-	/* 								objects end								*/
-
-	/* 								types begin								*/
-
 	DeviceChargeCreateType = &graphql.Field{
 		Type: DeviceCharge,
 		Args: graphql.FieldConfigArgument{
 			"uuid":     GenArg(graphql.String, "设备UUID", false),
 			"userUuid": GenArg(graphql.String, "指派人UUID", false),
 		},
-		Resolve: device.Charge,
+		Resolve: device.ChargeCreate,
 	}
 
 	DeviceChargeDeleteType = &graphql.Field{
@@ -55,7 +51,7 @@ func init() {
 		Args: graphql.FieldConfigArgument{
 			"id": GenArg(graphql.Int, "设备指派ID", false),
 		},
-		Resolve: device.UNCharge,
+		Resolve: device.ChargeDelete,
 	}
 
 	DeviceChargeUpdateType = &graphql.Field{
@@ -64,8 +60,25 @@ func init() {
 			"id":       GenArg(graphql.Int, "设备指派ID", false),
 			"userUuid": GenArg(graphql.String, "指派人UUID", false),
 		},
-		Resolve: device.RECharge,
+		Resolve: device.ChargeUpdate,
 	}
 
-	/* 							types end								*/
+	DeviceChargeGetType = &graphql.Field{
+		Type: DeviceCharge,
+		Args: graphql.FieldConfigArgument{
+			"id": GenArg(graphql.Int, "设备负责关系ID", false),
+		},
+		Description: "通过id获取设备负责关系",
+		Resolve:     device.ChargeGet,
+	}
+
+	DeviceChargeListType = &graphql.Field{
+		Type: graphql.NewList(DeviceCharge),
+		Args: graphql.FieldConfigArgument{
+			"userUUID":   GenArg(graphql.String, "设备负责人uuid"),
+			"deviceUUID": GenArg(graphql.String, "设备uuid"),
+		},
+		Description: "通过负责人uuid或设备uuid获取设备负责关系列表",
+		Resolve:     device.ChargeList,
+	}
 }

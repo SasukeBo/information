@@ -8,6 +8,53 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+// Get 获取设备
+func Get(params graphql.ResolveParams) (interface{}, error) {
+	uuid := params.Args["uuid"].(string)
+
+	device := models.Device{UUID: uuid}
+
+	if err := models.Repo.Read(&device, "uuid"); err != nil {
+		return nil, err
+	}
+
+	return device, nil
+}
+
+// List 获取设备列表
+func List(params graphql.ResolveParams) (interface{}, error) {
+	dType := params.Args["type"]
+	namePattern := params.Args["namePattern"]
+	status := params.Args["status"]
+	userUUID := params.Args["userUUID"]
+
+	qs := models.Repo.QueryTable("device")
+
+	if dType != nil {
+		qs = qs.Filter("type", dType.(string))
+	}
+
+	if namePattern != nil {
+		qs = qs.Filter("name__icontains", namePattern.(string))
+	}
+
+	if status != nil {
+		qs = qs.Filter("status", status.(int))
+	}
+
+	if userUUID != nil {
+		qs = qs.Filter("user__uuid", userUUID.(string))
+	}
+
+	var devices []*models.Device
+
+	if _, err := qs.All(&devices); err != nil {
+		return nil, err
+	}
+
+	return devices, nil
+}
+
 // Create 创建设备
 func Create(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
@@ -41,6 +88,47 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	// TODO: 为创建者分配所有权限
 
 	return device, nil
+}
+
+// Update 更新设备
+func Update(params graphql.ResolveParams) (interface{}, error) {
+	uuid := params.Args["uuid"].(string)
+	dType := params.Args["type"]
+	name := params.Args["name"]
+	status := params.Args["status"]
+	description := params.Args["description"]
+
+	device := models.Device{UUID: uuid}
+	if err := models.Repo.Read(&device); err != nil {
+		return nil, err
+	}
+
+	if dType != nil {
+		device.Type = dType.(string)
+	}
+
+	if name != nil {
+		device.Name = name.(string)
+	}
+
+	if status != nil {
+		device.Status = status.(int)
+	}
+
+	if description != nil {
+		device.Description = description.(string)
+	}
+
+	if _, err := models.Repo.Update(&device); err != nil {
+		return nil, err
+	}
+
+	return device, nil
+}
+
+// Delete 更新设备
+func Delete(params graphql.ResolveParams) (interface{}, error) {
+	return nil, nil
 }
 
 // Bind 绑定设备Mac地址，需要权限验证
@@ -82,73 +170,4 @@ func Bind(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	return device, nil
-}
-
-// Charge 指定设备负责人
-func Charge(params graphql.ResolveParams) (interface{}, error) {
-	// rootValue := params.Info.RootValue.(map[string]interface{})
-
-	uuid := params.Args["uuid"].(string)
-	userUUID := params.Args["userUuid"].(string)
-
-	user := models.User{UUID: userUUID}
-	if err := models.Repo.Read(&user, "uuid"); err != nil {
-		return nil, utils.LogicError{
-			Message: "user not found.",
-		}
-	}
-
-	device := models.Device{UUID: uuid}
-	if err := models.Repo.Read(&device, "uuid"); err != nil {
-		return nil, utils.LogicError{
-			Message: "device not found.",
-		}
-	}
-
-	// TODO: 权限验证
-	deviceCharge := models.DeviceCharge{
-		User:   &user,
-		Device: &device,
-	}
-
-	if _, err := models.Repo.Insert(&deviceCharge); err != nil {
-		return nil, err
-	}
-
-	return deviceCharge, nil
-}
-
-// UNCharge 取消指定设备负责人
-func UNCharge(params graphql.ResolveParams) (interface{}, error) {
-	id := params.Args["id"].(int)
-
-	deviceCharge := models.DeviceCharge{ID: id}
-	if _, err := models.Repo.Delete(&deviceCharge); err != nil {
-		return nil, err
-	}
-
-	return "ok", nil
-}
-
-// RECharge 重新指定设备负责人
-func RECharge(params graphql.ResolveParams) (interface{}, error) {
-	id := params.Args["id"].(int)
-	userUUID := params.Args["userUuid"].(string)
-
-	deviceCharge := models.DeviceCharge{ID: id}
-	if err := models.Repo.Read(&deviceCharge); err != nil {
-		return nil, err
-	}
-
-	user := models.User{UUID: userUUID}
-	if err := models.Repo.Read(&user); err != nil {
-		return nil, err
-	}
-
-	deviceCharge.User = &user
-	if _, err := models.Repo.Update(&deviceCharge, "user_id"); err != nil {
-		return nil, err
-	}
-
-	return deviceCharge, nil
 }

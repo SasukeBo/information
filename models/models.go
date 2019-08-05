@@ -101,7 +101,6 @@ type Device struct {
 	Mac         string    // 设备Mac地址
 	Token       string    `orm:"unique;index"`              // 设备Token，用于数据加密
 	Status      int       `orm:"default(0)"`                // 基础状态
-	Bind        bool      `orm:"default(false)"`            // 是否已绑定物理机器
 	ID          int       `orm:"auto;pk;column(id)"`        // PKey 主键
 	UUID        string    `orm:"column(uuid);unique;index"` // 通用唯一标识符
 	User        *User     `orm:"rel(fk)"`                   // 注册人
@@ -138,6 +137,7 @@ type DeviceParam struct {
 	Name      string    // 参数名称
 	Sign      string    // 参数签名（标识），要求英文及数字组合的字符串
 	Type      string    // 参数值类型，string？int？bool？
+	Device    *Device   `orm:"rel(fk);on_delete()"`
 	ID        int       `orm:"auto;pk;column(id)"`
 	Author    *User     `orm:"rel(fk);null;on_delete(set_null)"` // 创建人，删除时置空
 	CreatedAt time.Time `orm:"auto_now_add;type(datetime)"`
