@@ -112,9 +112,9 @@ type Device struct {
 
 // DeviceStatus 设备状态
 var DeviceStatus = struct {
-	Prod    int
-	Stop    int
-	OffLine int
+	Prod    int // 生产
+	Stop    int // 停机
+	OffLine int // 离线
 }{0, 1, 2}
 
 // DeviceCharge 设备负责人关系模型

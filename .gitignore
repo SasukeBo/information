@@ -1,7 +1,7 @@
 .vscode
 nohup.out
 .DS_Store
-conf
+conf/*.secret.conf
 static
 
 assets/node_modules

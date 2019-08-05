@@ -1,33 +1,31 @@
 package custom
 
-/*
-
 import (
 	"github.com/SasukeBo/information/models"
+	"github.com/astaxie/beego/logs"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/language/ast"
 )
 
-// StatusMap 主要用于做graphql自定义的BaseStatus类型转换
-var StatusMap = VMap{
-	"unBind": models.DeviceStatus.Prod,
-	"binded": models.DeviceStatus.Stop,
+// DeviceStatusMap 主要用于做graphql自定义的DeviceStatus类型转换
+var DeviceStatusMap = VMap{
+	"prod":    models.DeviceStatus.Prod,
+	"stop":    models.DeviceStatus.Stop,
+	"offline": models.DeviceStatus.OffLine,
 }
 
 // DeviceStatus is a custom graphql type
-// TODO: complete this
 var DeviceStatus = graphql.NewScalar(graphql.ScalarConfig{
-	Name: "BaseStatus",
-	Description: `BaseStatus is represent role current status,
+	Name: "DeviceStatus",
+	Description: `DeviceStatus is represent device current status,
 	it convert string to int for DB,
 	and convert int to string for output`,
-	// Serialize 用于将 BaseStatus 类型值转换为 string 类型从gql接口输出
 	Serialize: func(value interface{}) interface{} {
 		rs, ok := value.(int)
 		if !ok {
 			return nil
 		}
-		key := StatusMap.rMap(rs)
+		key := DeviceStatusMap.rMap(rs)
 		return key
 	},
 	// ParseValue 用于转换通过 variables 形式传递给 gquery 的值
@@ -37,23 +35,21 @@ var DeviceStatus = graphql.NewScalar(graphql.ScalarConfig{
 			logs.Error("value is not a string")
 			return nil
 		}
-		if value := StatusMap[key]; value != nil {
+		if value := DeviceStatusMap[key]; value != nil {
 			return value
 		}
-		logs.Error("value is not a BaseStatus type")
+		logs.Error("value is not a DeviceStatus type")
 		return nil
 	},
 	// ParseLiteral 用于转换 gql inline 变量值
 	ParseLiteral: func(valueAST ast.Value) interface{} {
 		switch valueAST.(type) {
 		case *ast.StringValue:
-			if value := StatusMap[valueAST.GetValue().(string)]; value != nil {
+			if value := DeviceStatusMap[valueAST.GetValue().(string)]; value != nil {
 				return value
 			}
 		}
-		logs.Error("value is not a BaseStatus type")
+		logs.Error("value is not a DeviceStatus type")
 		return nil
 	},
 })
-
-*/
