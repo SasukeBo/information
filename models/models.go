@@ -62,14 +62,12 @@ type UserExtend struct {
 	Email *string `orm:"unique;null"`
 }
 
-// Privilege 角色模型
+// Privilege 权限模型
 type Privilege struct {
-	ID        int       `orm:"auto;pk;column(id)"`
-	PrivName  string    `orm:"unique"`     // 权限名称
-	PrivType  int       `orm:"default(0)"` // 权限类型
-	Status    int       `orm:"default(0)"` // 基础状态
-	CreatedAt time.Time `orm:"auto_now_add;type(datetime)"`
-	UpdatedAt time.Time `orm:"auto_now;type(datetime)"`
+	ID       int    `orm:"auto;pk;column(id)"`
+	PrivName string `orm:"unique"`     // 权限名称
+	PrivType int    `orm:"default(0)"` // 权限类型
+	Status   int    `orm:"default(0)"` // 基础状态
 }
 
 // PrivType 权限类型

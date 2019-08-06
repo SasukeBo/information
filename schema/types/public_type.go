@@ -1,22 +1,9 @@
 package types
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/SasukeBo/information/models"
-	// "github.com/SasukeBo/information/resolvers"
-	"github.com/SasukeBo/information/schema/custom"
 	"github.com/graphql-go/graphql"
 )
-
-var gBaseStatus = &graphql.ArgumentConfig{Type: custom.BaseStatus, Description: `
-		基础状态
-		- default 默认状态
-		- publish 发布状态
-		- block   屏蔽（禁用）状态
-		- deleted 删除状态
-	`}
 
 // Response 消息体
 var Response = graphql.NewObject(graphql.ObjectConfig{
@@ -30,21 +17,21 @@ var Response = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-type whoAmIResponse struct {
+type whoIAmResponse struct {
 	Message string
 	UUID    string
 	Name    string
 	Phone   string
 }
 
-// WhoAmIType 测试获取context中存储的current_user
-var WhoAmIType = &graphql.Field{
+// WhoIAmType 测试获取context中存储的current_user
+var WhoIAmType = &graphql.Field{
 	Type: Response,
 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 		rootValue := p.Info.RootValue.(map[string]interface{})
 		currentUserUUID := rootValue["currentUserUUID"]
 		if currentUserUUID == nil {
-			return whoAmIResponse{Message: "not authenticated!"}, nil
+			return whoIAmResponse{Message: "not authenticated!"}, nil
 		}
 
 		user := models.User{UUID: currentUserUUID.(string)}
@@ -55,32 +42,7 @@ var WhoAmIType = &graphql.Field{
 		if err := models.Repo.Read(user.UserExtend); err != nil {
 			return nil, err
 		}
-		return whoAmIResponse{UUID: user.UUID, Name: user.UserExtend.Name, Phone: user.Phone}, nil
-	},
-}
-
-// SayHelloType 测试接口
-var SayHelloType = &graphql.Field{
-	Type: Response,
-	Args: graphql.FieldConfigArgument{
-		"your_name": &graphql.ArgumentConfig{
-			Type: graphql.NewNonNull(graphql.String),
-		},
-	},
-	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-		name := params.Args["your_name"]
-		now := time.Now()
-		message := fmt.Sprintf(
-			"你好%s! 现在是：%d年%d月%d日 %d:%d:%d",
-			name,
-			now.Year(),
-			int(now.Month()),
-			now.Day(),
-			now.Hour(),
-			now.Minute(),
-			now.Second(),
-		)
-		return struct{ Message string }{Message: message}, nil
+		return whoIAmResponse{UUID: user.UUID, Name: user.UserExtend.Name, Phone: user.Phone}, nil
 	},
 }
 

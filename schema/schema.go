@@ -11,12 +11,11 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
 	Fields: graphql.Fields{
 		/*    test    */
-		"sayHello": types.SayHelloType,
-		"whoAmI":   types.WhoAmIType,
+		"whoIAm": types.WhoIAmType,
 
-		/*    role    */
-		"roleGet":       types.RoleGetType,
-		"roleGetByName": types.RoleGetByNameType,
+		/* user */
+		"userGet":  types.UserGet,
+		// "userList": types.UserList, // TODO: 查询条件限制
 
 		/*    aliyun    */
 		"getSmsCode": types.GetSmsCodeType,
@@ -54,10 +53,7 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		"resetPassword":   types.ResetPasswordType,
 		"loginByPassword": types.LoginByPasswordType,
 		"logout":          types.LogoutType,
-
-		/*    role    */
-		"roleCreate": types.RoleCreateType,
-		"roleUpdate": types.RoleUpdateType,
+		// TODO:"userUpdate"
 
 		/*    aliyun    */
 		"sendSmsCode": types.SendSmsCodeType,
@@ -94,6 +90,6 @@ func init() {
 		Mutation: MutateRoot,
 	})
 	if err != nil {
-		log.Fatal("failed to create new schema, err: ", err)
+		log.Fatal("failed to create schema, err: ", err)
 	}
 }

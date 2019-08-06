@@ -10,6 +10,7 @@ import (
 func init() {
 	beego.Router("/*", &controllers.MainController{})
 	beego.Router("/graphql", &controllers.GQLController{})
+	beego.Router("/admin_graphql", &controllers.AdminGQLController{})
 	beego.Handler("/websocket", websocket.Handler(controllers.Connect))
 
 	beego.InsertFilter("/*", beego.BeforeExec, controllers.AuthFilter)

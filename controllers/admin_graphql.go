@@ -7,45 +7,24 @@ import (
 	"github.com/graphql-go/graphql/gqlerrors"
 )
 
-// GQLController is graphql controller
-type GQLController struct {
+// AdminGQLController is graphql controller
+type AdminGQLController struct {
 	beego.Controller
 }
 
-/*
-// Options http method
-func (conn *GQLController) Options() {
-	// TODO: 关闭跨域请求
-	conn.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:9080")
-	conn.Ctx.Output.Header("Access-Control-Allow-Methods", "POST, OPTIONS")
-	conn.Ctx.Output.Header("Access-Control-Allow-Headers", "content-type")
-	conn.Ctx.Output.SetStatus(204)
-}
-*/
-
 // Get http method
-func (conn *GQLController) Get() {
+func (conn *AdminGQLController) Get() {
 	graphiqlGet(&conn.Controller)
 }
 
 // Post http method
-func (conn *GQLController) Post() {
-	needAuth := true
+func (conn *AdminGQLController) Post() {
 	rootObject := gqlRootObject{}
 
 	var result *graphql.Result
 	params := fetchParams(&conn.Controller)
 
-	switch params.OperationName {
-	case "IntrospectionQuery", "sendSmsCode":
-		fallthrough
-	case "register", "resetPassword", "getSmsCode":
-		fallthrough
-	case "loginByPassword":
-		needAuth = false
-	}
-
-	if err := conn.GetSession("auth_error"); err != nil && needAuth {
+	if err := conn.GetSession("auth_error"); err != nil {
 		// 返回错误信息
 		result = &graphql.Result{
 			Errors: []gqlerrors.FormattedError{
@@ -59,7 +38,7 @@ func (conn *GQLController) Post() {
 		gqlGetSession(&conn.Controller, rootObject, params.OperationName)
 
 		gqlParams := graphql.Params{
-			Schema:         schema.Schema,
+			Schema:         schema.AdminSchema,
 			RequestString:  params.Query,
 			OperationName:  params.OperationName,
 			VariableValues: params.Variables,
@@ -70,7 +49,6 @@ func (conn *GQLController) Post() {
 
 		gqlSetSession(&conn.Controller, gqlParams.RootObject)
 	}
-	// conn.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:9080")
 	conn.Data["json"] = result
 	conn.ServeJSON()
 }

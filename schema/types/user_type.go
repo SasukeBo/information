@@ -15,6 +15,12 @@ var UserCreateType *graphql.Field
 // ResetPasswordType reset user password
 var ResetPasswordType *graphql.Field
 
+// UserGet doc false
+var UserGet *graphql.Field
+
+// UserList doc false
+var UserList *graphql.Field
+
 func init() {
 	User = graphql.NewObject(graphql.ObjectConfig{
 		Name: "User",
@@ -50,7 +56,31 @@ func init() {
 			"password": GenArg(graphql.String, "密码", false),
 			"smsCode":  GenArg(graphql.String, "验证码", false),
 		},
-		Resolve:     user.ResetPassword,
-		Description: "请求时需要加上 operationName",
+		Resolve: user.ResetPassword,
+		Description: `
+		未登录状态下修改密码
+		请求时需要加上 operationName
+		`,
 	}
+
+	UserGet = &graphql.Field{
+		Type: User,
+		Args: graphql.FieldConfigArgument{
+			"uuid": GenArg(graphql.String, "用户UUID", false),
+		},
+		Resolve:     user.Get,
+		Description: "使用UUID获取用户",
+	}
+
+	/*
+		UserList = &graphql.Field{
+			Type: User,
+			Args: graphql.FieldConfigArgument{
+				"namePattern":
+				"uuid": GenArg(graphql.String, "用户UUID", false),
+			},
+			Resolve:     user.List,
+			Description: "使用UUID获取用户",
+		}
+	*/
 }

@@ -106,3 +106,15 @@ func ResetPassword(params graphql.ResolveParams) (interface{}, error) {
 
 	return user, nil
 }
+
+// Get is a gql resolver, Get user
+func Get(params graphql.ResolveParams) (interface{}, error) {
+	uuid := params.Args["uuid"].(string)
+
+	user := models.User{UUID: uuid}
+	if err := models.Repo.Read(&user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
