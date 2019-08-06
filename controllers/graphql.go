@@ -5,9 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/schema"
-	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/graphql-go/graphql"
@@ -59,6 +57,10 @@ func (conn *GQLController) Get() {
 
 // Post http method
 func (conn *GQLController) Post() {
+	needAuth := true
+	rootObject := gqlRootObject{}
+
+	var result *graphql.Result
 	var params struct {
 		Query         string                 `json:"query"`
 		Variables     map[string]interface{} `json:"variables"`
@@ -76,18 +78,28 @@ func (conn *GQLController) Post() {
 		}
 	}
 
-	rootObject := gqlRootObject{}
-	var result *graphql.Result
-	if err := authenticate(conn, rootObject, params.OperationName); err != nil {
+	switch params.OperationName {
+	case "IntrospectionQuery", "sendSmsCode":
+		fallthrough
+	case "register", "resetPassword", "getSmsCode":
+		fallthrough
+	case "loginByPassword":
+		needAuth = false
+	}
+
+	if err := conn.GetSession("auth_error"); err != nil && needAuth {
 		// 返回错误信息
 		result = &graphql.Result{
 			Errors: []gqlerrors.FormattedError{
 				gqlerrors.FormattedError{
-					Message: err.Error(),
+					Message: err.(error).Error(),
 				},
 			},
 		}
+
 	} else {
+		gqlGetSession(conn, rootObject, params.OperationName)
+
 		gqlParams := graphql.Params{
 			Schema:         schema.Schema,
 			RequestString:  params.Query,
@@ -97,111 +109,10 @@ func (conn *GQLController) Post() {
 		}
 
 		result = graphql.Do(gqlParams)
-		setSession(conn, gqlParams.RootObject)
+
+		gqlSetSession(conn, gqlParams.RootObject)
 	}
 	// conn.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:9080")
 	conn.Data["json"] = result
 	conn.ServeJSON()
-}
-
-// authenticate 校验用户登录有效性
-// 根据 gql 操作名称向 graphql.Params.RootObject 中放入值
-// 至少会放入 currentUser 信息
-// 验证失败则返回 error
-func authenticate(conn *GQLController, obj gqlRootObject, name string) error {
-	env := beego.AppConfig.String
-	// 刷新 cookie
-	currentSessionID := conn.Ctx.Input.CruSession.SessionID()
-
-	switch name {
-	case "IntrospectionQuery", "sendSmsCode":
-		// graphiql schema query
-		return nil
-	case "register", "resetPassword", "getSmsCode":
-		obj["phone"] = conn.GetSession("phone")
-		obj["smsCode"] = conn.GetSession("smsCode")
-		return nil
-	case "loginByPassword":
-		// 登录操作不需要后面的验证
-		// 需要记录 IP UA
-		obj["remote_ip"] = conn.Ctx.Input.IP()
-		obj["user_agent"] = conn.Ctx.Input.UserAgent()
-		obj["session_id"] = currentSessionID
-		return nil
-	case "logout":
-		obj["session_id"] = currentSessionID
-	}
-
-	sessionID := conn.Ctx.Input.Cookie(env("SessionName"))
-	userLogin := models.UserLogin{SessionID: sessionID}
-	if err := models.Repo.Read(&userLogin, "session_id"); err != nil {
-		// 查找userLogin失败，返回身份验证失败
-		return utils.LogicError{
-			Message: "user not authenticated.",
-		}
-	}
-
-	if currentUserUUID := conn.GetSession("currentUserUUID"); currentUserUUID == nil {
-		// 如果没有currentUserUUID
-		// 通过sessionID获取userLogin
-		if userLogin.Logout {
-			return utils.LogicError{
-				Message: "user already logout.",
-			}
-		}
-		if !userLogin.Remembered {
-			return utils.LogicError{
-				Message: "user login not remembered.",
-			}
-		}
-		user := userLogin.User
-		if err := models.Repo.Read(user); err != nil {
-			// 查找user失败后，返回身份验证失败
-			return utils.LogicError{
-				Message: "user not find.",
-			}
-		}
-		if user.Password != userLogin.EncryptedPasswd {
-			// 登录记录的密码与用户密码不匹配，验证失败
-			return utils.LogicError{
-				Message: "password unmatch, maybe changed.",
-			}
-		}
-		userLogin.SessionID = currentSessionID
-
-		conn.SetSession("currentUserUUID", user.UUID)
-		obj["currentUserUUID"] = user.UUID
-		models.Repo.Update(&userLogin)
-	} else {
-		obj["currentUserUUID"] = currentUserUUID
-	}
-
-	if userLogin.Remembered {
-		expires, err := beego.AppConfig.Int("SessionCookieLifeTime")
-		if err != nil {
-			// 默认刷新为存活时间 7 天
-			expires = 60 * 60 * 24 * 7
-		}
-
-		conn.Ctx.Output.Cookie(env("SessionName"), currentSessionID, expires)
-	}
-
-	return nil
-}
-
-// setSession 根据 graphql.Params.RootObject 中 setSession 对应的
-// string 数组内容，从 RootObject 中取值并放入 Session
-func setSession(conn *GQLController, obj gqlRootObject) {
-	if fields := obj["setSession"]; fields != nil {
-		for _, field := range fields.([]string) {
-			conn.SetSession(field, obj[field])
-		}
-	}
-	if remember := obj["remember"]; remember != nil {
-		if !remember.(bool) {
-			// 如果用户登录为不记住登录，则将cookie过期时间设置为 回话
-			currentSessionID := conn.Ctx.Input.CruSession.SessionID()
-			conn.Ctx.Output.Cookie(beego.AppConfig.String("SessionName"), currentSessionID, 0)
-		}
-	}
 }
