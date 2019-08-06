@@ -17,10 +17,10 @@ func init() {
 		Name: "DeviceStatusLog",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
 			return graphql.Fields{
-				"id":          &graphql.Field{Type: graphql.Int},
-				"status":      &graphql.Field{Type: custom.DeviceStatus, Description: "设备运行状态"},
-				"deviceParam": &graphql.Field{Type: DeviceParam, Description: "设备参数"},
-				"createdAt":   &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
+				"id":       &graphql.Field{Type: graphql.Int},
+				"status":   &graphql.Field{Type: custom.DeviceStatus, Description: "设备运行状态"},
+				"device":   &graphql.Field{Type: Device, Description: "设备"},
+				"changeAt": &graphql.Field{Type: graphql.DateTime, Description: "变更时间"},
 			}
 		}),
 	})
