@@ -1,9 +1,11 @@
 package schema
 
 import (
-	"github.com/SasukeBo/information/schema/admintypes"
-	"github.com/graphql-go/graphql"
 	"log"
+
+	"github.com/graphql-go/graphql"
+
+	fields "github.com/SasukeBo/information/schema/fields/admin"
 )
 
 // AdminQueryRoot is query root
@@ -14,8 +16,8 @@ var AdminQueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		// TODO: "adminUserList"
 
 		/*    role    */
-		"adminRoleGet":       admintypes.RoleGetType,
-		"adminRoleGetByName": admintypes.RoleGetByNameType,
+		"adminRoleGet":       fields.RoleGetField,
+		"adminRoleGetByName": fields.RoleGetByNameField,
 		// TODO: "roleList"
 	},
 })
@@ -29,8 +31,8 @@ var AdminMutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		// TODO: "adminUserUpdate"
 
 		/*    role    */
-		"adminRoleCreate": admintypes.RoleCreateType,
-		"adminRoleUpdate": admintypes.RoleUpdateType,
+		"adminRoleCreate": fields.RoleCreateField,
+		"adminRoleUpdate": fields.RoleUpdateField,
 	},
 })
 
