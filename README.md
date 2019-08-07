@@ -70,6 +70,9 @@
 | inserted_at | datetime | 创建时间 |
 | updated_at | datetime | 更新时间 |
 
+**权限**
+各项读写权限
+
 #### 角色与权限关联表 role_abilities
 
 > 存储角色与权限关联信息
@@ -120,6 +123,7 @@
 | id | int | pk |
 | device_user_id | int | 设备负责人关系ID |
 | priv_id | int | 权限ID |
+
 
 #### 设备参数表 device_params
 

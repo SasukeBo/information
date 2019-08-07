@@ -1,11 +1,12 @@
 .vscode
 nohup.out
 .DS_Store
-conf
+conf/*.secret.conf
 static
 
 assets/node_modules
 assets/yarn-error.log
 
+information.exe
 information
 nohup.out
