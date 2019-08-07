@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"github.com/SasukeBo/information/schema"
 	"github.com/astaxie/beego"
 	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/gqlerrors"
+
+	"github.com/SasukeBo/information/schema"
 )
 
 // AdminGQLController is graphql controller
@@ -22,20 +22,14 @@ func (conn *AdminGQLController) Post() {
 	rootObject := gqlRootObject{}
 
 	var result *graphql.Result
-	params := fetchParams(&conn.Controller)
 
 	if err := conn.GetSession("auth_error"); err != nil {
-		// 返回错误信息
-		result = &graphql.Result{
-			Errors: []gqlerrors.FormattedError{
-				gqlerrors.FormattedError{
-					Message: err.(error).Error(),
-				},
-			},
-		}
-
+		result = genGQLError(err.(error))
+	} else if err = conn.Ctx.Input.GetData("gql_error"); err != nil {
+		result = genGQLError(err.(error))
 	} else {
-		gqlGetSession(&conn.Controller, rootObject, params.OperationName)
+		params := conn.Ctx.Input.GetData("query_params").(queryParams)
+		gqlGetSession(&conn.Controller, rootObject, params.RootFieldName)
 
 		gqlParams := graphql.Params{
 			Schema:         schema.AdminSchema,

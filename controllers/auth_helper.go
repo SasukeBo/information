@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	// "github.com/astaxie/beego/logs"
+
+	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/utils"
 )
 
 // authenticate 校验用户登录有效性

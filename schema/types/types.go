@@ -201,6 +201,7 @@ func init() {
 				"id":         &graphql.Field{Type: graphql.Int},
 				"uuid":       &graphql.Field{Type: graphql.String, Description: "通用唯一标识"},
 				"phone":      &graphql.Field{Type: graphql.String, Description: "手机号"},
+				"avatarURL":  &graphql.Field{Type: graphql.String, Description: "头像链接"},
 				"role":       &graphql.Field{Type: Role, Description: "用户角色"},
 				"userExtend": &graphql.Field{Type: UserExtend, Description: "用户拓展信息"},
 				"status":     &graphql.Field{Type: scalars.BaseStatus, Description: "基础状态"},

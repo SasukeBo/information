@@ -28,7 +28,7 @@ var AdminMutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		/* user */
 		// TODO: "adminUserDelete"
-		// TODO: "adminUserUpdate"
+		"adminUserUpdate": fields.UserUpdateField,
 
 		/*    role    */
 		"adminRoleCreate": fields.RoleCreateField,

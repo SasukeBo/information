@@ -8,6 +8,44 @@ import (
 	fields "github.com/SasukeBo/information/schema/fields/public"
 )
 
+// MutateRoot is mutation root
+var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
+	Name: "RootMutation",
+	Fields: graphql.Fields{
+		/*    user    */
+		"register":           fields.UserCreateField,
+		"resetPassword":      fields.ResetPasswordField,
+		"loginByPassword":    fields.LoginByPasswordField,
+		"logout":             fields.LogoutField,
+		"userUpdateAvatar":   fields.UserUpdateAvatarField,
+		"userUpdatePassword": fields.UserUpdatePasswordField,
+		"userUpdatePhone":    fields.UserUpdatePhoneField,
+
+		/*    aliyun    */
+		"sendSmsCode": fields.SendSmsCodeField,
+
+		/*    device    */
+		"deviceCreate": fields.DeviceCreateField,
+		"deviceUpdate": fields.DeviceUpdateField,
+		"deviceDelete": fields.DeviceDeleteField,
+		"deviceBind":   fields.DeviceBindField,
+
+		/*    deviceCharge    */
+		"deviceChargeCreate": fields.DeviceChargeCreateField,
+		"deviceChargeDelete": fields.DeviceChargeDeleteField,
+		"deviceChargeUpdate": fields.DeviceChargeUpdateField,
+
+		/*    deviceParam    */
+		"deviceParamCreate": fields.DeviceParamCreateField,
+		"deviceParamUpdate": fields.DeviceParamUpdateField,
+		"deviceParamDelete": fields.DeviceParamDeleteField,
+
+		/*    deviceChargeAbility    */
+		"deviceChargePrivCreate": fields.DeviceChargePrivCreateField,
+		"deviceChargePrivDelete": fields.DeviceChargePrivDeleteField,
+	},
+})
+
 // QueryRoot is query root
 var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
@@ -41,42 +79,6 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 
 		/*    deviceStatusLog    */
 		"deviceStatusLogList": fields.DeviceStatusLogListField,
-	},
-})
-
-// MutateRoot is mutation root
-var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
-	Name: "RootMutation",
-	Fields: graphql.Fields{
-		/*    user    */
-		"register":        fields.UserCreateField,
-		"resetPassword":   fields.ResetPasswordField,
-		"loginByPassword": fields.LoginByPasswordField,
-		"logout":          fields.LogoutField,
-		// TODO:"userUpdate"
-
-		/*    aliyun    */
-		"sendSmsCode": fields.SendSmsCodeField,
-
-		/*    device    */
-		"deviceCreate": fields.DeviceCreateField,
-		"deviceUpdate": fields.DeviceUpdateField,
-		"deviceDelete": fields.DeviceDeleteField,
-		"deviceBind":   fields.DeviceBindField,
-
-		/*    deviceCharge    */
-		"deviceChargeCreate": fields.DeviceChargeCreateField,
-		"deviceChargeDelete": fields.DeviceChargeDeleteField,
-		"deviceChargeUpdate": fields.DeviceChargeUpdateField,
-
-		/*    deviceParam    */
-		"deviceParamCreate": fields.DeviceParamCreateField,
-		"deviceParamUpdate": fields.DeviceParamUpdateField,
-		"deviceParamDelete": fields.DeviceParamDeleteField,
-
-		/*    deviceChargeAbility    */
-		"deviceChargePrivCreate": fields.DeviceChargePrivCreateField,
-		"deviceChargePrivDelete": fields.DeviceChargePrivDeleteField,
 	},
 })
 
