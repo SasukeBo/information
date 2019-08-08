@@ -1,113 +1,140 @@
 package device
 
 import (
-	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
-	"github.com/graphql-go/graphql"
+  "github.com/SasukeBo/information/models"
+  "github.com/SasukeBo/information/utils"
+  "github.com/graphql-go/graphql"
 )
 
 // ChargeCreate 指定设备负责人
 func ChargeCreate(params graphql.ResolveParams) (interface{}, error) {
-	// rootValue := params.Info.RootValue.(map[string]interface{})
+  // rootValue := params.Info.RootValue.(map[string]interface{})
 
-	uuid := params.Args["uuid"].(string)
-	userUUID := params.Args["userUuid"].(string)
+  uuid := params.Args["uuid"].(string)
+  userUUID := params.Args["userUUID"].(string)
 
-	user := models.User{UUID: userUUID}
-	if err := models.Repo.Read(&user, "uuid"); err != nil {
-		return nil, utils.LogicError{
-			Message: "user not found.",
-		}
-	}
+  user := models.User{UUID: userUUID}
+  if err := models.Repo.Read(&user, "uuid"); err != nil {
+    return nil, utils.ORMError{
+      Message: "user read error",
+      OrmErr:  err,
+    }
+  }
 
-	device := models.Device{UUID: uuid}
-	if err := models.Repo.Read(&device, "uuid"); err != nil {
-		return nil, utils.LogicError{
-			Message: "device not found.",
-		}
-	}
+  device := models.Device{UUID: uuid}
+  if err := models.Repo.Read(&device, "uuid"); err != nil {
+    return nil, utils.ORMError{
+      Message: "device read error",
+      OrmErr:  err,
+    }
+  }
 
-	// TODO: 权限验证
-	deviceCharge := models.DeviceCharge{
-		User:   &user,
-		Device: &device,
-	}
+  // TODO: 权限验证
+  deviceCharge := models.DeviceCharge{
+    User:   &user,
+    Device: &device,
+  }
 
-	if _, err := models.Repo.Insert(&deviceCharge); err != nil {
-		return nil, err
-	}
+  if _, err := models.Repo.Insert(&deviceCharge); err != nil {
+    return nil, utils.ORMError{
+      Message: "device_charge insert error",
+      OrmErr:  err,
+    }
+  }
 
-	return deviceCharge, nil
+  return deviceCharge, nil
 }
 
 // ChargeDelete 取消指定设备负责人
 func ChargeDelete(params graphql.ResolveParams) (interface{}, error) {
-	id := params.Args["id"].(int)
+  id := params.Args["id"].(int)
 
-	deviceCharge := models.DeviceCharge{ID: id}
-	if _, err := models.Repo.Delete(&deviceCharge); err != nil {
-		return nil, err
-	}
+  deviceCharge := models.DeviceCharge{ID: id}
+  if err := models.Repo.Read(&deviceCharge); err != nil {
+    return nil, utils.ORMError{
+      Message: "device_charge read error",
+      OrmErr:  err,
+    }
+  }
 
-	return "ok", nil
+  if _, err := models.Repo.Delete(&deviceCharge); err != nil {
+    return nil, utils.ORMError{
+      Message: "device_charge delete error",
+      OrmErr:  err,
+    }
+  }
+
+  return "ok", nil
 }
 
 // ChargeUpdate 重新指定设备负责人
 func ChargeUpdate(params graphql.ResolveParams) (interface{}, error) {
-	id := params.Args["id"].(int)
-	userUUID := params.Args["userUuid"].(string)
+  id := params.Args["id"].(int)
+  userUUID := params.Args["userUUID"].(string)
 
-	deviceCharge := models.DeviceCharge{ID: id}
-	if err := models.Repo.Read(&deviceCharge); err != nil {
-		return nil, err
-	}
+  deviceCharge := models.DeviceCharge{ID: id}
+  if err := models.Repo.Read(&deviceCharge); err != nil {
+    return nil, utils.ORMError{
+      Message: "device_charge read error",
+      OrmErr:  err,
+    }
+  }
 
-	user := models.User{UUID: userUUID}
-	if err := models.Repo.Read(&user); err != nil {
-		return nil, err
-	}
+  user := models.User{UUID: userUUID}
+  if err := models.Repo.Read(&user, "uuid"); err != nil {
+    return nil, utils.ORMError{
+      Message: "user read error",
+      OrmErr:  err,
+    }
+  }
 
-	deviceCharge.User = &user
-	if _, err := models.Repo.Update(&deviceCharge, "user_id"); err != nil {
-		return nil, err
-	}
+  deviceCharge.User = &user
+  if _, err := models.Repo.Update(&deviceCharge, "user_id"); err != nil {
+    return nil, utils.ORMError{
+      Message: "device_charge update error",
+      OrmErr:  err,
+    }
+  }
 
-	return deviceCharge, nil
+  return deviceCharge, nil
 }
 
 // ChargeGet ID查询设备负责关系
 func ChargeGet(params graphql.ResolveParams) (interface{}, error) {
-	id := params.Args["id"].(int)
+  id := params.Args["id"].(int)
 
-	deviceCharge := models.DeviceCharge{ID: id}
+  deviceCharge := models.DeviceCharge{ID: id}
 
-	if err := models.Repo.Read(&deviceCharge); err != nil {
-		return nil, err
-	}
+  if err := deviceCharge.Get(); err != nil {
+    return nil, err
+  }
 
-	return deviceCharge, nil
+  return deviceCharge, nil
 }
 
 // ChargeList 条件查询设备负责关系列表
 func ChargeList(params graphql.ResolveParams) (interface{}, error) {
-	userUUID := params.Args["userUUID"]
-	deviceUUID := params.Args["deviceUUID"]
+  userUUID := params.Args["userUUID"]
+  deviceUUID := params.Args["deviceUUID"]
 
-	qs := models.Repo.QueryTable("device_charge")
+  qs := models.Repo.QueryTable("device_charge")
 
-	if userUUID != nil {
-		qs = qs.Filter("user__uuid", userUUID.(string))
-	}
+  if userUUID != nil {
+    qs = qs.Filter("user__uuid", userUUID.(string))
+  }
 
-	if deviceUUID != nil {
-		qs = qs.Filter("device__uuid", deviceUUID.(string))
-	}
+  if deviceUUID != nil {
+    qs = qs.Filter("device__uuid", deviceUUID.(string))
+  }
 
-	var charges []*models.DeviceCharge
+  var charges []*models.DeviceCharge
 
-	if _, err := qs.All(&charges); err != nil {
-		return nil, err
-	}
+  if _, err := qs.All(&charges); err != nil {
+    return nil, utils.ORMError{
+      Message: "device_charge list error",
+      OrmErr:  err,
+    }
+  }
 
-	return charges, nil
+  return charges, nil
 }

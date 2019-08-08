@@ -112,7 +112,7 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
   uuid := params.Args["uuid"].(string)
 
   user := models.User{UUID: uuid}
-  if err := models.Repo.Read(&user); err != nil {
+  if err := user.GetByUUID(); err != nil {
     return nil, err
   }
 
@@ -121,7 +121,35 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 
 // List get list of user
 func List(params graphql.ResolveParams) (interface{}, error) {
-  return nil, nil
+  namePattern := params.Args["namePattern"]
+  phone := params.Args["phone"]
+  email := params.Args["email"]
+
+  var users []*models.User
+
+  if namePattern == nil && phone == nil && email == nil {
+    return users, nil
+  }
+
+  qs := models.Repo.QueryTable("user")
+
+  if namePattern != nil {
+    qs = qs.Filter("user_extend__name__icontains", namePattern.(string))
+  }
+
+  if phone != nil {
+    qs = qs.Filter("phone", phone.(string))
+  }
+
+  if email != nil {
+    qs = qs.Filter("user_extend__email", email.(string))
+  }
+
+  if _, err := qs.All(&users); err != nil {
+    return nil, err
+  }
+
+  return users, nil
 }
 
 // UpdateAvatar update user avatar url

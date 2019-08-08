@@ -1,14 +1,14 @@
 package utils
 
 import (
-	"testing"
+  "testing"
 
-	"github.com/SasukeBo/information/utils"
+  "github.com/SasukeBo/information/utils"
 )
 
 func Test_GenSmsCode(t *testing.T) {
-	code := utils.GenSmsCode()
-	if code != "117650" {
-		t.Error("生成验证码: ", code)
-	}
+  code := utils.GenSmsCode()
+  if code != "117650" {
+    t.Error("生成验证码: ", code)
+  }
 }

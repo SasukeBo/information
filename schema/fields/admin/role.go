@@ -25,12 +25,12 @@ var RoleUpdateField = &graphql.Field{
     "id":       fields.GenArg(graphql.Int, "角色ID", false),
     "roleName": fields.GenArg(graphql.String, "角色名称"),
     "status": fields.GenArg(scalars.BaseStatus, `
-				基础状态
-				- default 默认状态
-				- publish 发布状态
-				- block   屏蔽（禁用）状态
-				- deleted 删除状态
-			`),
+        基础状态
+        - default 默认状态
+        - publish 发布状态
+        - block   屏蔽（禁用）状态
+        - deleted 删除状态
+      `),
   },
   Resolve: role.Update,
 }

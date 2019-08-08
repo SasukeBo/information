@@ -30,9 +30,9 @@ var ResetPasswordField = &graphql.Field{
   },
   Resolve: user.ResetPassword,
   Description: `
-		未登录状态下修改密码
-		请求时需要加上 operationName
-		`,
+    未登录状态下修改密码
+    请求时需要加上 operationName
+    `,
 }
 
 // UserGetField _
@@ -45,15 +45,17 @@ var UserGetField = &graphql.Field{
   Description: "使用UUID获取用户",
 }
 
-// // UserListField _
-// var UserListField = &graphql.Field{
-// Type: types.User,
-// Args: graphql.FieldConfigArgument{
-// "namePattern": fields.GenArg(graphql.String, "用户UUID", false),
-// },
-// Resolve:     user.List,
-// Description: "使用UUID获取用户",
-// }
+// UserListField _
+var UserListField = &graphql.Field{
+  Type: graphql.NewList(types.User),
+  Args: graphql.FieldConfigArgument{
+    "namePattern": fields.GenArg(graphql.String, "用户名称模糊匹配"),
+    "phone":       fields.GenArg(graphql.String, "用户手机号"),
+    "email":       fields.GenArg(graphql.String, "用户邮箱"),
+  },
+  Resolve:     user.List,
+  Description: "按条件查询用户列表，如果没有给出查询条件，返回空列表",
+}
 
 // UserUpdateAvatarField _
 var UserUpdateAvatarField = &graphql.Field{
