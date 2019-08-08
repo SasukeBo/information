@@ -245,3 +245,30 @@ func getUser(params graphql.ResolveParams, user *models.User) error {
 
 	return nil
 }
+
+// RelatedLoad load user
+func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
+	var id int
+
+	switch v := params.Source.(type) {
+	case models.DeviceCharge:
+		id = v.User.ID
+	case models.DeviceParam:
+		id = v.Author.ID
+	case models.Device:
+		id = v.User.ID
+	case models.UserExtend:
+		id = v.User.ID
+	default:
+		return nil, utils.LogicError{
+			Message: "reloated user load error",
+		}
+	}
+
+	user := models.User{ID: id}
+	if err := user.Get(); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
