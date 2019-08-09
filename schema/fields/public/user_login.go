@@ -12,7 +12,11 @@ import (
 var UserLoginListField = &graphql.Field{
 	Type: graphql.NewList(types.UserLogin),
 	Args: graphql.FieldConfigArgument{
-		"todo": fields.GenArg(graphql.String, "todo"),
+		"limit":      fields.GenArg(graphql.Int, "单次查询最大返回条数"),
+		"offset":     fields.GenArg(graphql.Int, "返回条数的偏移量"),
+		"beforeTime": fields.GenArg(graphql.DateTime, "查询 beforeTime 之前的记录"),
+		"afterTime":  fields.GenArg(graphql.DateTime, "查询 afterTime 之后的记录"),
 	},
-	Resolve: userlogin.List,
+	Description: "获取用户登录记录列表，按照时间倒序排列",
+	Resolve:     userlogin.List,
 }

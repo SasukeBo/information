@@ -3,6 +3,8 @@ package models
 import (
 	"time"
 
+	"github.com/astaxie/beego/orm"
+
 	"github.com/SasukeBo/information/utils"
 )
 
@@ -38,4 +40,21 @@ func (r *Role) LoadRolePriv() ([]*RolePriv, error) {
 	}
 
 	return r.RolePriv, nil
+}
+
+// Validate _
+func (r *Role) Validate(sign string) error {
+	qs := Repo.QueryTable("role_priv").Filter("role_id", r.ID).Filter("privilege__sign", sign)
+	var rp RolePriv
+	if err := qs.One(&rp, "id"); err == orm.ErrNoRows {
+		return utils.LogicError{
+			Message: "has no right",
+		}
+	} else if err != nil {
+		return utils.LogicError{
+			Message: "unknown error",
+		}
+	}
+
+	return nil
 }

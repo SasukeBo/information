@@ -33,6 +33,18 @@ func (d *Device) Get() error {
 	return nil
 }
 
+// GetByUUID get device by uuid
+func (d *Device) GetByUUID() error {
+	if err := Repo.Read(d, "uuid"); err != nil {
+		return utils.ORMError{
+			Message: "device get by uuid error",
+			OrmErr:  err,
+		}
+	}
+
+	return nil
+}
+
 // LoadUser _
 func (d *Device) LoadUser() (*User, error) {
 	if _, err := Repo.LoadRelated(d, "User"); err != nil {

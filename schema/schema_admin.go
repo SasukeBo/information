@@ -20,6 +20,9 @@ var AdminQueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		/* device */
 		"adminDeviceGet":  fields.DeviceGetField,
 		"adminDeviceList": fields.DeviceListField,
+
+		/* userLogin */
+		"adminUserLoginList": fields.UserLoginListField,
 	},
 })
 

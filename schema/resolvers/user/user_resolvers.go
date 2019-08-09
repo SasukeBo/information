@@ -263,6 +263,8 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 		return v.LoadUser()
 	case models.UserExtend:
 		return v.LoadUser()
+	case *models.UserLogin:
+		return v.LoadUser()
 	default:
 		return nil, utils.LogicError{
 			Message: "related user load error",

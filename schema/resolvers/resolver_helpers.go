@@ -3,6 +3,7 @@ package resolvers
 import (
 	"regexp"
 
+	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/utils"
 )
 
@@ -45,5 +46,27 @@ func ValidatePassword(password string) error {
 			Message: "too short",
 		}
 	}
+	return nil
+}
+
+// ValidateUserPrivilege _
+func ValidateUserPrivilege(user *models.User, privSign string) error {
+	var role *models.Role
+	var err error
+
+	if role, err = user.LoadRole(); err != nil {
+		return utils.PrivError{
+			Message: "validate user privilege error",
+			PrivErr: err,
+		}
+	}
+
+	if err := role.Validate(privSign); err != nil {
+		return utils.PrivError{
+			Message: "user can't access",
+			PrivErr: err,
+		}
+	}
+
 	return nil
 }

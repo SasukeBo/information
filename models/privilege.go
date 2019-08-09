@@ -13,10 +13,10 @@ var PrivType = struct {
 
 // Privilege 权限模型
 type Privilege struct {
+	Name     string // 权限名称
 	ID       int    `orm:"auto;pk;column(id)"`
-	PrivName string `orm:"unique"`     // 权限名称
+	Sign     string `orm:"unique"`     // 权限签名
 	PrivType int    `orm:"default(0)"` // 权限类型
-	Status   int    `orm:"default(0)"` // 基础状态
 }
 
 // Get get privilege by id

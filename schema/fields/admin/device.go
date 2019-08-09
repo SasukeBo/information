@@ -5,7 +5,7 @@ import (
 
 	"github.com/SasukeBo/information/schema/fields"
 	"github.com/SasukeBo/information/schema/resolvers/admin/device"
-	// "github.com/SasukeBo/information/schema/scalars"
+	"github.com/SasukeBo/information/schema/scalars"
 	"github.com/SasukeBo/information/schema/types"
 )
 
@@ -22,8 +22,11 @@ var DeviceGetField = &graphql.Field{
 var DeviceListField = &graphql.Field{
 	Type: graphql.NewList(types.Device),
 	Args: graphql.FieldConfigArgument{
-		// TODO:
-		"todo": fields.GenArg(graphql.String, "todo"),
+		"type":        fields.GenArg(graphql.String, "设备类型"),
+		"namePattern": fields.GenArg(graphql.String, "设备名称模糊匹配"),
+		"status":      fields.GenArg(graphql.NewList(scalars.BaseStatus), "设备状态列表"),
+		// TODO: "userName":      fields.GenArg(graphql.NewList(scalars.BaseStatus), "设备状态列表"),
+		// TODO: 管理员接口，设备接口，包含权限验证
 	},
 	Resolve: device.List,
 }

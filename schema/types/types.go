@@ -155,9 +155,9 @@ func init() {
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
 			return graphql.Fields{
 				"id":       &graphql.Field{Type: graphql.Int},
-				"privName": &graphql.Field{Type: graphql.String},
-				"privType": &graphql.Field{Type: graphql.Int},
-				"status":   &graphql.Field{Type: scalars.BaseStatus, Description: "基础状态"},
+				"name":     &graphql.Field{Type: graphql.String, Description: "权限名称"},
+				"sign":     &graphql.Field{Type: graphql.String, Description: "权限签名"},
+				"privType": &graphql.Field{Type: graphql.Int, Description: "权限类型"},
 			}
 		}),
 	})

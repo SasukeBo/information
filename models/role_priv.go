@@ -12,6 +12,13 @@ type RolePriv struct {
 	Privilege *Privilege `orm:"rel(fk);on_delete()"` // 关联权利，删除时删除
 }
 
+// TableUnique 自定义唯一键
+func (rp *RolePriv) TableUnique() [][]string {
+	return [][]string{
+		[]string{"role_id", "privilege_id"},
+	}
+}
+
 // Get _
 func (rp *RolePriv) Get() error {
 	if err := Repo.Read(rp); err != nil {

@@ -13,7 +13,8 @@ import (
 var PrivilegeListField = &graphql.Field{
 	Type: graphql.NewList(types.Privilege),
 	Args: graphql.FieldConfigArgument{
-		"privType": fields.GenArg(scalars.PrivType, "权限类型"),
+		"privType":    fields.GenArg(scalars.PrivType, "权限类型"),
+		"namePattern": fields.GenArg(graphql.String, "权限名称模糊匹配"),
 	},
 	Resolve: privilege.List,
 }
