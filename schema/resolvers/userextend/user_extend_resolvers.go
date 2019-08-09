@@ -36,21 +36,14 @@ func BindEmail(params graphql.ResolveParams) (interface{}, error) {
 
 // RelatedLoad load user_extend
 func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
-	var value interface{}
-
 	switch v := params.Source.(type) {
 	case models.User:
-		value = v.UserExtend
+		return v.LoadUserExtend()
+	case *models.User:
+		return v.LoadUserExtend()
 	default:
 		return nil, utils.LogicError{
 			Message: "reloated user load error",
 		}
 	}
-
-	userExtend := value.(*models.UserExtend)
-	if err := userExtend.Get(); err != nil {
-		return nil, err
-	}
-
-	return userExtend, nil
 }

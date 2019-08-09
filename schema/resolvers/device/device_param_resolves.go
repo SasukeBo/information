@@ -125,21 +125,14 @@ func ParamList(params graphql.ResolveParams) (interface{}, error) {
 
 // ParamRelatedLoad 根据条件获取设备参数列表
 func ParamRelatedLoad(params graphql.ResolveParams) (interface{}, error) {
-	var id int
-
 	switch v := params.Source.(type) {
 	case models.DeviceParamValue:
-		id = v.DeviceParam.ID
+		return v.LoadDeviceParam()
+	case *models.DeviceParamValue:
+		return v.LoadDeviceParam()
 	default:
 		return nil, utils.LogicError{
-			Message: "reloated device_charge load error",
+			Message: "reloated device_param load error",
 		}
 	}
-
-	deviceParam := models.DeviceParam{ID: id}
-	if err := deviceParam.Get(); err != nil {
-		return nil, err
-	}
-
-	return deviceParam, nil
 }

@@ -27,3 +27,15 @@ func (r *Role) Get() error {
 
 	return nil
 }
+
+// LoadRolePriv _
+func (r *Role) LoadRolePriv() ([]*RolePriv, error) {
+	if _, err := Repo.LoadRelated(r, "RolePriv"); err != nil {
+		return nil, utils.ORMError{
+			Message: "related load role_priv error",
+			OrmErr:  err,
+		}
+	}
+
+	return r.RolePriv, nil
+}

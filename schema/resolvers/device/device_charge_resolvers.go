@@ -144,21 +144,14 @@ func ChargeList(params graphql.ResolveParams) (interface{}, error) {
 
 // ChargeRelatedLoad 设备负责关系 load related
 func ChargeRelatedLoad(params graphql.ResolveParams) (interface{}, error) {
-	var id int
-
 	switch v := params.Source.(type) {
 	case models.DeviceChargeAbility:
-		id = v.DeviceCharge.ID
+		return v.LoadDeviceCharge()
+	case *models.DeviceChargeAbility:
+		return v.LoadDeviceCharge()
 	default:
 		return nil, utils.LogicError{
 			Message: "reloated device_charge load error",
 		}
 	}
-
-	deviceCharge := models.DeviceCharge{ID: id}
-	if err := deviceCharge.Get(); err != nil {
-		return nil, err
-	}
-
-	return deviceCharge, nil
 }

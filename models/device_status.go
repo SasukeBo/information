@@ -1,8 +1,8 @@
 package models
 
 import (
+	"github.com/SasukeBo/information/utils"
 	"time"
-	// "github.com/SasukeBo/information/utils"
 )
 
 // DeviceStatus 设备状态
@@ -18,4 +18,16 @@ type DeviceStatusLog struct {
 	ID       int       `orm:"auto;pk;column(id)"`
 	Device   *Device   `orm:"rel(fk);on_delete()"`
 	ChangeAt time.Time `orm:"auto_now_add;type(datetime)"`
+}
+
+// LoadDevice _
+func (dsl *DeviceStatusLog) LoadDevice() (*Device, error) {
+	if _, err := Repo.LoadRelated(dsl, "Device"); err != nil {
+		return nil, utils.ORMError{
+			Message: "devcice_status_log load related device error",
+			OrmErr:  err,
+		}
+	}
+
+	return dsl.Device, nil
 }

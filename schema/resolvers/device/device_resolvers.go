@@ -187,25 +187,22 @@ func Bind(params graphql.ResolveParams) (interface{}, error) {
 
 // RelatedLoad _
 func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
-	var id int
-
 	switch v := params.Source.(type) {
 	case models.DeviceCharge:
-		id = v.Device.ID
+		return v.LoadDevice()
+	case *models.DeviceCharge:
+		return v.LoadDevice()
 	case models.DeviceStatusLog:
-		id = v.Device.ID
+		return v.LoadDevice()
+	case *models.DeviceStatusLog:
+		return v.LoadDevice()
 	case models.DeviceParam:
-		id = v.Device.ID
+		return v.LoadDevice()
+	case *models.DeviceParam:
+		return v.LoadDevice()
 	default:
 		return nil, utils.LogicError{
-			Message: "reloated device_charge load error",
+			Message: "reloated device load error",
 		}
 	}
-
-	device := models.Device{ID: id}
-	if err := device.Get(); err != nil {
-		return nil, err
-	}
-
-	return device, nil
 }

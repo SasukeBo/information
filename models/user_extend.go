@@ -39,3 +39,15 @@ func (ue *UserExtend) Update(cols ...string) error {
 
 	return nil
 }
+
+// LoadUser _
+func (ue *UserExtend) LoadUser() (*User, error) {
+	if _, err := Repo.LoadRelated(ue, "User"); err != nil {
+		return nil, utils.ORMError{
+			Message: "user_extend load related user error",
+			OrmErr:  err,
+		}
+	}
+
+	return ue.User, nil
+}

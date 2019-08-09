@@ -11,23 +11,18 @@ import (
 
 // RelatedLoad _
 func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
-	var id int
-
 	switch v := params.Source.(type) {
 	case models.DeviceChargeAbility:
-		id = v.Privilege.ID
+		return v.LoadPrivilege()
+	case *models.DeviceChargeAbility:
+		return v.LoadPrivilege()
 	case models.RolePriv:
-		id = v.Privilege.ID
+		return v.LoadPrivilege()
+	case *models.RolePriv:
+		return v.LoadPrivilege()
 	default:
 		return nil, utils.LogicError{
-			Message: "reloated device_charge load error",
+			Message: "related privilege load error",
 		}
 	}
-
-	privilege := models.Privilege{ID: id}
-	if err := privilege.Get(); err != nil {
-		return nil, err
-	}
-
-	return privilege, nil
 }
