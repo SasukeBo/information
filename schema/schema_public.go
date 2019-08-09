@@ -9,8 +9,7 @@ import (
 )
 
 // MutateRoot is mutation root
-var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
-	Name: "RootMutation",
+var MutateRoot = graphql.NewObject(graphql.ObjectConfig{Name: "RootMutation",
 	Fields: graphql.Fields{
 		/*    user    */
 		"register":           fields.UserCreateField,
@@ -83,6 +82,12 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 
 		/*    deviceStatusLog    */
 		"deviceStatusLogList": fields.DeviceStatusLogListField,
+
+		/* userLogin */
+		"userLoginList": fields.UserLoginListField,
+
+		/* privilege */
+		"privilegeList": fields.PrivilegeListField,
 	},
 })
 

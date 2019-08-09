@@ -93,3 +93,9 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 	return roles, nil
 }
+
+// Delete _
+func Delete(params graphql.ResolveParams) (interface{}, error) {
+	// TODO:
+	return nil, nil
+}

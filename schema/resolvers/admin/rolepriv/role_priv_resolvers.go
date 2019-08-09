@@ -1,4 +1,4 @@
-package device
+package rolepriv
 
 import (
 	// "fmt"
@@ -9,26 +9,14 @@ import (
 	// "github.com/SasukeBo/information/utils"
 )
 
-// Get is a gql resolver, get a device
-func Get(params graphql.ResolveParams) (interface{}, error) {
-	// TODO:
-	return nil, nil
-}
-
-// List _
-func List(params graphql.ResolveParams) (interface{}, error) {
+// Create _
+func Create(params graphql.ResolveParams) (interface{}, error) {
 	// TODO:
 	return nil, nil
 }
 
 // Delete _
 func Delete(params graphql.ResolveParams) (interface{}, error) {
-	// TODO:
-	return nil, nil
-}
-
-// Update _
-func Update(params graphql.ResolveParams) (interface{}, error) {
 	// TODO:
 	return nil, nil
 }

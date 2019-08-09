@@ -8,7 +8,8 @@ import (
 // PrivType 权限类型
 var PrivType = struct {
 	Default int
-}{0}
+	Device  int
+}{0, 1}
 
 // Privilege 权限模型
 type Privilege struct {

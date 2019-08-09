@@ -15,38 +15,38 @@ import (
 // SendSmsCodeResponse response type of SendSmsCode
 var SendSmsCodeResponse graphql.Type
 
-// DeviceChargeAbility 设备负责人权限
+// DeviceChargeAbility 设备负责人权限类型
 var DeviceChargeAbility graphql.Type
 
-// DeviceCharge 设备类型
+// DeviceCharge 设备负责人类型
 var DeviceCharge graphql.Type
 
-// DeviceParam 设备参数
+// DeviceParam 设备参数类型
 var DeviceParam graphql.Type
 
-// DeviceParamValue 设备参数值
+// DeviceParamValue 设备参数值类型
 var DeviceParamValue graphql.Type
 
-// DeviceStatusLog 设备状态变更记录
+// DeviceStatusLog 设备状态变更记录类型
 var DeviceStatusLog graphql.Type
 
 // Device 设备类型
 var Device graphql.Type
 
-// Privilege 用户类型
+// Privilege 权限类型
 var Privilege graphql.Type
 
-// Response 消息体
-var Response graphql.Type
-
-// RolePriv 用户类型
+// RolePriv 角色权限关系类型
 var RolePriv graphql.Type
 
-// Role 用户类型
+// Role 角色类型
 var Role graphql.Type
 
-// UserExtend 用户类型
+// UserExtend 用户信息拓展类型
 var UserExtend graphql.Type
+
+// UserLogin 用户登录类型
+var UserLogin graphql.Type
 
 // User 用户类型
 var User graphql.Type
@@ -215,6 +215,21 @@ func init() {
 				"status":     &graphql.Field{Type: scalars.BaseStatus, Description: "基础状态"},
 				"createdAt":  &graphql.Field{Type: graphql.DateTime},
 				"updatedAt":  &graphql.Field{Type: graphql.DateTime},
+			}
+		}),
+	})
+
+	UserLogin = graphql.NewObject(graphql.ObjectConfig{
+		Name: "UserLogin",
+		Fields: graphql.FieldsThunk(func() graphql.Fields {
+			return graphql.Fields{
+				"id":        &graphql.Field{Type: graphql.Int},
+				"userAgent": &graphql.Field{Type: graphql.String, Description: "UA"},
+				"user":      &graphql.Field{Type: User, Description: "用户", Resolve: user.RelatedLoad},
+				"remoteIP":  &graphql.Field{Type: graphql.String, Description: "头像链接"},
+				"logout":    &graphql.Field{Type: graphql.Boolean, Description: "用户角色"},
+				"createdAt": &graphql.Field{Type: graphql.DateTime},
+				"updatedAt": &graphql.Field{Type: graphql.DateTime},
 			}
 		}),
 	})

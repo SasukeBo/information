@@ -9,6 +9,12 @@ import (
 	"github.com/SasukeBo/information/utils"
 )
 
+// List is a gql resolver, get list of privilege
+func List(params graphql.ResolveParams) (interface{}, error) {
+	// TODO:
+	return nil, nil
+}
+
 // RelatedLoad _
 func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	switch v := params.Source.(type) {

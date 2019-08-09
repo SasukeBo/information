@@ -23,7 +23,7 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 	return device, nil
 }
 
-// List 获取设备列表
+// List 获取设备列表 TODO: 获取所有列表应放在admin中
 func List(params graphql.ResolveParams) (interface{}, error) {
 	dType := params.Args["type"]
 	namePattern := params.Args["namePattern"]

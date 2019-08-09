@@ -15,7 +15,8 @@ var RoleCreateField = &graphql.Field{
 	Args: graphql.FieldConfigArgument{
 		"roleName": fields.GenArg(graphql.String, "角色名称", false),
 	},
-	Resolve: role.Create}
+	Resolve: role.Create,
+}
 
 // RoleUpdateField create a role
 var RoleUpdateField = &graphql.Field{
@@ -32,6 +33,15 @@ var RoleUpdateField = &graphql.Field{
       `),
 	},
 	Resolve: role.Update,
+}
+
+// RoleDeleteField delete a role
+var RoleDeleteField = &graphql.Field{
+	Type: graphql.String,
+	Args: graphql.FieldConfigArgument{
+		"id": fields.GenArg(graphql.Int, "角色ID", false),
+	},
+	Resolve: role.Delete,
 }
 
 // RoleGetField get role by id

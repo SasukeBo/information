@@ -12,13 +12,14 @@ import (
 var AdminQueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
 	Fields: graphql.Fields{
-		/* user */
-		// TODO: "adminUserList"
-
 		/*    role    */
 		"adminRoleGet":       fields.RoleGetField,
 		"adminRoleGetByName": fields.RoleGetByNameField,
 		"adminRoleList":      fields.RoleListField,
+
+		/* device */
+		"adminDeviceGet":  fields.DeviceGetField,
+		"adminDeviceList": fields.DeviceListField,
 	},
 })
 
@@ -26,13 +27,25 @@ var AdminQueryRoot = graphql.NewObject(graphql.ObjectConfig{
 var AdminMutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
 	Fields: graphql.Fields{
-		/* user */
-		// TODO: "adminUserDelete"
-		"adminUserUpdate": fields.UserUpdateField,
-
 		/*    role    */
 		"adminRoleCreate": fields.RoleCreateField,
 		"adminRoleUpdate": fields.RoleUpdateField,
+		"adminRoleDelete": fields.RoleDeleteField,
+
+		/* userExtend */
+		"adminUserExtendUpdate": fields.UserExtendUpdateField,
+
+		/* user */
+		"adminUserDelete": fields.UserDeleteField,
+		"adminUserUpdate": fields.UserUpdateField,
+
+		/* rolePriv */
+		"adminRolePrivCreate": fields.RolePrivCreateField,
+		"adminRolePrivDelete": fields.RolePrivDeleteField,
+
+		/* device */
+		"adminDeviceUpdate": fields.DeviceUpdateField,
+		"adminDeviceDelete": fields.DeviceDeleteField,
 	},
 })
 
