@@ -16,6 +16,7 @@ var RolePrivCreateField = &graphql.Field{
 		"roleID": fields.GenArg(graphql.Int, "角色ID", false),
 		"privID": fields.GenArg(graphql.Int, "权限ID", false),
 	},
+	// TODO:
 	Resolve: rolepriv.Create,
 }
 
@@ -25,5 +26,6 @@ var RolePrivDeleteField = &graphql.Field{
 	Args: graphql.FieldConfigArgument{
 		"id": fields.GenArg(graphql.Int, "角色权限关系ID", false),
 	},
+	// TODO:
 	Resolve: rolepriv.Delete,
 }

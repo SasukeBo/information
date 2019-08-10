@@ -1,49 +1,62 @@
 package user
 
 import (
-	"github.com/SasukeBo/information/models"
 	"github.com/graphql-go/graphql"
+
+	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/schema/resolvers"
 )
 
 // Update _
 func Update(params graphql.ResolveParams) (interface{}, error) {
-	// TODO: valiadate user_w ability
-	uuid := params.Args["uuid"].(string)
-
-	user := models.User{UUID: uuid}
-	if err := models.Repo.Read(&user, "uuid"); err != nil {
+	if err := resolvers.ValidateAccess(&params, "user_w"); err != nil {
 		return nil, err
 	}
 
-	phone := params.Args["phone"]
-	avatarURL := params.Args["avatarURL"]
-	roleID := params.Args["roleID"]
-	status := params.Args["status"]
+	user := models.User{UUID: params.Args["uuid"].(string)}
+	if err := user.GetBy("uuid"); err != nil {
+		return nil, err
+	}
 
-	if phone != nil {
+	if phone := params.Args["phone"]; phone != nil {
 		user.Phone = phone.(string)
 	}
 
-	if avatarURL != nil {
+	if avatarURL := params.Args["avatarURL"]; avatarURL != nil {
 		user.AvatarURL = avatarURL.(string)
 	}
 
-	if roleID != nil {
+	if roleID := params.Args["roleID"]; roleID != nil {
 		user.Role = &models.Role{ID: roleID.(int)}
 	}
 
-	if status != nil {
+	if status := params.Args["status"]; status != nil {
 		user.Status = status.(int)
 	}
 
-	if _, err := models.Repo.Update(&user); err != nil {
+	if err := user.Update("phone", "avatarURL", "roleID", "status"); err != nil {
 		return nil, err
 	}
 
 	return user, nil
 }
 
-// Delete _ TODO:
+// Delete _
 func Delete(params graphql.ResolveParams) (interface{}, error) {
-	return nil, nil
+	if err := resolvers.ValidateAccess(&params, "user_w"); err != nil {
+		return nil, err
+	}
+
+	user := models.User{UUID: params.Args["uuid"].(string)}
+	if err := user.GetBy("uuid"); err != nil {
+		return nil, err
+	}
+
+	user.Status = models.BaseStatus.Block
+
+	if err := user.Update("status"); err != nil {
+		return nil, err
+	}
+
+	return "ok", nil
 }

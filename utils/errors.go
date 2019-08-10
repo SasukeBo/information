@@ -36,9 +36,9 @@ func (e LogicError) Error() string {
 }
 
 func (e ORMError) Error() string {
-	return fmt.Sprintf("orm error: %s, %v", e.Message, e.OrmErr.Error())
+	return fmt.Sprintf("Orm Error: %s, %v", e.Message, e.OrmErr.Error())
 }
 
 func (e PrivError) Error() string {
-	return fmt.Sprintf("privilege error: %s, %v", e.Message, e.PrivErr.Error())
+	return fmt.Sprintf("Privilege Error: %s, %v", e.Message, e.PrivErr.Error())
 }

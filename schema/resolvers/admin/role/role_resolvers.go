@@ -12,24 +12,33 @@ import (
 
 // Create is a gql resolver, create role
 func Create(params graphql.ResolveParams) (interface{}, error) {
-	// TODO 权限验证
+	if err := resolvers.ValidateAccess(&params, "role_w"); err != nil {
+		return nil, err
+	}
+
 	roleNameStr := params.Args["roleName"].(string)
 	if err := resolvers.ValidateStringEmpty(roleNameStr, "roleName"); err != nil {
 		return nil, err
 	}
+
 	role := &models.Role{RoleName: roleNameStr}
-	_, err := models.Repo.Insert(role)
-	return role, err
+	if _, err := models.Repo.Insert(role); err != nil {
+		return nil, err
+	}
+
+	return role, nil
 }
 
 // Update is a gql resolver, update role
 func Update(params graphql.ResolveParams) (interface{}, error) {
-	// TODO 权限验证
+	if err := resolvers.ValidateAccess(&params, "role_w"); err != nil {
+		return nil, err
+	}
+
 	id := params.Args["id"].(int)
-	role := &models.Role{ID: id}
-	err := models.Repo.Read(role)
-	if err != nil {
-		return role, err
+	role := models.Role{ID: id}
+	if err := role.GetBy("id"); err != nil {
+		return nil, err
 	}
 
 	if roleName := params.Args["roleName"]; roleName != nil {
@@ -45,31 +54,50 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 		role.Status = status.(int)
 	}
 
-	_, err = models.Repo.Update(role)
-	return role, err
+	if err := role.Update("role_name", "status"); err != nil {
+		return nil, err
+	}
+
+	return role, nil
 }
 
 // Get is a gql resolver, get role by id
 func Get(params graphql.ResolveParams) (interface{}, error) {
+	if err := resolvers.ValidateAccess(&params, "role_r"); err != nil {
+		return nil, err
+	}
+
 	id := params.Args["id"].(int)
 	role := &models.Role{ID: id}
-	err := models.Repo.Read(role)
-	return role, err
+	if err := role.GetBy("id"); err != nil {
+		return nil, err
+	}
+
+	return role, nil
 }
 
 // GetByName is a gql resolver, get role by name
 func GetByName(params graphql.ResolveParams) (interface{}, error) {
-	roleNameStr := params.Args["roleName"].(string)
-	if err := resolvers.ValidateStringEmpty(roleNameStr, "roleName"); err != nil {
+	if err := resolvers.ValidateAccess(&params, "role_r"); err != nil {
 		return nil, err
 	}
+
+	roleNameStr := params.Args["roleName"].(string)
+
 	role := &models.Role{RoleName: roleNameStr}
-	err := models.Repo.Read(role, "RoleName")
-	return role, err
+	if err := role.GetBy("role_name"); err != nil {
+		return nil, err
+	}
+
+	return role, nil
 }
 
 // List _
 func List(params graphql.ResolveParams) (interface{}, error) {
+	if err := resolvers.ValidateAccess(&params, "role_r"); err != nil {
+		return nil, err
+	}
+
 	roleNamePattern := params.Args["roleNamePattern"]
 	status := params.Args["status"]
 
@@ -96,6 +124,15 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 // Delete _
 func Delete(params graphql.ResolveParams) (interface{}, error) {
-	// TODO:
-	return nil, nil
+	if err := resolvers.ValidateAccess(&params, "role_w"); err != nil {
+		return nil, err
+	}
+
+	id := params.Args["id"].(int)
+	role := models.Role{ID: id}
+	if err := role.Delete(); err != nil {
+		return nil, err
+	}
+
+	return "ok", nil
 }

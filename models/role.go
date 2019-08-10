@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -18,11 +19,39 @@ type Role struct {
 	UpdatedAt time.Time   `orm:"auto_now;type(datetime)"`
 }
 
-// Get _
-func (r *Role) Get() error {
-	if err := Repo.Read(r); err != nil {
+// GetBy _
+func (r *Role) GetBy(col string) error {
+	if err := Repo.Read(r, col); err != nil {
 		return utils.ORMError{
-			Message: "role get error",
+			Message: fmt.Sprintf("role get by %s error", col),
+			OrmErr:  err,
+		}
+	}
+
+	return nil
+}
+
+// Delete _
+func (r *Role) Delete() error {
+	if err := r.GetBy("id"); err != nil {
+		return err
+	}
+
+	if _, err := Repo.Delete(r); err != nil {
+		return utils.ORMError{
+			Message: "role delete by id error",
+			OrmErr:  err,
+		}
+	}
+
+	return nil
+}
+
+// Update _
+func (r *Role) Update(cols ...string) error {
+	if _, err := Repo.Update(r, cols...); err != nil {
+		return utils.ORMError{
+			Message: "role update error",
 			OrmErr:  err,
 		}
 	}
@@ -48,7 +77,7 @@ func (r *Role) Validate(sign string) error {
 	var rp RolePriv
 	if err := qs.One(&rp, "id"); err == orm.ErrNoRows {
 		return utils.LogicError{
-			Message: "has no right",
+			Message: fmt.Sprintf("without %s ability", sign),
 		}
 	} else if err != nil {
 		return utils.LogicError{

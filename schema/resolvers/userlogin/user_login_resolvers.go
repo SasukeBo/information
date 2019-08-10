@@ -14,7 +14,7 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	currentUserUUID := params.Info.RootValue.(map[string]interface{})["currentUserUUID"].(string)
 
 	user := models.User{UUID: currentUserUUID}
-	if err := user.GetByUUID(); err != nil {
+	if err := user.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 

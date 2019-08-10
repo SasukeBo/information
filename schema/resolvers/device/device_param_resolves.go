@@ -11,13 +11,13 @@ import (
 func ParamCreate(params graphql.ResolveParams) (interface{}, error) {
 	currentUserUUID := params.Info.RootValue.(map[string]interface{})["currentUserUUID"].(string)
 	user := models.User{UUID: currentUserUUID}
-	if err := user.GetByUUID(); err != nil {
+	if err := user.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 
 	deviceID := params.Args["deviceID"].(int)
 	device := models.Device{ID: deviceID}
-	if err := device.Get(); err != nil {
+	if err := device.GetBy("id"); err != nil {
 		return nil, err
 	}
 

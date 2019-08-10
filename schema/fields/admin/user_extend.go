@@ -5,7 +5,6 @@ import (
 
 	"github.com/SasukeBo/information/schema/fields"
 	"github.com/SasukeBo/information/schema/resolvers/admin/uextend"
-	// "github.com/SasukeBo/information/schema/scalars"
 	"github.com/SasukeBo/information/schema/types"
 )
 
@@ -14,6 +13,8 @@ var UserExtendUpdateField = &graphql.Field{
 	Type: types.UserExtend,
 	Args: graphql.FieldConfigArgument{
 		"userUUID": fields.GenArg(graphql.String, "用户UUID", false),
+		"name":     fields.GenArg(graphql.String, "用户姓名"),
+		"email":    fields.GenArg(graphql.String, "用户邮箱"),
 	},
 	Resolve: uextend.Update,
 }

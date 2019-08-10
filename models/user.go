@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/SasukeBo/information/utils"
@@ -20,11 +21,11 @@ type User struct {
 	UpdatedAt  time.Time   `orm:"auto_now;type(datetime)"`
 }
 
-// Get get user by id
-func (u *User) Get() error {
-	if err := Repo.Read(u); err != nil {
+// GetBy get user by col
+func (u *User) GetBy(col string) error {
+	if err := Repo.Read(u, col); err != nil {
 		return utils.ORMError{
-			Message: "user get error",
+			Message: fmt.Sprintf("user get by %s error", col),
 			OrmErr:  err,
 		}
 	}
@@ -32,11 +33,11 @@ func (u *User) Get() error {
 	return nil
 }
 
-// GetByUUID get user by uuid
-func (u *User) GetByUUID() error {
-	if err := Repo.Read(u, "uuid"); err != nil {
+// Update _
+func (u *User) Update(cols ...string) error {
+	if _, err := Repo.Update(u, cols...); err != nil {
 		return utils.ORMError{
-			Message: "user get by uuid error",
+			Message: "user update error",
 			OrmErr:  err,
 		}
 	}

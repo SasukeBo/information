@@ -13,6 +13,7 @@ INSERT INTO privilege(sign, priv_type, name) values
 	('device_param_r', 1, '当前设备参数读权限'),
 	('device_param_w', 1, '当前设备参数写权限'),
 
+INSERT INTO role (role_name, status, created_at, updated_at) values ('default', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO role (role_name, status, created_at, updated_at) values ('admin', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 CREATE OR REPLACE FUNCTION insert_privs_of_admin_role()

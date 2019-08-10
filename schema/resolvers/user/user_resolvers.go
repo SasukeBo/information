@@ -49,8 +49,14 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	if _, err := models.Repo.Insert(&userExtend); err != nil {
 		return nil, err
 	}
-
 	user.UserExtend = &userExtend
+
+	role := models.Role{RoleName: "default"}
+	if err := role.GetBy("role_name"); err != nil {
+		return nil, err
+	}
+	user.Role = &role
+
 	if _, err := models.Repo.Insert(&user); err != nil {
 		models.Repo.Rollback()
 
@@ -113,7 +119,7 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 	uuid := params.Args["uuid"].(string)
 
 	user := models.User{UUID: uuid}
-	if err := user.GetByUUID(); err != nil {
+	if err := user.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 
@@ -262,6 +268,8 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	case *models.Device:
 		return v.LoadUser()
 	case models.UserExtend:
+		return v.LoadUser()
+	case *models.UserExtend:
 		return v.LoadUser()
 	case *models.UserLogin:
 		return v.LoadUser()
