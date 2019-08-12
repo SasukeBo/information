@@ -5,6 +5,7 @@ import (
 
 	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/utils"
 )
 
 // ParamCreate 设备参数创建
@@ -22,8 +23,19 @@ func ParamCreate(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	name := params.Args["name"].(string)
+	if err := utils.ValidateStringEmpty(name, "name"); err != nil {
+		return nil, err
+	}
+
 	sign := params.Args["sign"].(string)
+	if err := utils.ValidateStringEmpty(sign, "sign"); err != nil {
+		return nil, err
+	}
+
 	pType := params.Args["type"].(string)
+	if err := utils.ValidateStringEmpty(pType, "type"); err != nil {
+		return nil, err
+	}
 
 	deviceParam := models.DeviceParam{Name: name, Sign: sign, Type: pType, Author: &user, Device: &device}
 	if err := deviceParam.Insert(); err != nil {
@@ -42,19 +54,24 @@ func ParamUpdate(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	name := params.Args["name"]
-	sign := params.Args["sign"]
-	pType := params.Args["type"]
-
-	if name != nil {
+	if name := params.Args["name"]; name != nil {
+		if err := utils.ValidateStringEmpty(name.(string), "name"); err != nil {
+			return nil, err
+		}
 		deviceParam.Name = name.(string)
 	}
 
-	if sign != nil {
+	if sign := params.Args["sign"]; sign != nil {
+		if err := utils.ValidateStringEmpty(sign.(string), "sign"); err != nil {
+			return nil, err
+		}
 		deviceParam.Sign = sign.(string)
 	}
 
-	if pType != nil {
+	if pType := params.Args["type"]; pType != nil {
+		if err := utils.ValidateStringEmpty(pType.(string), "type"); err != nil {
+			return nil, err
+		}
 		deviceParam.Type = pType.(string)
 	}
 

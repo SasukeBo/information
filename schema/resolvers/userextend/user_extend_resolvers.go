@@ -5,6 +5,7 @@ import (
 
 	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/utils"
 )
 
 // Update _
@@ -14,11 +15,12 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 	if err := user.GetBy("uuid"); err != nil {
 		return nil, err
 	}
-
 	userExtend := user.UserExtend
-	name := params.Args["name"]
 
-	if name != nil {
+	if name := params.Args["name"]; name != nil {
+		if err := utils.ValidateStringEmpty(name.(string), "name"); err != nil {
+			return nil, err
+		}
 		userExtend.Name = name.(string)
 	}
 

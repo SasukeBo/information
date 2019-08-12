@@ -42,11 +42,10 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	if roleName := params.Args["roleName"]; roleName != nil {
-		roleNameStr := roleName.(string)
-		if err := utils.ValidateStringEmpty(roleNameStr, "roleName"); err != nil {
+		if err := utils.ValidateStringEmpty(roleName.(string), "roleName"); err != nil {
 			return nil, err
 		}
-		role.RoleName = roleNameStr
+		role.RoleName = roleName.(string)
 	}
 
 	if status := params.Args["status"]; status != nil {

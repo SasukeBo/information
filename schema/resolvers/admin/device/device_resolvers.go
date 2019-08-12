@@ -60,11 +60,14 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 		if err := userExtend.GetBy("name"); err != nil {
 			return nil, err
 		}
-		if user, err := userExtend.LoadUser(); err != nil {
+
+		var user *models.User
+		var err error
+		if user, err = userExtend.LoadUser(); err == nil {
 			return nil, err
-		} else {
-			qs = qs.Filter("user_id", user.ID)
 		}
+
+		qs = qs.Filter("user_id", user.ID)
 	}
 
 	if userUUID := params.Args["userUUID"]; userUUID != nil {
@@ -144,10 +147,16 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	if name := params.Args["name"]; name != nil {
+		if err := utils.ValidateStringEmpty(name.(string), "name"); err != nil {
+			return nil, err
+		}
 		device.Name = name.(string)
 	}
 
 	if mac := params.Args["mac"]; mac != nil {
+		if err := utils.ValidateStringEmpty(mac.(string), "mac"); err != nil {
+			return nil, err
+		}
 		device.Mac = mac.(string)
 	}
 

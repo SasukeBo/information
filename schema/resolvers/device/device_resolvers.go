@@ -65,7 +65,15 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
 
 	dType := params.Args["type"].(string)
+	if err := utils.ValidateStringEmpty(dType, "type"); err != nil {
+		return nil, err
+	}
+
 	dName := params.Args["name"].(string)
+	if err := utils.ValidateStringEmpty(dName, "name"); err != nil {
+		return nil, err
+	}
+
 	token := utils.GenRandomToken(8)
 	description := params.Args["description"].(string)
 	uuid := uuid.New().String()
@@ -96,29 +104,31 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 // Update 更新设备
 func Update(params graphql.ResolveParams) (interface{}, error) {
 	uuid := params.Args["uuid"].(string)
-	dType := params.Args["type"]
-	name := params.Args["name"]
-	status := params.Args["status"]
-	description := params.Args["description"]
 
 	device := models.Device{UUID: uuid}
 	if err := device.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 
-	if dType != nil {
+	if dType := params.Args["type"]; dType != nil {
+		if err := utils.ValidateStringEmpty(dType.(string), "type"); err != nil {
+			return nil, err
+		}
 		device.Type = dType.(string)
 	}
 
-	if name != nil {
+	if name := params.Args["name"]; name != nil {
+		if err := utils.ValidateStringEmpty(name.(string), "name"); err != nil {
+			return nil, err
+		}
 		device.Name = name.(string)
 	}
 
-	if status != nil {
+	if status := params.Args["status"]; status != nil {
 		device.Status = status.(int)
 	}
 
-	if description != nil {
+	if description := params.Args["description"]; description != nil {
 		device.Description = description.(string)
 	}
 
@@ -145,7 +155,11 @@ func Delete(params graphql.ResolveParams) (interface{}, error) {
 func Bind(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
 	token := params.Args["token"].(string)
+
 	mac := params.Args["mac"].(string)
+	if err := utils.ValidateStringEmpty(mac, "mac"); err != nil {
+		return nil, err
+	}
 
 	currentUserUUID := rootValue["currentUserUUID"]
 	if currentUserUUID == nil {

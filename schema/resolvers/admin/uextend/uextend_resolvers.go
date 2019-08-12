@@ -1,16 +1,11 @@
 package uextend
 
 import (
-	"regexp"
-
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/utils"
 )
-
-var emailRegexp = `[^\\.\\s@:](?:[^\\s@:]*[^\\s@:\\.])?@[^\\.\\s@]+(?:\\.[^\\.\\s@]+)*`
 
 // Update _
 func Update(params graphql.ResolveParams) (interface{}, error) {
@@ -35,13 +30,8 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	if email := params.Args["email"]; email != nil {
-		reg := regexp.MustCompile(emailRegexp)
-		if !reg.Match([]byte(email.(string))) {
-			return nil, errors.LogicError{
-				Type:    "Resolver",
-				Field:   "UserExtend",
-				Message: "Update() invalid email error",
-			}
+		if err := utils.ValidateEmail(email.(string)); err != nil {
+			return nil, err
 		}
 		userExtend.Email = email.(string)
 	}

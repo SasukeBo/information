@@ -173,7 +173,12 @@ func UpdateAvatar(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	user.AvatarURL = params.Args["avatarURL"].(string)
+	avatarURL := params.Args["avatarURL"].(string)
+	if err := utils.ValidateStringEmpty(avatarURL, "avatarURL"); err != nil {
+		return nil, err
+	}
+
+	user.AvatarURL = avatarURL
 	if err := user.Update("avatar_url"); err != nil {
 		return nil, err
 	}
@@ -198,6 +203,10 @@ func UpdatePassword(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	newPassword := params.Args["newPassword"].(string)
+	if err := utils.ValidatePassword(newPassword); err != nil {
+		return nil, err
+	}
+
 	user.Password = utils.Encrypt(newPassword)
 	if err := user.Update("password"); err != nil {
 		return nil, err
@@ -224,6 +233,10 @@ func UpdatePhone(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	newPhone := params.Args["newPhone"].(string)
+	if err := utils.ValidatePhone(newPhone); err != nil {
+		return nil, err
+	}
+
 	smsCode := params.Args["smsCode"].(string)
 	sessPhone := rootValue["phone"]
 	sessSmsCode := rootValue["smsCode"]

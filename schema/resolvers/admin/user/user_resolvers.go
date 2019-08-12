@@ -19,10 +19,18 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	if phone := params.Args["phone"]; phone != nil {
+		if err := utils.ValidatePhone(phone.(string)); err != nil {
+			return nil, err
+		}
+
 		user.Phone = phone.(string)
 	}
 
 	if avatarURL := params.Args["avatarURL"]; avatarURL != nil {
+		if err := utils.ValidateStringEmpty(avatarURL.(string), "avatarURL"); err != nil {
+			return nil, err
+		}
+
 		user.AvatarURL = avatarURL.(string)
 	}
 

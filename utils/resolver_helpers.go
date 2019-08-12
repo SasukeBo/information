@@ -10,6 +10,7 @@ import (
 )
 
 var phoneRegexp = `^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[35678]\d{2}|4(?:0\d|1[0-2]|9\d))|9[189]\d{2}|66\d{2})\d{6}$`
+var emailRegexp = `[^\\.\\s@:](?:[^\\s@:]*[^\\s@:\\.])?@[^\\.\\s@]+(?:\\.[^\\.\\s@]+)*`
 
 // EmptyResult list query empty result
 var EmptyResult = []interface{}{}
@@ -26,28 +27,35 @@ func ValidateStringEmpty(str, field string) error {
 	return nil
 }
 
-// ValidatePhone validate phone number is or not legal
+// ValidatePhone _
 func ValidatePhone(phone string) error {
-	if err := ValidateStringEmpty(phone, "phone"); err != nil {
-		return err
-	}
-
 	re := regexp.MustCompile(phoneRegexp)
 	if !re.Match([]byte(phone)) {
 		return errors.LogicError{
 			Type:    "Validate",
 			Field:   "phone",
-			Message: "is not a valid phone number",
+			Message: "invalid.",
 		}
 	}
 	return nil
 }
 
+// ValidateEmail _
+func ValidateEmail(email string) error {
+	reg := regexp.MustCompile(emailRegexp)
+	if !reg.Match([]byte(email)) {
+		return errors.LogicError{
+			Type:    "Validate",
+			Field:   "email",
+			Message: "invalid.",
+		}
+	}
+
+	return nil
+}
+
 // ValidatePassword validate password is or not legal
 func ValidatePassword(password string) error {
-	if err := ValidateStringEmpty(password, "password"); err != nil {
-		return err
-	}
 	if len(password) < 6 {
 		return errors.LogicError{
 			Type:    "Validate",
