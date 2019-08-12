@@ -1,8 +1,8 @@
 package schema
 
 /*
-	管理员接口权限逻辑不同，只适用于后台管理页面调用，在前台页面中禁止调用管理员接口，
-
+	管理员接口权限逻辑不同，只用于后台调用。
+	禁止在前台中调用管理员接口。
 */
 
 import (
@@ -16,6 +16,10 @@ import (
 // AdminQueryRoot is query root
 var AdminQueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
+	Description: `
+	管理员接口权限逻辑不同，只用于后台调用。
+	禁止在前台中调用管理员接口。
+	`,
 	Fields: graphql.Fields{
 		/*    role    */
 		"adminRoleGet":       fields.RoleGetField,
@@ -34,6 +38,10 @@ var AdminQueryRoot = graphql.NewObject(graphql.ObjectConfig{
 // AdminMutateRoot is mutation root
 var AdminMutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
+	Description: `
+	管理员接口权限逻辑不同，只用于后台调用。
+	禁止在前台中调用管理员接口。
+	`,
 	Fields: graphql.Fields{
 		/*    role    */
 		"adminRoleCreate": fields.RoleCreateField,

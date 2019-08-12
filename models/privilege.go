@@ -1,7 +1,8 @@
 package models
 
 import (
-	// "time"
+	"fmt"
+
 	"github.com/SasukeBo/information/utils"
 )
 
@@ -24,6 +25,34 @@ func (p *Privilege) Get() error {
 	if err := Repo.Read(p); err != nil {
 		return utils.ORMError{
 			Message: "privilege get error",
+			OrmErr:  err,
+		}
+	}
+
+	return nil
+}
+
+// GetBy get privilege by col
+func (p *Privilege) GetBy(col string) error {
+	if err := Repo.Read(p, col); err != nil {
+		return utils.ORMError{
+			Message: fmt.Sprintf("privilege get by %s error", col),
+			OrmErr:  err,
+		}
+	}
+
+	return nil
+}
+
+// Delete _
+func (p *Privilege) Delete() error {
+	if err := p.Get(); err != nil {
+		return err
+	}
+
+	if _, err := Repo.Delete(p); err != nil {
+		return utils.ORMError{
+			Message: "privilege delete error",
 			OrmErr:  err,
 		}
 	}

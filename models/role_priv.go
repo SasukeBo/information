@@ -31,6 +31,34 @@ func (rp *RolePriv) Get() error {
 	return nil
 }
 
+// Insert _
+func (rp *RolePriv) Insert() error {
+	if _, err := Repo.Insert(rp); err != nil {
+		return utils.ORMError{
+			Message: "role_priv insert error",
+			OrmErr:  err,
+		}
+	}
+
+	return nil
+}
+
+// Delete _
+func (rp *RolePriv) Delete() error {
+	if err := rp.Get(); err != nil {
+		return err
+	}
+
+	if _, err := Repo.Delete(rp); err != nil {
+		return utils.ORMError{
+			Message: "role_priv delete error",
+			OrmErr:  err,
+		}
+	}
+
+	return nil
+}
+
 // LoadPrivilege related load privilege
 func (rp *RolePriv) LoadPrivilege() (*Privilege, error) {
 	if _, err := Repo.LoadRelated(rp, "Privilege"); err != nil {
