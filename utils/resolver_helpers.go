@@ -1,12 +1,12 @@
-package resolvers
+package utils
 
 import (
 	"regexp"
 
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
 )
 
 var phoneRegexp = `^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[35678]\d{2}|4(?:0\d|1[0-2]|9\d))|9[189]\d{2}|66\d{2})\d{6}$`
@@ -17,8 +17,9 @@ var EmptyResult = []interface{}{}
 // ValidateStringEmpty validate str is or not empty, return resolvers.ArgumentError type error
 func ValidateStringEmpty(str, field string) error {
 	if str == "" {
-		return utils.ArgumentError{
-			Field:   "roleName",
+		return errors.LogicError{
+			Type:    "Validate",
+			Field:   field,
 			Message: "can not be blank",
 		}
 	}
@@ -30,9 +31,11 @@ func ValidatePhone(phone string) error {
 	if err := ValidateStringEmpty(phone, "phone"); err != nil {
 		return err
 	}
+
 	re := regexp.MustCompile(phoneRegexp)
 	if !re.Match([]byte(phone)) {
-		return utils.ArgumentError{
+		return errors.LogicError{
+			Type:    "Validate",
 			Field:   "phone",
 			Message: "is not a valid phone number",
 		}
@@ -46,7 +49,8 @@ func ValidatePassword(password string) error {
 		return err
 	}
 	if len(password) < 6 {
-		return utils.ArgumentError{
+		return errors.LogicError{
+			Type:    "Validate",
 			Field:   "password",
 			Message: "too short",
 		}
@@ -66,16 +70,20 @@ func ValidateAccess(params *graphql.ResolveParams, privSign string) error {
 	var err error
 
 	if role, err = user.LoadRole(); err != nil {
-		return utils.PrivError{
-			Message: "validate user privilege error",
-			PrivErr: err,
+		return errors.LogicError{
+			Type:    "Validate",
+			Field:   "role",
+			Message: "load error",
+			OriErr:  err,
 		}
 	}
 
 	if err := role.Validate(privSign); err != nil {
-		return utils.PrivError{
-			Message: "user can't access",
-			PrivErr: err,
+		return errors.LogicError{
+			Type:    "Validate",
+			Field:   "privilege",
+			Message: "access error",
+			OriErr:  err,
 		}
 	}
 

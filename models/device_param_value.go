@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/SasukeBo/information/utils"
+	"github.com/SasukeBo/information/errors"
 	"time"
 )
 
@@ -16,9 +16,11 @@ type DeviceParamValue struct {
 // LoadDeviceParam related load device_param
 func (dpv *DeviceParamValue) LoadDeviceParam() (*DeviceParam, error) {
 	if _, err := Repo.LoadRelated(dpv, "DeviceParam"); err != nil {
-		return nil, utils.ORMError{
-			Message: "device_param_value load related device_param error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "DeviceParamValue",
+			Message: "LoadDeviceParam() error",
+			OriErr:  err,
 		}
 	}
 

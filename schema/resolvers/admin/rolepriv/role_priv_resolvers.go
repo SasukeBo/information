@@ -4,12 +4,12 @@ import (
 	"github.com/graphql-go/graphql"
 
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/schema/resolvers"
+	"github.com/SasukeBo/information/utils"
 )
 
 // Create _
 func Create(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "role_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "role_w"); err != nil {
 		return nil, err
 	}
 
@@ -33,7 +33,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 
 // Delete _
 func Delete(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "role_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "role_w"); err != nil {
 		return nil, err
 	}
 

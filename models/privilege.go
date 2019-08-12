@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 
-	"github.com/SasukeBo/information/utils"
+	"github.com/SasukeBo/information/errors"
 )
 
 // PrivType 权限类型
@@ -23,9 +23,11 @@ type Privilege struct {
 // Get get privilege by id
 func (p *Privilege) Get() error {
 	if err := Repo.Read(p); err != nil {
-		return utils.ORMError{
-			Message: "privilege get error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Privilege",
+			Message: "Get() error",
+			OriErr:  err,
 		}
 	}
 
@@ -35,9 +37,11 @@ func (p *Privilege) Get() error {
 // GetBy get privilege by col
 func (p *Privilege) GetBy(col string) error {
 	if err := Repo.Read(p, col); err != nil {
-		return utils.ORMError{
-			Message: fmt.Sprintf("privilege get by %s error", col),
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Privilege",
+			Message: fmt.Sprintf("GetBy(%s) error", col),
+			OriErr:  err,
 		}
 	}
 
@@ -51,9 +55,11 @@ func (p *Privilege) Delete() error {
 	}
 
 	if _, err := Repo.Delete(p); err != nil {
-		return utils.ORMError{
-			Message: "privilege delete error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Privilege",
+			Message: "Delete() error",
+			OriErr:  err,
 		}
 	}
 

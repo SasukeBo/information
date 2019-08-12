@@ -5,8 +5,8 @@ import (
 
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
 )
 
 // List _
@@ -38,9 +38,11 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 	var userLogins []*models.UserLogin
 	if _, err := qs.All(&userLogins); err != nil {
-		return nil, utils.ORMError{
-			Message: "user_login get list error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "UserLogin",
+			Message: "List() error",
+			OriErr:  err,
 		}
 	}
 

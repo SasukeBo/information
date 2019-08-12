@@ -5,24 +5,24 @@ import (
 
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/schema/resolvers"
 	"github.com/SasukeBo/information/utils"
 )
 
 // Create is a gql resolver, create role
 func Create(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "role_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "role_w"); err != nil {
 		return nil, err
 	}
 
 	roleNameStr := params.Args["roleName"].(string)
-	if err := resolvers.ValidateStringEmpty(roleNameStr, "roleName"); err != nil {
+	if err := utils.ValidateStringEmpty(roleNameStr, "roleName"); err != nil {
 		return nil, err
 	}
 
-	role := &models.Role{RoleName: roleNameStr}
-	if _, err := models.Repo.Insert(role); err != nil {
+	role := models.Role{RoleName: roleNameStr}
+	if err := role.Insert(); err != nil {
 		return nil, err
 	}
 
@@ -31,7 +31,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 
 // Update is a gql resolver, update role
 func Update(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "role_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "role_w"); err != nil {
 		return nil, err
 	}
 
@@ -43,9 +43,8 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 
 	if roleName := params.Args["roleName"]; roleName != nil {
 		roleNameStr := roleName.(string)
-		err := resolvers.ValidateStringEmpty(roleNameStr, "roleName")
-		if err != nil {
-			return role, err
+		if err := utils.ValidateStringEmpty(roleNameStr, "roleName"); err != nil {
+			return nil, err
 		}
 		role.RoleName = roleNameStr
 	}
@@ -63,7 +62,7 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 
 // Get is a gql resolver, get role by id
 func Get(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "role_r"); err != nil {
+	if err := utils.ValidateAccess(&params, "role_r"); err != nil {
 		return nil, err
 	}
 
@@ -78,7 +77,7 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 
 // GetByName is a gql resolver, get role by name
 func GetByName(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "role_r"); err != nil {
+	if err := utils.ValidateAccess(&params, "role_r"); err != nil {
 		return nil, err
 	}
 
@@ -94,7 +93,7 @@ func GetByName(params graphql.ResolveParams) (interface{}, error) {
 
 // List _
 func List(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "role_r"); err != nil {
+	if err := utils.ValidateAccess(&params, "role_r"); err != nil {
 		return nil, err
 	}
 
@@ -113,9 +112,11 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 	var roles []*models.Role
 	if _, err := qs.All(&roles); err != nil {
-		return nil, utils.ORMError{
-			Message: "role list error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "Role",
+			Message: "List() error",
+			OriErr:  err,
 		}
 	}
 
@@ -124,7 +125,7 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 // Delete _
 func Delete(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "role_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "role_w"); err != nil {
 		return nil, err
 	}
 

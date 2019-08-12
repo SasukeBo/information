@@ -3,8 +3,8 @@ package userextend
 import (
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
 )
 
 // Update _
@@ -42,8 +42,10 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	case *models.User:
 		return v.LoadUserExtend()
 	default:
-		return nil, utils.LogicError{
-			Message: "reloated user load error",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "UserExtend",
+			Message: "RelatedLoad() error",
 		}
 	}
 }

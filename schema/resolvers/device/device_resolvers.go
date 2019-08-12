@@ -1,11 +1,10 @@
 package device
 
 import (
-	// "github.com/astaxie/beego/logs"
-	"github.com/astaxie/beego/orm"
 	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/utils"
 )
@@ -15,15 +14,14 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 	uuid := params.Args["uuid"].(string)
 
 	device := models.Device{UUID: uuid}
-
-	if err := models.Repo.Read(&device, "uuid"); err != nil {
+	if err := device.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 
 	return device, nil
 }
 
-// List 获取设备列表 TODO: 获取所有列表应放在admin中
+// List _
 func List(params graphql.ResolveParams) (interface{}, error) {
 	dType := params.Args["type"]
 	namePattern := params.Args["namePattern"]
@@ -51,7 +49,12 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	var devices []*models.Device
 
 	if _, err := qs.All(&devices); err != nil {
-		return nil, err
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "Device",
+			Message: "List() error",
+			OriErr:  err,
+		}
 	}
 
 	return devices, nil
@@ -69,10 +72,8 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 
 	userUUID := rootValue["currentUserUUID"].(string)
 	user := models.User{UUID: userUUID}
-	if err := models.Repo.Read(&user, "uuid"); err == orm.ErrNoRows {
-		return nil, utils.LogicError{
-			Message: "user not found.",
-		}
+	if err := user.GetBy("uuid"); err != nil {
+		return nil, err
 	}
 
 	device := models.Device{
@@ -84,7 +85,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 		Description: description,
 	}
 
-	if _, err := models.Repo.Insert(&device); err != nil {
+	if err := device.Insert(); err != nil {
 		return nil, err
 	}
 	// TODO: 为创建者分配所有权限
@@ -101,7 +102,7 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 	description := params.Args["description"]
 
 	device := models.Device{UUID: uuid}
-	if err := models.Repo.Read(&device, "uuid"); err != nil {
+	if err := device.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 
@@ -121,7 +122,7 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 		device.Description = description.(string)
 	}
 
-	if _, err := models.Repo.Update(&device); err != nil {
+	if err := device.Update("type", "name", "status", "description"); err != nil {
 		return nil, err
 	}
 
@@ -133,11 +134,7 @@ func Delete(params graphql.ResolveParams) (interface{}, error) {
 	uuid := params.Args["uuid"].(string)
 
 	device := models.Device{UUID: uuid}
-	if err := models.Repo.Read(&device, "uuid"); err != nil {
-		return nil, err
-	}
-
-	if _, err := models.Repo.Delete(&device); err != nil {
+	if err := device.DeleteByUUID(); err != nil {
 		return nil, err
 	}
 
@@ -152,33 +149,29 @@ func Bind(params graphql.ResolveParams) (interface{}, error) {
 
 	currentUserUUID := rootValue["currentUserUUID"]
 	if currentUserUUID == nil {
-		return nil, utils.LogicError{
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "Device",
 			Message: "user not authenticated.",
 		}
 	}
 
 	user := models.User{UUID: currentUserUUID.(string)}
 
-	if err := models.Repo.Read(&user, "uuid"); err != nil {
-		return nil, utils.LogicError{
-			Message: "user not found.",
-		}
+	if err := user.GetBy("uuid"); err != nil {
+		return nil, err
 	}
 
 	// TODO: 验证绑定设备的权限
 	device := models.Device{Token: token}
-
-	if err := models.Repo.Read(&device, "token"); err != nil {
-		return nil, utils.LogicError{
-			Message: "device not found.",
-		}
+	if err := device.GetBy("token"); err != nil {
+		return nil, err
 	}
 
 	// TODO: 设备状态
 	device.Mac = mac
-	device.Status = 1 // 已绑定
 
-	if _, err := models.Repo.Update(&device, "mac"); err != nil {
+	if err := device.Update("mac"); err != nil {
 		return nil, err
 	}
 
@@ -201,8 +194,10 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	case *models.DeviceParam:
 		return v.LoadDevice()
 	default:
-		return nil, utils.LogicError{
-			Message: "reloated device load error",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "Device",
+			Message: "RelatedLoad() error",
 		}
 	}
 }

@@ -3,7 +3,7 @@ package models
 import (
 	// "time"
 
-	"github.com/SasukeBo/information/utils"
+	"github.com/SasukeBo/information/errors"
 )
 
 // DeviceChargeAbility 设备负责人权限模型
@@ -23,9 +23,11 @@ func (dca *DeviceChargeAbility) TableUnique() [][]string {
 // LoadDeviceCharge related load device_charge
 func (dca *DeviceChargeAbility) LoadDeviceCharge() (*DeviceCharge, error) {
 	if _, err := Repo.LoadRelated(dca, "DeviceCharge"); err != nil {
-		return nil, utils.ORMError{
-			Message: "device_charge_ability load related device_charge error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "DeviceChargeAbility",
+			Message: "LoadDeviceCharge() error",
+			OriErr:  err,
 		}
 	}
 
@@ -35,9 +37,11 @@ func (dca *DeviceChargeAbility) LoadDeviceCharge() (*DeviceCharge, error) {
 // LoadPrivilege related load privilege
 func (dca *DeviceChargeAbility) LoadPrivilege() (*Privilege, error) {
 	if _, err := Repo.LoadRelated(dca, "Privilege"); err != nil {
-		return nil, utils.ORMError{
-			Message: "device_charge_ability load related privilege error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "DeviceChargeAbility",
+			Message: "LoadPrivilege() error",
+			OriErr:  err,
 		}
 	}
 

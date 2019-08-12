@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/SasukeBo/information/utils"
+	"github.com/SasukeBo/information/errors"
 )
 
 // User 用户模型
@@ -24,9 +24,25 @@ type User struct {
 // GetBy get user by col
 func (u *User) GetBy(col string) error {
 	if err := Repo.Read(u, col); err != nil {
-		return utils.ORMError{
-			Message: fmt.Sprintf("user get by %s error", col),
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "User",
+			Message: fmt.Sprintf("GetBy(%s) error", col),
+			OriErr:  err,
+		}
+	}
+
+	return nil
+}
+
+// Insert _
+func (u *User) Insert() error {
+	if _, err := Repo.Insert(u); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "User",
+			Message: "Insert() error",
+			OriErr:  err,
 		}
 	}
 
@@ -36,9 +52,11 @@ func (u *User) GetBy(col string) error {
 // Update _
 func (u *User) Update(cols ...string) error {
 	if _, err := Repo.Update(u, cols...); err != nil {
-		return utils.ORMError{
-			Message: "user update error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "User",
+			Message: "Update() error",
+			OriErr:  err,
 		}
 	}
 
@@ -48,9 +66,11 @@ func (u *User) Update(cols ...string) error {
 // LoadRole related load role
 func (u *User) LoadRole() (*Role, error) {
 	if _, err := Repo.LoadRelated(u, "Role"); err != nil {
-		return nil, utils.ORMError{
-			Message: "user load related role error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "User",
+			Message: "LoadRole() error",
+			OriErr:  err,
 		}
 	}
 
@@ -60,9 +80,11 @@ func (u *User) LoadRole() (*Role, error) {
 // LoadUserExtend related load user_extend
 func (u *User) LoadUserExtend() (*UserExtend, error) {
 	if _, err := Repo.LoadRelated(u, "UserExtend"); err != nil {
-		return nil, utils.ORMError{
-			Message: "user load related user_extend error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "User",
+			Message: "LoadUserExtend() error",
+			OriErr:  err,
 		}
 	}
 

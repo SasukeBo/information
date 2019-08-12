@@ -3,10 +3,8 @@ package device
 import (
 	"github.com/graphql-go/graphql"
 
-	// "github.com/astaxie/beego/logs"
-
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
 )
 
 // ChargeCreate 指定设备负责人
@@ -17,19 +15,13 @@ func ChargeCreate(params graphql.ResolveParams) (interface{}, error) {
 	userUUID := params.Args["userUUID"].(string)
 
 	user := models.User{UUID: userUUID}
-	if err := models.Repo.Read(&user, "uuid"); err != nil {
-		return nil, utils.ORMError{
-			Message: "user read error",
-			OrmErr:  err,
-		}
+	if err := user.GetBy("uuid"); err != nil {
+		return nil, err
 	}
 
 	device := models.Device{UUID: uuid}
-	if err := models.Repo.Read(&device, "uuid"); err != nil {
-		return nil, utils.ORMError{
-			Message: "device read error",
-			OrmErr:  err,
-		}
+	if err := device.GetBy("uuid"); err != nil {
+		return nil, err
 	}
 
 	// TODO: 权限验证
@@ -38,11 +30,8 @@ func ChargeCreate(params graphql.ResolveParams) (interface{}, error) {
 		Device: &device,
 	}
 
-	if _, err := models.Repo.Insert(&deviceCharge); err != nil {
-		return nil, utils.ORMError{
-			Message: "device_charge insert error",
-			OrmErr:  err,
-		}
+	if err := deviceCharge.Insert(); err != nil {
+		return nil, err
 	}
 
 	return deviceCharge, nil
@@ -53,18 +42,8 @@ func ChargeDelete(params graphql.ResolveParams) (interface{}, error) {
 	id := params.Args["id"].(int)
 
 	deviceCharge := models.DeviceCharge{ID: id}
-	if err := models.Repo.Read(&deviceCharge); err != nil {
-		return nil, utils.ORMError{
-			Message: "device_charge read error",
-			OrmErr:  err,
-		}
-	}
-
-	if _, err := models.Repo.Delete(&deviceCharge); err != nil {
-		return nil, utils.ORMError{
-			Message: "device_charge delete error",
-			OrmErr:  err,
-		}
+	if err := deviceCharge.Delete(); err != nil {
+		return nil, err
 	}
 
 	return "ok", nil
@@ -76,27 +55,18 @@ func ChargeUpdate(params graphql.ResolveParams) (interface{}, error) {
 	userUUID := params.Args["userUUID"].(string)
 
 	deviceCharge := models.DeviceCharge{ID: id}
-	if err := models.Repo.Read(&deviceCharge); err != nil {
-		return nil, utils.ORMError{
-			Message: "device_charge read error",
-			OrmErr:  err,
-		}
+	if err := deviceCharge.Get(); err != nil {
+		return nil, err
 	}
 
 	user := models.User{UUID: userUUID}
-	if err := models.Repo.Read(&user, "uuid"); err != nil {
-		return nil, utils.ORMError{
-			Message: "user read error",
-			OrmErr:  err,
-		}
+	if err := user.GetBy("uuid"); err != nil {
+		return nil, err
 	}
 
 	deviceCharge.User = &user
-	if _, err := models.Repo.Update(&deviceCharge, "user_id"); err != nil {
-		return nil, utils.ORMError{
-			Message: "device_charge update error",
-			OrmErr:  err,
-		}
+	if err := deviceCharge.Update("user_id"); err != nil {
+		return nil, err
 	}
 
 	return deviceCharge, nil
@@ -133,9 +103,11 @@ func ChargeList(params graphql.ResolveParams) (interface{}, error) {
 	var charges []*models.DeviceCharge
 
 	if _, err := qs.All(&charges); err != nil {
-		return nil, utils.ORMError{
-			Message: "device_charge list error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "DeviceCharge",
+			Message: "ChargeList() error",
+			OriErr:  err,
 		}
 	}
 
@@ -150,8 +122,10 @@ func ChargeRelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	case *models.DeviceChargeAbility:
 		return v.LoadDeviceCharge()
 	default:
-		return nil, utils.LogicError{
-			Message: "reloated device_charge load error",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "DeviceCharge",
+			Message: "ChargeRelatedLoad() error",
 		}
 	}
 }

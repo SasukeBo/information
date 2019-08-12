@@ -3,8 +3,8 @@ package device
 import (
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
 )
 
 // ParamCreate 设备参数创建
@@ -117,7 +117,12 @@ func ParamList(params graphql.ResolveParams) (interface{}, error) {
 	var deviceParams []*models.DeviceParam
 
 	if _, err := qs.All(&deviceParams); err != nil {
-		return nil, err
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "DeviceParam",
+			Message: "List() error",
+			OriErr:  err,
+		}
 	}
 
 	return deviceParams, nil
@@ -131,8 +136,10 @@ func ParamRelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	case *models.DeviceParamValue:
 		return v.LoadDeviceParam()
 	default:
-		return nil, utils.LogicError{
-			Message: "reloated device_param load error",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "DeviceParam",
+			Message: "ParamRelatedLoad() error",
 		}
 	}
 }

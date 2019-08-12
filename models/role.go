@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/astaxie/beego/orm"
-
-	"github.com/SasukeBo/information/utils"
+	"github.com/SasukeBo/information/errors"
 )
 
 // Role 角色模型
@@ -22,9 +20,25 @@ type Role struct {
 // GetBy _
 func (r *Role) GetBy(col string) error {
 	if err := Repo.Read(r, col); err != nil {
-		return utils.ORMError{
-			Message: fmt.Sprintf("role get by %s error", col),
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Role",
+			Message: fmt.Sprintf("GetBy(%s) error", col),
+			OriErr:  err,
+		}
+	}
+
+	return nil
+}
+
+// Insert _
+func (r *Role) Insert() error {
+	if _, err := Repo.Insert(r); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Role",
+			Message: "Insert() error",
+			OriErr:  err,
 		}
 	}
 
@@ -38,9 +52,11 @@ func (r *Role) Delete() error {
 	}
 
 	if _, err := Repo.Delete(r); err != nil {
-		return utils.ORMError{
-			Message: "role delete by id error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Role",
+			Message: "Delete() error",
+			OriErr:  err,
 		}
 	}
 
@@ -50,9 +66,11 @@ func (r *Role) Delete() error {
 // Update _
 func (r *Role) Update(cols ...string) error {
 	if _, err := Repo.Update(r, cols...); err != nil {
-		return utils.ORMError{
-			Message: "role update error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Role",
+			Message: "Update() error",
+			OriErr:  err,
 		}
 	}
 
@@ -62,9 +80,11 @@ func (r *Role) Update(cols ...string) error {
 // LoadRolePriv _
 func (r *Role) LoadRolePriv() ([]*RolePriv, error) {
 	if _, err := Repo.LoadRelated(r, "RolePriv"); err != nil {
-		return nil, utils.ORMError{
-			Message: "related load role_priv error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "Role",
+			Message: "LoadRolePriv() error",
+			OriErr:  err,
 		}
 	}
 
@@ -74,14 +94,14 @@ func (r *Role) LoadRolePriv() ([]*RolePriv, error) {
 // Validate _
 func (r *Role) Validate(sign string) error {
 	qs := Repo.QueryTable("role_priv").Filter("role_id", r.ID).Filter("privilege__sign", sign)
+
 	var rp RolePriv
-	if err := qs.One(&rp, "id"); err == orm.ErrNoRows {
-		return utils.LogicError{
+	if err := qs.One(&rp, "id"); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Role",
 			Message: fmt.Sprintf("without %s ability", sign),
-		}
-	} else if err != nil {
-		return utils.LogicError{
-			Message: "unknown error",
+			OriErr:  err,
 		}
 	}
 

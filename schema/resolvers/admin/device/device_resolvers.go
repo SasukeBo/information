@@ -6,14 +6,14 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/schema/resolvers"
 	"github.com/SasukeBo/information/utils"
 )
 
 // Get is a gql resolver, get a device
 func Get(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "device_r"); err != nil {
+	if err := utils.ValidateAccess(&params, "device_r"); err != nil {
 		return nil, err
 	}
 
@@ -29,7 +29,7 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 
 // List _
 func List(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "device_r"); err != nil {
+	if err := utils.ValidateAccess(&params, "device_r"); err != nil {
 		return nil, err
 	}
 
@@ -103,9 +103,11 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 	var devices []*models.Device
 	if _, err := qs.All(&devices); err != nil {
-		return nil, utils.ORMError{
-			Message: "admin device get list error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "Device",
+			Message: "List() error",
+			OriErr:  err,
 		}
 	}
 
@@ -131,7 +133,7 @@ func listIDInQS(qs orm.QuerySeter, r orm.RawSeter) orm.QuerySeter {
 
 // Update _
 func Update(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "device_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "device_w"); err != nil {
 		return nil, err
 	}
 
@@ -166,7 +168,7 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 
 // Delete _
 func Delete(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "device_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "device_w"); err != nil {
 		return nil, err
 	}
 

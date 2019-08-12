@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 
-	"github.com/SasukeBo/information/utils"
+	"github.com/SasukeBo/information/errors"
 )
 
 // UserExtend 用户信息模型
@@ -17,9 +17,11 @@ type UserExtend struct {
 // Get _
 func (ue *UserExtend) Get() error {
 	if err := Repo.Read(ue); err != nil {
-		return utils.ORMError{
-			Message: "user_extend get error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "UserExtend",
+			Message: "Get() error",
+			OriErr:  err,
 		}
 	}
 
@@ -29,9 +31,25 @@ func (ue *UserExtend) Get() error {
 // GetBy _
 func (ue *UserExtend) GetBy(col string) error {
 	if err := Repo.Read(ue, col); err != nil {
-		return utils.ORMError{
-			Message: fmt.Sprintf("user_extend get by %s error", col),
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "UserExtend",
+			Message: fmt.Sprintf("GetBy(%s) error", col),
+			OriErr:  err,
+		}
+	}
+
+	return nil
+}
+
+// Insert _
+func (ue *UserExtend) Insert() error {
+	if _, err := Repo.Insert(ue); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "UserExtend",
+			Message: "Insert() error",
+			OriErr:  err,
 		}
 	}
 
@@ -41,14 +59,12 @@ func (ue *UserExtend) GetBy(col string) error {
 // Update _
 func (ue *UserExtend) Update(cols ...string) error {
 	if _, err := Repo.Update(ue, cols...); err != nil {
-		return utils.ORMError{
-			Message: "user_extend update error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "UserExtend",
+			Message: "Update() error",
+			OriErr:  err,
 		}
-	}
-
-	if err := ue.Get(); err != nil {
-		return err
 	}
 
 	return nil
@@ -57,9 +73,11 @@ func (ue *UserExtend) Update(cols ...string) error {
 // LoadUser _
 func (ue *UserExtend) LoadUser() (*User, error) {
 	if _, err := Repo.LoadRelated(ue, "User"); err != nil {
-		return nil, utils.ORMError{
-			Message: "user_extend load related user error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "UserExtend",
+			Message: "LoadUser() error",
+			OriErr:  err,
 		}
 	}
 

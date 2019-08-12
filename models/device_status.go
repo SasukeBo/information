@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/SasukeBo/information/utils"
+	"github.com/SasukeBo/information/errors"
 	"time"
 )
 
@@ -23,9 +23,11 @@ type DeviceStatusLog struct {
 // LoadDevice _
 func (dsl *DeviceStatusLog) LoadDevice() (*Device, error) {
 	if _, err := Repo.LoadRelated(dsl, "Device"); err != nil {
-		return nil, utils.ORMError{
-			Message: "devcice_status_log load related device error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "DeviceStatusLog",
+			Message: "LoadDevice() error",
+			OriErr:  err,
 		}
 	}
 

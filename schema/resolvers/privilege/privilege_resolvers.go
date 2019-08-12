@@ -3,10 +3,8 @@ package privilege
 import (
 	"github.com/graphql-go/graphql"
 
-	// "github.com/astaxie/beego/logs"
-
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
 )
 
 // List is a gql resolver, get list of privilege
@@ -23,9 +21,11 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 	var privs []*models.Privilege
 	if _, err := qs.All(&privs); err != nil {
-		return nil, utils.ORMError{
-			Message: "privilege get list error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "Privilege",
+			Message: "List() error",
+			OriErr:  err,
 		}
 	}
 
@@ -44,8 +44,10 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	case *models.RolePriv:
 		return v.LoadPrivilege()
 	default:
-		return nil, utils.LogicError{
-			Message: "related privilege load error",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "Privilege",
+			Message: "RelatedLoad() error",
 		}
 	}
 }

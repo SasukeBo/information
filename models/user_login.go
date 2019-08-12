@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/SasukeBo/information/utils"
+	"github.com/SasukeBo/information/errors"
 )
 
 // UserLogin 用户登录模型
@@ -28,12 +28,42 @@ func (ul *UserLogin) TableUnique() [][]string {
 	}
 }
 
+// Insert _
+func (ul *UserLogin) Insert() error {
+	if _, err := Repo.Insert(ul); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "UserLogin",
+			Message: "Insert() error",
+			OriErr:  err,
+		}
+	}
+
+	return nil
+}
+
+// Update _
+func (ul *UserLogin) Update(cols ...string) error {
+	if _, err := Repo.Update(ul, cols...); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "UserLogin",
+			Message: "Update() error",
+			OriErr:  err,
+		}
+	}
+
+	return nil
+}
+
 // LoadUser _
 func (ul *UserLogin) LoadUser() (*User, error) {
 	if _, err := Repo.LoadRelated(ul, "User"); err != nil {
-		return nil, utils.ORMError{
-			Message: "user_login load related user error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "UserLogin",
+			Message: "LoadUser() error",
+			OriErr:  err,
 		}
 	}
 

@@ -3,10 +3,9 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
-	// "github.com/astaxie/beego/logs"
 
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
 )
 
 // authenticate 校验用户登录有效性
@@ -24,8 +23,10 @@ func authenticate(ctx *context.Context) error {
 		}
 
 		if user.Status == models.BaseStatus.Block {
-			return utils.LogicError{
-				Message: "Account has been blocked",
+			return errors.LogicError{
+				Type:    "Controller",
+				Field:   "Auth",
+				Message: "account has been blocked",
 			}
 		}
 
@@ -41,22 +42,28 @@ func authenticate(ctx *context.Context) error {
 	// 获取 userLogin
 	if err := models.Repo.Read(&userLogin, "session_id"); err != nil {
 		// 查找userLogin失败，返回身份验证失败
-		return utils.LogicError{
+		return errors.LogicError{
+			Type:    "Controller",
+			Field:   "Auth",
 			Message: "user not authenticated.",
 		}
 	}
 
 	// 用户已经登出
 	if userLogin.Logout {
-		return utils.LogicError{
+		return errors.LogicError{
+			Type:    "Controller",
+			Field:   "Auth",
 			Message: "user already logout.",
 		}
 	}
 
 	// 用户没有记住登录
 	if !userLogin.Remembered {
-		return utils.LogicError{
-			Message: "user login not remembered.",
+		return errors.LogicError{
+			Type:    "Controller",
+			Field:   "Auth",
+			Message: "user login unremembered.",
 		}
 	}
 
@@ -69,8 +76,10 @@ func authenticate(ctx *context.Context) error {
 	// 判断密码是否匹配
 	if user.Password != userLogin.EncryptedPasswd {
 		// 登录记录的密码与用户密码不匹配，验证失败
-		return utils.LogicError{
-			Message: "password unmatch, maybe changed.",
+		return errors.LogicError{
+			Type:    "Controller",
+			Field:   "Auth",
+			Message: "password unmatch.",
 		}
 	}
 

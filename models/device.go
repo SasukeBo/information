@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/SasukeBo/information/utils"
+	"github.com/SasukeBo/information/errors"
 )
 
 // Device 设备模型
@@ -25,9 +25,25 @@ type Device struct {
 // GetBy get device by col
 func (d *Device) GetBy(col string) error {
 	if err := Repo.Read(d, col); err != nil {
-		return utils.ORMError{
-			Message: fmt.Sprintf("device get by %s error", col),
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Device",
+			Message: fmt.Sprintf("GetBy(%s) error", col),
+			OriErr:  err,
+		}
+	}
+
+	return nil
+}
+
+// Insert _
+func (d *Device) Insert() error {
+	if _, err := Repo.Insert(d); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Device",
+			Message: "Insert() error",
+			OriErr:  err,
 		}
 	}
 
@@ -37,9 +53,11 @@ func (d *Device) GetBy(col string) error {
 // Update device with cols
 func (d *Device) Update(cols ...string) error {
 	if _, err := Repo.Update(d, cols...); err != nil {
-		return utils.ORMError{
-			Message: "device update error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Device",
+			Message: "Update() error",
+			OriErr:  err,
 		}
 	}
 
@@ -53,9 +71,11 @@ func (d *Device) DeleteByUUID() error {
 	}
 
 	if _, err := Repo.Delete(d); err != nil {
-		return utils.ORMError{
-			Message: "device delete by uuid error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "Device",
+			Message: "DeleteByUUID() error",
+			OriErr:  err,
 		}
 	}
 
@@ -65,9 +85,11 @@ func (d *Device) DeleteByUUID() error {
 // LoadUser _
 func (d *Device) LoadUser() (*User, error) {
 	if _, err := Repo.LoadRelated(d, "User"); err != nil {
-		return nil, utils.ORMError{
-			Message: "devcice load related user error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "Device",
+			Message: "LoadUser() error",
+			OriErr:  err,
 		}
 	}
 

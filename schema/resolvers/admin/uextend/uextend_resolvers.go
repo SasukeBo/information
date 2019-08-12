@@ -5,8 +5,8 @@ import (
 
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/schema/resolvers"
 	"github.com/SasukeBo/information/utils"
 )
 
@@ -14,7 +14,7 @@ var emailRegexp = `[^\\.\\s@:](?:[^\\s@:]*[^\\s@:\\.])?@[^\\.\\s@]+(?:\\.[^\\.\\
 
 // Update _
 func Update(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "user_extend_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "user_extend_w"); err != nil {
 		return nil, err
 	}
 
@@ -37,8 +37,10 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 	if email := params.Args["email"]; email != nil {
 		reg := regexp.MustCompile(emailRegexp)
 		if !reg.Match([]byte(email.(string))) {
-			return nil, utils.LogicError{
-				Message: "invalid email",
+			return nil, errors.LogicError{
+				Type:    "Resolver",
+				Field:   "UserExtend",
+				Message: "Update() invalid email error",
 			}
 		}
 		userExtend.Email = email.(string)

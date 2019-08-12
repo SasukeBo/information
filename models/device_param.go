@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/SasukeBo/information/utils"
+	"github.com/SasukeBo/information/errors"
 )
 
 // DeviceParam 设备参数模型
@@ -20,9 +20,11 @@ type DeviceParam struct {
 // Get get device_param by id
 func (dp *DeviceParam) Get() error {
 	if err := Repo.Read(dp); err != nil {
-		return utils.ORMError{
-			Message: "device_param get error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "DeviceParam",
+			Message: "Get() error",
+			OriErr:  err,
 		}
 	}
 
@@ -35,9 +37,11 @@ func (dp *DeviceParam) Delete() error {
 		return err
 	}
 	if _, err := Repo.Delete(dp); err != nil {
-		return utils.ORMError{
-			Message: "device_param delete error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "DeviceParam",
+			Message: "Delete() error",
+			OriErr:  err,
 		}
 	}
 
@@ -47,9 +51,11 @@ func (dp *DeviceParam) Delete() error {
 // Insert insert device_param
 func (dp *DeviceParam) Insert() error {
 	if _, err := Repo.Insert(dp); err != nil {
-		return utils.ORMError{
-			Message: "device_param insert error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "DeviceParam",
+			Message: "Insert() error",
+			OriErr:  err,
 		}
 	}
 
@@ -59,14 +65,12 @@ func (dp *DeviceParam) Insert() error {
 // Update update device_param
 func (dp *DeviceParam) Update(cols ...string) error {
 	if _, err := Repo.Update(dp, cols...); err != nil {
-		return utils.ORMError{
-			Message: "device_param update error",
-			OrmErr:  err,
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   "DeviceParam",
+			Message: "Update() error",
+			OriErr:  err,
 		}
-	}
-
-	if err := dp.Get(); err != nil {
-		return err
 	}
 
 	return nil
@@ -75,9 +79,11 @@ func (dp *DeviceParam) Update(cols ...string) error {
 // LoadAuthor _
 func (dp *DeviceParam) LoadAuthor() (*User, error) {
 	if _, err := Repo.LoadRelated(dp, "Author"); err != nil {
-		return nil, utils.ORMError{
-			Message: "devcice_param load related author error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "DeviceParam",
+			Message: "LoadAuthor() error",
+			OriErr:  err,
 		}
 	}
 
@@ -87,9 +93,11 @@ func (dp *DeviceParam) LoadAuthor() (*User, error) {
 // LoadDevice _
 func (dp *DeviceParam) LoadDevice() (*Device, error) {
 	if _, err := Repo.LoadRelated(dp, "Device"); err != nil {
-		return nil, utils.ORMError{
-			Message: "devcice_param load related device error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "DeviceParam",
+			Message: "LoadDevice() error",
+			OriErr:  err,
 		}
 	}
 

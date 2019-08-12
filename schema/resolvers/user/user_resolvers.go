@@ -4,8 +4,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/schema/resolvers"
 	"github.com/SasukeBo/information/utils"
 )
 
@@ -25,12 +25,13 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	user := models.User{UUID: _uuid}
 
 	// validate phone
-	if err := resolvers.ValidatePhone(phoneStr); err != nil {
+	if err := utils.ValidatePhone(phoneStr); err != nil {
 		return nil, err
 	}
 	if sessPhone == nil || sessMsgCode == nil || phoneStr != sessPhone || msgCodeStr != sessMsgCode {
 		// 用户发送验证码的手机号与提交注册时的手机号不匹配，按照验证码不正确处理
-		return nil, utils.ArgumentError{
+		return nil, errors.LogicError{
+			Type:    "Resolver",
 			Field:   "smsCode",
 			Message: "is not correct",
 		}
@@ -38,7 +39,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	user.Phone = phoneStr
 
 	// validate password
-	if err := resolvers.ValidatePassword(passwordStr); err != nil {
+	if err := utils.ValidatePassword(passwordStr); err != nil {
 		return nil, err
 	}
 	user.Password = utils.Encrypt(passwordStr)
@@ -46,7 +47,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	// 事务处理
 	models.Repo.Begin()
 	userExtend := models.UserExtend{}
-	if _, err := models.Repo.Insert(&userExtend); err != nil {
+	if err := userExtend.Insert(); err != nil {
 		return nil, err
 	}
 	user.UserExtend = &userExtend
@@ -57,7 +58,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	}
 	user.Role = &role
 
-	if _, err := models.Repo.Insert(&user); err != nil {
+	if err := user.Insert(); err != nil {
 		models.Repo.Rollback()
 
 		return nil, err
@@ -83,27 +84,28 @@ func ResetPassword(params graphql.ResolveParams) (interface{}, error) {
 	sessMsgCode := rootValue["smsCode"]
 
 	// validate phone
-	if err := resolvers.ValidatePhone(phoneStr); err != nil {
+	if err := utils.ValidatePhone(phoneStr); err != nil {
 		return nil, err
 	}
 	if sessPhone == nil || sessMsgCode == nil || phoneStr != sessPhone || msgCodeStr != sessMsgCode {
 		// 用户发送验证码的手机号与提交注册时的手机号不匹配，按照验证码不正确处理
-		return nil, utils.ArgumentError{
+		return nil, errors.LogicError{
+			Type:    "Resolver",
 			Field:   "smsCode",
 			Message: "is not correct",
 		}
 	}
-	if err := resolvers.ValidatePassword(passwordStr); err != nil {
+	if err := utils.ValidatePassword(passwordStr); err != nil {
 		return nil, err
 	}
 
 	user := models.User{Phone: phoneStr}
-	if err := models.Repo.Read(&user, "phone"); err != nil {
+	if err := user.GetBy("phone"); err != nil {
 		return nil, err
 	}
 
 	user.Password = utils.Encrypt(passwordStr)
-	if _, err := models.Repo.Update(&user, "password"); err != nil {
+	if err := user.Update("password"); err != nil {
 		return nil, err
 	}
 
@@ -153,7 +155,12 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	if _, err := qs.All(&users); err != nil {
-		return nil, err
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "User",
+			Message: "List() error",
+			OriErr:  err,
+		}
 	}
 
 	return users, nil
@@ -161,15 +168,13 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 // UpdateAvatar update user avatar url
 func UpdateAvatar(params graphql.ResolveParams) (interface{}, error) {
-	var user models.User
-	if err := getUser(params, &user); err != nil {
+	user := models.User{UUID: params.Info.RootValue.(map[string]interface{})["currentUserUUID"].(string)}
+	if err := user.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 
-	avatarURL := params.Args["avatarURL"].(string)
-
-	user.AvatarURL = avatarURL
-	if _, err := models.Repo.Update(&user, "avatar_url"); err != nil {
+	user.AvatarURL = params.Args["avatarURL"].(string)
+	if err := user.Update("avatar_url"); err != nil {
 		return nil, err
 	}
 
@@ -178,21 +183,23 @@ func UpdateAvatar(params graphql.ResolveParams) (interface{}, error) {
 
 // UpdatePassword update user password
 func UpdatePassword(params graphql.ResolveParams) (interface{}, error) {
-	var user models.User
-	if err := getUser(params, &user); err != nil {
+	user := models.User{UUID: params.Info.RootValue.(map[string]interface{})["currentUserUUID"].(string)}
+	if err := user.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 
 	oldPassword := params.Args["oldPassword"].(string)
 	if user.Password != utils.Encrypt(oldPassword) {
-		return nil, utils.LogicError{
-			Message: "password not correct!",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "User",
+			Message: "password incorrect!",
 		}
 	}
 
 	newPassword := params.Args["newPassword"].(string)
 	user.Password = utils.Encrypt(newPassword)
-	if _, err := models.Repo.Update(&user, "password"); err != nil {
+	if err := user.Update("password"); err != nil {
 		return nil, err
 	}
 
@@ -202,15 +209,17 @@ func UpdatePassword(params graphql.ResolveParams) (interface{}, error) {
 // UpdatePhone update user phone
 func UpdatePhone(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
-	var user models.User
-	if err := getUser(params, &user); err != nil {
+	user := models.User{UUID: rootValue["currentUserUUID"].(string)}
+	if err := user.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 
 	password := params.Args["password"].(string)
 	if user.Password != utils.Encrypt(password) {
-		return nil, utils.LogicError{
-			Message: "password not correct!",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "User",
+			Message: "password incorrect!",
 		}
 	}
 
@@ -221,35 +230,19 @@ func UpdatePhone(params graphql.ResolveParams) (interface{}, error) {
 
 	if sessPhone == nil || sessSmsCode == nil || newPhone != sessPhone || smsCode != sessSmsCode {
 		// 用户发送验证码的手机号与提交注册时的手机号不匹配，按照验证码不正确处理
-		return nil, utils.ArgumentError{
+		return nil, errors.LogicError{
+			Type:    "Resolver",
 			Field:   "smsCode",
-			Message: "is not correct",
+			Message: "incorrect!",
 		}
 	}
 
 	user.Phone = newPhone
-	if _, err := models.Repo.Update(&user, "phone"); err != nil {
+	if err := user.Update("phone"); err != nil {
 		return nil, err
 	}
 
 	return user, nil
-}
-
-func getUser(params graphql.ResolveParams, user *models.User) error {
-	uuid := params.Info.RootValue.(map[string]interface{})["currentUserUUID"]
-	if uuid == nil {
-		return utils.LogicError{
-			Message: "user is not authenticated",
-		}
-	}
-
-	user.UUID = uuid.(string)
-
-	if err := models.Repo.Read(user, "uuid"); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // RelatedLoad load user
@@ -274,8 +267,10 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	case *models.UserLogin:
 		return v.LoadUser()
 	default:
-		return nil, utils.LogicError{
-			Message: "related user load error",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "User",
+			Message: "RelatedLoad() error",
 		}
 	}
 }

@@ -3,14 +3,14 @@ package ulogin
 import (
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/errors"
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/schema/resolvers"
 	"github.com/SasukeBo/information/utils"
 )
 
 // List _
 func List(params graphql.ResolveParams) (interface{}, error) {
-	if err := resolvers.ValidateAccess(&params, "user_login_r"); err != nil {
+	if err := utils.ValidateAccess(&params, "user_login_r"); err != nil {
 		return nil, err
 	}
 
@@ -27,7 +27,7 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	if userUUID := params.Args["userUUID"]; userUUID != nil {
 		user := models.User{UUID: userUUID.(string)}
 		if err := user.GetBy("uuid"); err != nil {
-			return resolvers.EmptyResult, err
+			return utils.EmptyResult, err
 		}
 
 		qs = qs.Filter("user_id", user.ID)
@@ -48,9 +48,11 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	var userLogins []*models.UserLogin
 
 	if _, err := qs.All(&userLogins); err != nil {
-		return nil, utils.ORMError{
-			Message: "UserLogin get list error",
-			OrmErr:  err,
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "UserLogin",
+			Message: "List() error",
+			OriErr:  err,
 		}
 	}
 
