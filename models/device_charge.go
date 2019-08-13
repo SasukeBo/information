@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/SasukeBo/information/errors"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // DeviceCharge 设备负责人关系模型

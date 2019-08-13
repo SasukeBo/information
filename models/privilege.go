@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 
-	"github.com/SasukeBo/information/errors"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // PrivType 权限类型

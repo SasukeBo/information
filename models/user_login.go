@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/SasukeBo/information/errors"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // UserLogin 用户登录模型

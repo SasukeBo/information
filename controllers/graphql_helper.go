@@ -11,7 +11,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
 
-	"github.com/SasukeBo/information/errors"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // graphiqlData is the page data structure of the rendered GraphiQL page

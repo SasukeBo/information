@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/SasukeBo/information/errors"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // Role 角色模型

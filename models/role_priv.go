@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/SasukeBo/information/errors"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // RolePriv 角色权限关联关系模型

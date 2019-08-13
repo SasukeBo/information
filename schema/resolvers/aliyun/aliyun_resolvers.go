@@ -6,7 +6,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/errors"
+	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
 )
 

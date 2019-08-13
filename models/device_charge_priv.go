@@ -3,7 +3,7 @@ package models
 import (
 	// "time"
 
-	"github.com/SasukeBo/information/errors"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // DeviceChargeAbility 设备负责人权限模型

@@ -4,7 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 
-	"github.com/SasukeBo/information/errors"
+	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
 )
 
