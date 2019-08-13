@@ -4,8 +4,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
 )
 
@@ -77,12 +77,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	token := utils.GenRandomToken(8)
 	description := params.Args["description"].(string)
 	uuid := uuid.New().String()
-
-	userUUID := rootValue["currentUserUUID"].(string)
-	user := models.User{UUID: userUUID}
-	if err := user.GetBy("uuid"); err != nil {
-		return nil, err
-	}
+	user := rootValue["currentUser"].(models.User)
 
 	device := models.Device{
 		Type:        dType,
@@ -96,7 +91,6 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	if err := device.Insert(); err != nil {
 		return nil, err
 	}
-	// TODO: 为创建者分配所有权限
 
 	return device, nil
 }
@@ -153,26 +147,12 @@ func Delete(params graphql.ResolveParams) (interface{}, error) {
 
 // Bind 绑定设备Mac地址，需要权限验证
 func Bind(params graphql.ResolveParams) (interface{}, error) {
-	rootValue := params.Info.RootValue.(map[string]interface{})
+	// rootValue := params.Info.RootValue.(map[string]interface{})
 	token := params.Args["token"].(string)
+	// user := rootValue["currentUser"].(models.User)
 
 	mac := params.Args["mac"].(string)
 	if err := utils.ValidateStringEmpty(mac, "mac"); err != nil {
-		return nil, err
-	}
-
-	currentUserUUID := rootValue["currentUserUUID"]
-	if currentUserUUID == nil {
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "Device",
-			Message: "user not authenticated.",
-		}
-	}
-
-	user := models.User{UUID: currentUserUUID.(string)}
-
-	if err := user.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 

@@ -55,7 +55,7 @@ func gqlGetSession(conn *beego.Controller, obj gqlRootObject, rootFieldName stri
 		obj["session_id"] = conn.Ctx.Input.CruSession.SessionID()
 	}
 
-	obj["currentUserUUID"] = conn.GetSession("currentUserUUID")
+	obj["currentUser"] = conn.GetSession("currentUser")
 }
 
 // gqlSetSession 根据 graphql.Params.RootObject 中 set session 对应的

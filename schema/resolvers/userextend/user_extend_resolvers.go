@@ -3,18 +3,15 @@ package userextend
 import (
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
 )
 
 // Update _
 func Update(params graphql.ResolveParams) (interface{}, error) {
-	currentUserUUID := params.Info.RootValue.(map[interface{}]interface{})["currentUserUUID"].(string)
-	user := models.User{UUID: currentUserUUID}
-	if err := user.GetBy("uuid"); err != nil {
-		return nil, err
-	}
+	user := params.Info.RootValue.(map[interface{}]interface{})["currentUser"].(models.User)
+	user.LoadUserExtend()
 	userExtend := user.UserExtend
 
 	if name := params.Args["name"]; name != nil {

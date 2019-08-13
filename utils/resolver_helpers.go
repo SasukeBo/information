@@ -5,8 +5,8 @@ import (
 
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 var phoneRegexp = `^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[35678]\d{2}|4(?:0\d|1[0-2]|9\d))|9[189]\d{2}|66\d{2})\d{6}$`
@@ -68,14 +68,9 @@ func ValidatePassword(password string) error {
 
 // ValidateAccess _
 func ValidateAccess(params *graphql.ResolveParams, privSign string) error {
-	currentUserUUID := params.Info.RootValue.(map[string]interface{})["currentUserUUID"].(string)
-	user := models.User{UUID: currentUserUUID}
-	if err := user.GetBy("uuid"); err != nil {
-		return err
-	}
-
 	var role *models.Role
 	var err error
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 
 	if role, err = user.LoadRole(); err != nil {
 		return errors.LogicError{

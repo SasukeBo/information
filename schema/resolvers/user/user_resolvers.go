@@ -4,8 +4,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
 )
 
@@ -109,9 +109,9 @@ func ResetPassword(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	rootValue["currentUserUUID"] = nil
+	rootValue["currentUser"] = nil
 	rootValue["smsCode"] = nil
-	rootValue["setSession"] = []string{"currentUserUUID", "smsCode"}
+	rootValue["setSession"] = []string{"currentUser", "smsCode"}
 
 	return user, nil
 }
@@ -168,12 +168,9 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 // UpdateAvatar update user avatar url
 func UpdateAvatar(params graphql.ResolveParams) (interface{}, error) {
-	user := models.User{UUID: params.Info.RootValue.(map[string]interface{})["currentUserUUID"].(string)}
-	if err := user.GetBy("uuid"); err != nil {
-		return nil, err
-	}
-
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	avatarURL := params.Args["avatarURL"].(string)
+
 	if err := utils.ValidateStringEmpty(avatarURL, "avatarURL"); err != nil {
 		return nil, err
 	}
@@ -188,12 +185,9 @@ func UpdateAvatar(params graphql.ResolveParams) (interface{}, error) {
 
 // UpdatePassword update user password
 func UpdatePassword(params graphql.ResolveParams) (interface{}, error) {
-	user := models.User{UUID: params.Info.RootValue.(map[string]interface{})["currentUserUUID"].(string)}
-	if err := user.GetBy("uuid"); err != nil {
-		return nil, err
-	}
-
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	oldPassword := params.Args["oldPassword"].(string)
+
 	if user.Password != utils.Encrypt(oldPassword) {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
@@ -218,12 +212,9 @@ func UpdatePassword(params graphql.ResolveParams) (interface{}, error) {
 // UpdatePhone update user phone
 func UpdatePhone(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
-	user := models.User{UUID: rootValue["currentUserUUID"].(string)}
-	if err := user.GetBy("uuid"); err != nil {
-		return nil, err
-	}
-
+	user := rootValue["currentUser"].(models.User)
 	password := params.Args["password"].(string)
+
 	if user.Password != utils.Encrypt(password) {
 		return nil, errors.LogicError{
 			Type:    "Resolver",

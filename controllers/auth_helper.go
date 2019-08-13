@@ -4,8 +4,8 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // authenticate 校验用户登录有效性
@@ -13,16 +13,14 @@ import (
 // 至少会放入 currentUser 信息
 // 验证失败则返回 error
 func authenticate(ctx *context.Context) error {
-	currentUserUUID := ctx.Input.Session("currentUserUUID")
-
-	// 如果当前 session 中有 currentUserUUID，则验证成功
-	if currentUserUUID != nil {
-		user := models.User{UUID: currentUserUUID.(string)}
-		if err := user.GetBy("uuid"); err != nil {
+	// 如果当前 session 中有 currentUser
+	if currentUser, ok := ctx.Input.Session("currentUser").(models.User); ok {
+		if err := currentUser.GetBy("id"); err != nil {
 			return err
 		}
 
-		if user.Status == models.BaseStatus.Block {
+		// 且用户当前状态正常
+		if currentUser.Status == models.BaseStatus.Block {
 			return errors.LogicError{
 				Type:    "Controller",
 				Field:   "Auth",
@@ -30,6 +28,8 @@ func authenticate(ctx *context.Context) error {
 			}
 		}
 
+		// 则验证成功
+		ctx.Output.Session("currentUser", currentUser)
 		return nil
 	}
 
@@ -67,14 +67,14 @@ func authenticate(ctx *context.Context) error {
 		}
 	}
 
-	var user *models.User
+	var currentUser *models.User
 	var err error
 
-	if user, err = userLogin.LoadUser(); err != nil {
+	if currentUser, err = userLogin.LoadUser(); err != nil {
 		return err
 	}
 	// 判断密码是否匹配
-	if user.Password != userLogin.EncryptedPasswd {
+	if currentUser.Password != userLogin.EncryptedPasswd {
 		// 登录记录的密码与用户密码不匹配，验证失败
 		return errors.LogicError{
 			Type:    "Controller",
@@ -88,7 +88,7 @@ func authenticate(ctx *context.Context) error {
 
 	userLogin.SessionID = sessionID
 
-	ctx.Output.Session("currentUserUUID", user.UUID)
+	ctx.Output.Session("currentUser", currentUser)
 	models.Repo.Update(&userLogin)
 
 	expires, err := beego.AppConfig.Int("SessionCookieLifeTime")

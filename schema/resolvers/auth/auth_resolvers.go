@@ -4,8 +4,8 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
 )
 
@@ -70,8 +70,8 @@ func LoginByPassword(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	rootValue["currentUserUUID"] = user.UUID
-	rootValue["setSession"] = []string{"currentUserUUID"}
+	rootValue["currentUser"] = user
+	rootValue["setSession"] = []string{"currentUser"}
 	rootValue["remember"] = remember
 
 	return user.UUID, nil
@@ -80,23 +80,11 @@ func LoginByPassword(params graphql.ResolveParams) (interface{}, error) {
 // Logout 登出系统
 func Logout(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
-	currentUserUUID := rootValue["currentUserUUID"]
 	sessionID := rootValue["session_id"]
-	if currentUserUUID == nil {
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "Auth",
-			Message: "user not authenticated.",
-		}
-	}
-
-	user := models.User{UUID: currentUserUUID.(string)}
-	if err := user.GetBy("uuid"); err != nil {
-		return nil, err
-	}
+	currentUser := rootValue["currentUser"].(models.User)
 
 	var userLogin models.UserLogin
-	err := models.Repo.QueryTable("user_login").Filter("user_id", user.ID).Filter("session_id", sessionID.(string)).One(&userLogin)
+	err := models.Repo.QueryTable("user_login").Filter("user_id", currentUser.ID).Filter("session_id", sessionID.(string)).One(&userLogin)
 	if err == orm.ErrMultiRows {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
@@ -118,8 +106,8 @@ func Logout(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	rootValue["currentUserUUID"] = nil
-	rootValue["setSession"] = []string{"currentUserUUID"}
+	rootValue["currentUser"] = nil
+	rootValue["setSession"] = []string{"currentUser"}
 
 	return "ok", nil
 }
@@ -127,19 +115,7 @@ func Logout(params graphql.ResolveParams) (interface{}, error) {
 // CurrentUser 获取当前用户
 func CurrentUser(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
-	currentUserUUID := rootValue["currentUserUUID"]
-	if currentUserUUID == nil {
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "Auth",
-			Message: "user not authenticated.",
-		}
-	}
+	currentUser := rootValue["currentUser"].(models.User)
 
-	user := models.User{UUID: currentUserUUID.(string)}
-	if err := user.GetBy("uuid"); err != nil {
-		return nil, err
-	}
-
-	return user, nil
+	return currentUser, nil
 }

@@ -3,20 +3,16 @@ package device
 import (
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
 )
 
 // ParamCreate 设备参数创建
 func ParamCreate(params graphql.ResolveParams) (interface{}, error) {
-	currentUserUUID := params.Info.RootValue.(map[string]interface{})["currentUserUUID"].(string)
-	user := models.User{UUID: currentUserUUID}
-	if err := user.GetBy("uuid"); err != nil {
-		return nil, err
-	}
-
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	deviceID := params.Args["deviceID"].(int)
+
 	device := models.Device{ID: deviceID}
 	if err := device.GetBy("id"); err != nil {
 		return nil, err

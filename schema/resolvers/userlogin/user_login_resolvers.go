@@ -5,18 +5,13 @@ import (
 
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // List _
 func List(params graphql.ResolveParams) (interface{}, error) {
-	currentUserUUID := params.Info.RootValue.(map[string]interface{})["currentUserUUID"].(string)
-
-	user := models.User{UUID: currentUserUUID}
-	if err := user.GetBy("uuid"); err != nil {
-		return nil, err
-	}
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 
 	qs := models.Repo.QueryTable("user_login").OrderBy("-created_at").Filter("user_id", user.ID)
 
