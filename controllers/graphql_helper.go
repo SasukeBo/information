@@ -99,11 +99,13 @@ func HandleGraphql(ctx *context.Context) {
 	ctx.Input.SetData("need_auth", true)
 
 	if params.RootFieldName == "" && params.OperationName != "IntrospectionQuery" {
-		ctx.Input.SetData("gql_error", errors.LogicError{
-			Type:    "Controller",
-			Field:   "Graphql",
-			Message: "query root field name missing",
-		})
+		ctx.Input.SetData(
+			"gql_error",
+			errors.LogicError{
+				Type:    "Controller",
+				Message: "query root field name missing",
+			},
+		)
 	}
 
 	if params.OperationName == "IntrospectionQuery" {

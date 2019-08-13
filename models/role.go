@@ -22,8 +22,8 @@ func (r *Role) GetBy(col string) error {
 	if err := Repo.Read(r, col); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "Role",
-			Message: fmt.Sprintf("GetBy(%s) error", col),
+			Field:   col,
+			Message: fmt.Sprintf("get role by %s error", col),
 			OriErr:  err,
 		}
 	}
@@ -36,8 +36,7 @@ func (r *Role) Insert() error {
 	if _, err := Repo.Insert(r); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "Role",
-			Message: "Insert() error",
+			Message: "insert role error",
 			OriErr:  err,
 		}
 	}
@@ -54,8 +53,7 @@ func (r *Role) Delete() error {
 	if _, err := Repo.Delete(r); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "Role",
-			Message: "Delete() error",
+			Message: "delete role error",
 			OriErr:  err,
 		}
 	}
@@ -68,8 +66,7 @@ func (r *Role) Update(cols ...string) error {
 	if _, err := Repo.Update(r, cols...); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "Role",
-			Message: "Update() error",
+			Message: "update role error",
 			OriErr:  err,
 		}
 	}
@@ -82,8 +79,7 @@ func (r *Role) LoadRolePriv() ([]*RolePriv, error) {
 	if _, err := Repo.LoadRelated(r, "RolePriv"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "Role",
-			Message: "LoadRolePriv() error",
+			Message: "role load role_priv error",
 			OriErr:  err,
 		}
 	}
@@ -98,9 +94,8 @@ func (r *Role) Validate(sign string) error {
 	var rp RolePriv
 	if err := qs.One(&rp, "id"); err != nil {
 		return errors.LogicError{
-			Type:    "Model",
-			Field:   "Role",
-			Message: fmt.Sprintf("without %s ability", sign),
+			Type:    "Validate",
+			Message: fmt.Sprintf("can't access without %s ability", sign),
 			OriErr:  err,
 		}
 	}

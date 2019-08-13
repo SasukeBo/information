@@ -43,8 +43,7 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	default:
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "UserExtend",
-			Message: "RelatedLoad() error",
+			Message: "load related source type unmatched error.",
 		}
 	}
 }

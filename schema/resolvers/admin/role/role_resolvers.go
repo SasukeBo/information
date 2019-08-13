@@ -5,8 +5,8 @@ import (
 
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
 )
 
@@ -113,8 +113,7 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	if _, err := qs.All(&roles); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "Role",
-			Message: "List() error",
+			Message: "get role list error",
 			OriErr:  err,
 		}
 	}

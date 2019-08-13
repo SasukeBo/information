@@ -34,9 +34,8 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	var userLogins []*models.UserLogin
 	if _, err := qs.All(&userLogins); err != nil {
 		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "UserLogin",
-			Message: "List() error",
+			Type:    "Model",
+			Message: "get user_login list error",
 			OriErr:  err,
 		}
 	}

@@ -18,8 +18,7 @@ func (dpv *DeviceParamValue) LoadDeviceParam() (*DeviceParam, error) {
 	if _, err := Repo.LoadRelated(dpv, "DeviceParam"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceParamValue",
-			Message: "LoadDeviceParam() error",
+			Message: "device_param_value load device_param error",
 			OriErr:  err,
 		}
 	}

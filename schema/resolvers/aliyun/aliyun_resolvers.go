@@ -59,8 +59,7 @@ func GetSmsCode(p graphql.ResolveParams) (interface{}, error) {
 	if beego.AppConfig.String("runmode") != "dev" {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "Aliyun",
-			Message: "GetSmsCode() only work on dev environment.",
+			Message: "this api only work on dev environment.",
 		}
 	}
 	rootValue := p.Info.RootValue.(map[string]interface{})
@@ -68,8 +67,8 @@ func GetSmsCode(p graphql.ResolveParams) (interface{}, error) {
 	if smsCode == nil {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "Aliyun",
-			Message: "smsCode not found",
+			Field:   "smsCode",
+			Message: "smsCode not found.",
 		}
 	}
 

@@ -13,10 +13,16 @@ type LogicError struct {
 }
 
 func (e LogicError) Error() string {
-	str := fmt.Sprintf("%s Error: %s %s", e.Type, e.Field, e.Message)
+	var oriMsg = ""
 	if e.OriErr != nil {
-		str = fmt.Sprintf("%s,\n %s", str, e.OriErr.Error())
+		oriMsg = e.OriErr.Error()
 	}
 
-	return str
+	return fmt.Sprintf(
+		`{"type": "%s Error", "field": "%s", "message": "%s", "originMessage": "%s"}`,
+		e.Type,
+		e.Field,
+		e.Message,
+		oriMsg,
+	)
 }

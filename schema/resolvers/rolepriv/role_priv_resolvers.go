@@ -3,8 +3,8 @@ package rolepriv
 import (
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // RelatedLoad _
@@ -17,8 +17,7 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	default:
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "RolePriv",
-			Message: "RelatedLoad() error",
+			Message: "load related source type unmatched error.",
 		}
 	}
 }

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/graphql-go/graphql"
+
 	"github.com/SasukeBo/information/models/errors"
 )
 
@@ -27,8 +29,8 @@ func (d *Device) GetBy(col string) error {
 	if err := Repo.Read(d, col); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "Device",
-			Message: fmt.Sprintf("GetBy(%s) error", col),
+			Field:   col,
+			Message: fmt.Sprintf("get device by %s error", col),
 			OriErr:  err,
 		}
 	}
@@ -41,8 +43,7 @@ func (d *Device) Insert() error {
 	if _, err := Repo.Insert(d); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "Device",
-			Message: "Insert() error",
+			Message: "insert device error",
 			OriErr:  err,
 		}
 	}
@@ -55,8 +56,7 @@ func (d *Device) Update(cols ...string) error {
 	if _, err := Repo.Update(d, cols...); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "Device",
-			Message: "Update() error",
+			Message: "update device error",
 			OriErr:  err,
 		}
 	}
@@ -73,8 +73,8 @@ func (d *Device) DeleteByUUID() error {
 	if _, err := Repo.Delete(d); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "Device",
-			Message: "DeleteByUUID() error",
+			Field:   "uuid",
+			Message: "delete device by uuid error",
 			OriErr:  err,
 		}
 	}
@@ -87,11 +87,39 @@ func (d *Device) LoadUser() (*User, error) {
 	if _, err := Repo.LoadRelated(d, "User"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "Device",
-			Message: "LoadUser() error",
+			Message: "device load user error",
 			OriErr:  err,
 		}
 	}
 
 	return d.User, nil
+}
+
+// ValidateAccess validate access to device
+func (d *Device) ValidateAccess(params graphql.ResolveParams, sign string) error {
+	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(User)
+
+	if d.User.ID == currentUser.ID {
+		return nil
+	}
+
+	var dc DeviceCharge
+	qs := Repo.QueryTable("device_charge").Filter("device_id", d.ID).Filter("user_id", currentUser.ID)
+
+	// 没有指派
+	if err := qs.One(&dc); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Message: "user not charge on this device",
+			OriErr:  err,
+		}
+	}
+
+	// charge 权限验证
+	if err := dc.Validate(sign); err != nil {
+		return err
+	}
+
+	// 权限通过
+	return nil
 }

@@ -33,8 +33,7 @@ func (ul *UserLogin) Insert() error {
 	if _, err := Repo.Insert(ul); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "UserLogin",
-			Message: "Insert() error",
+			Message: "insert user_login error",
 			OriErr:  err,
 		}
 	}
@@ -47,8 +46,7 @@ func (ul *UserLogin) Update(cols ...string) error {
 	if _, err := Repo.Update(ul, cols...); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "UserLogin",
-			Message: "Update() error",
+			Message: "update user_login error",
 			OriErr:  err,
 		}
 	}
@@ -61,8 +59,7 @@ func (ul *UserLogin) LoadUser() (*User, error) {
 	if _, err := Repo.LoadRelated(ul, "User"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "UserLogin",
-			Message: "LoadUser() error",
+			Message: "user_login load user error",
 			OriErr:  err,
 		}
 	}

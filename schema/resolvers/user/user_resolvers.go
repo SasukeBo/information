@@ -33,7 +33,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
 			Field:   "smsCode",
-			Message: "is not correct",
+			Message: "smsCode incorrect.",
 		}
 	}
 	user.Phone = phoneStr
@@ -92,7 +92,7 @@ func ResetPassword(params graphql.ResolveParams) (interface{}, error) {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
 			Field:   "smsCode",
-			Message: "is not correct",
+			Message: "smsCode incorrect.",
 		}
 	}
 	if err := utils.ValidatePassword(passwordStr); err != nil {
@@ -156,9 +156,8 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 	if _, err := qs.All(&users); err != nil {
 		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "User",
-			Message: "List() error",
+			Type:    "Model",
+			Message: "get user list error.",
 			OriErr:  err,
 		}
 	}
@@ -191,8 +190,8 @@ func UpdatePassword(params graphql.ResolveParams) (interface{}, error) {
 	if user.Password != utils.Encrypt(oldPassword) {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "User",
-			Message: "password incorrect!",
+			Field:   "password",
+			Message: "password incorrect.",
 		}
 	}
 
@@ -218,8 +217,8 @@ func UpdatePhone(params graphql.ResolveParams) (interface{}, error) {
 	if user.Password != utils.Encrypt(password) {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "User",
-			Message: "password incorrect!",
+			Field:   "password",
+			Message: "password incorrect.",
 		}
 	}
 
@@ -237,7 +236,7 @@ func UpdatePhone(params graphql.ResolveParams) (interface{}, error) {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
 			Field:   "smsCode",
-			Message: "incorrect!",
+			Message: "smsCode incorrect.",
 		}
 	}
 
@@ -273,8 +272,7 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	default:
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "User",
-			Message: "RelatedLoad() error",
+			Message: "load related source type unmatched error.",
 		}
 	}
 }

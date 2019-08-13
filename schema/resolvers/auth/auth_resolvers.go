@@ -24,7 +24,7 @@ func LoginByPassword(params graphql.ResolveParams) (interface{}, error) {
 	if user.Password != utils.Encrypt(passwordStr) {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "Auth",
+			Field:   "password",
 			Message: "password incorrect.",
 		}
 	}
@@ -33,8 +33,8 @@ func LoginByPassword(params graphql.ResolveParams) (interface{}, error) {
 	if sessionID == nil {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "Auth",
-			Message: "missing session_id.",
+			Field:   "session_id",
+			Message: "session_id lost.",
 		}
 	}
 
@@ -88,8 +88,7 @@ func Logout(params graphql.ResolveParams) (interface{}, error) {
 	if err == orm.ErrMultiRows {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "Auth",
-			Message: "Logout() error",
+			Message: "logout error",
 			OriErr:  err,
 		}
 	}
@@ -97,7 +96,6 @@ func Logout(params graphql.ResolveParams) (interface{}, error) {
 	if err == orm.ErrNoRows {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "Auth",
 			Message: "user not authenticated.",
 		}
 	}

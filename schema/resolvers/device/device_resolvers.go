@@ -18,6 +18,10 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
+	if err := device.ValidateAccess(params, "device_charge_r"); err != nil {
+		return nil, err
+	}
+
 	return device, nil
 }
 
@@ -50,9 +54,8 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 	if _, err := qs.All(&devices); err != nil {
 		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "Device",
-			Message: "List() error",
+			Type:    "Model",
+			Message: "get device list error.",
 			OriErr:  err,
 		}
 	}
@@ -190,8 +193,7 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	default:
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "Device",
-			Message: "RelatedLoad() error",
+			Message: "load related source type unmatched error.",
 		}
 	}
 }

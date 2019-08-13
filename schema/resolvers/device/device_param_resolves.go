@@ -131,9 +131,8 @@ func ParamList(params graphql.ResolveParams) (interface{}, error) {
 
 	if _, err := qs.All(&deviceParams); err != nil {
 		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "DeviceParam",
-			Message: "List() error",
+			Type:    "Model",
+			Message: "get device_param list error",
 			OriErr:  err,
 		}
 	}
@@ -151,8 +150,7 @@ func ParamRelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	default:
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "DeviceParam",
-			Message: "ParamRelatedLoad() error",
+			Message: "load related source type unmatched error.",
 		}
 	}
 }

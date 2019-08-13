@@ -3,8 +3,8 @@ package ulogin
 import (
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
 )
 
@@ -50,8 +50,7 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	if _, err := qs.All(&userLogins); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "UserLogin",
-			Message: "List() error",
+			Message: "get user_login list error",
 			OriErr:  err,
 		}
 	}

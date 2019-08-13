@@ -1,8 +1,6 @@
 package models
 
 import (
-	// "time"
-
 	"github.com/SasukeBo/information/models/errors"
 )
 
@@ -25,8 +23,7 @@ func (dca *DeviceChargeAbility) LoadDeviceCharge() (*DeviceCharge, error) {
 	if _, err := Repo.LoadRelated(dca, "DeviceCharge"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceChargeAbility",
-			Message: "LoadDeviceCharge() error",
+			Message: "device_charge_ability load device_charge error",
 			OriErr:  err,
 		}
 	}
@@ -39,8 +36,7 @@ func (dca *DeviceChargeAbility) LoadPrivilege() (*Privilege, error) {
 	if _, err := Repo.LoadRelated(dca, "Privilege"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceChargeAbility",
-			Message: "LoadPrivilege() error",
+			Message: "device_charge_ability load privilege error",
 			OriErr:  err,
 		}
 	}

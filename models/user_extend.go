@@ -11,7 +11,7 @@ type UserExtend struct {
 	ID    int    `orm:"auto;pk;column(id)"`
 	User  *User  `orm:"reverse(one);on_delete()"` // 用户删除时删除
 	Name  string `orm:"null"`                     // 真实姓名
-	Email string `orm:"unique;null"`
+	Email string `orm:"null"`
 }
 
 // Get _
@@ -19,8 +19,7 @@ func (ue *UserExtend) Get() error {
 	if err := Repo.Read(ue); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "UserExtend",
-			Message: "Get() error",
+			Message: "get user_extend error",
 			OriErr:  err,
 		}
 	}
@@ -33,8 +32,8 @@ func (ue *UserExtend) GetBy(col string) error {
 	if err := Repo.Read(ue, col); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "UserExtend",
-			Message: fmt.Sprintf("GetBy(%s) error", col),
+			Field:   col,
+			Message: fmt.Sprintf("get user_extend by %s error", col),
 			OriErr:  err,
 		}
 	}
@@ -47,8 +46,7 @@ func (ue *UserExtend) Insert() error {
 	if _, err := Repo.Insert(ue); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "UserExtend",
-			Message: "Insert() error",
+			Message: "insert user_extend error",
 			OriErr:  err,
 		}
 	}
@@ -61,8 +59,7 @@ func (ue *UserExtend) Update(cols ...string) error {
 	if _, err := Repo.Update(ue, cols...); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "UserExtend",
-			Message: "Update() error",
+			Message: "update user_extend error",
 			OriErr:  err,
 		}
 	}
@@ -75,8 +72,7 @@ func (ue *UserExtend) LoadUser() (*User, error) {
 	if _, err := Repo.LoadRelated(ue, "User"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "UserExtend",
-			Message: "LoadUser() error",
+			Message: "user_extend load user error",
 			OriErr:  err,
 		}
 	}

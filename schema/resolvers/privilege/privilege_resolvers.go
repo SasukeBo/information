@@ -3,8 +3,8 @@ package privilege
 import (
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // List is a gql resolver, get list of privilege
@@ -22,9 +22,8 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	var privs []*models.Privilege
 	if _, err := qs.All(&privs); err != nil {
 		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "Privilege",
-			Message: "List() error",
+			Type:    "Model",
+			Message: "get privilege list error",
 			OriErr:  err,
 		}
 	}
@@ -46,8 +45,7 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	default:
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "Privilege",
-			Message: "RelatedLoad() error",
+			Message: "load related source type unmatched error",
 		}
 	}
 }

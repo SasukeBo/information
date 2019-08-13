@@ -26,8 +26,8 @@ func (u *User) GetBy(col string) error {
 	if err := Repo.Read(u, col); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "User",
-			Message: fmt.Sprintf("GetBy(%s) error", col),
+			Field:   col,
+			Message: fmt.Sprintf("get user by %s error", col),
 			OriErr:  err,
 		}
 	}
@@ -40,8 +40,7 @@ func (u *User) Insert() error {
 	if _, err := Repo.Insert(u); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "User",
-			Message: "Insert() error",
+			Message: "insert user error",
 			OriErr:  err,
 		}
 	}
@@ -54,8 +53,7 @@ func (u *User) Update(cols ...string) error {
 	if _, err := Repo.Update(u, cols...); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "User",
-			Message: "Update() error",
+			Message: "update user error",
 			OriErr:  err,
 		}
 	}
@@ -68,8 +66,7 @@ func (u *User) LoadRole() (*Role, error) {
 	if _, err := Repo.LoadRelated(u, "Role"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "User",
-			Message: "LoadRole() error",
+			Message: "user load role error",
 			OriErr:  err,
 		}
 	}
@@ -82,8 +79,7 @@ func (u *User) LoadUserExtend() (*UserExtend, error) {
 	if _, err := Repo.LoadRelated(u, "UserExtend"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "User",
-			Message: "LoadUserExtend() error",
+			Message: "user load user_extend error",
 			OriErr:  err,
 		}
 	}

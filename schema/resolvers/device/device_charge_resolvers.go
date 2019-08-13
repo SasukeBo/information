@@ -3,8 +3,8 @@ package device
 import (
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // ChargeCreate 指定设备负责人
@@ -104,9 +104,8 @@ func ChargeList(params graphql.ResolveParams) (interface{}, error) {
 
 	if _, err := qs.All(&charges); err != nil {
 		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "DeviceCharge",
-			Message: "ChargeList() error",
+			Type:    "Model",
+			Message: "get device_charge list error.",
 			OriErr:  err,
 		}
 	}
@@ -124,8 +123,7 @@ func ChargeRelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	default:
 		return nil, errors.LogicError{
 			Type:    "Resolver",
-			Field:   "DeviceCharge",
-			Message: "ChargeRelatedLoad() error",
+			Message: "load related source type unmatched error.",
 		}
 	}
 }

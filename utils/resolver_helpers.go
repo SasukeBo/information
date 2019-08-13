@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/graphql-go/graphql"
@@ -21,7 +22,7 @@ func ValidateStringEmpty(str, field string) error {
 		return errors.LogicError{
 			Type:    "Validate",
 			Field:   field,
-			Message: "can not be blank",
+			Message: fmt.Sprintf("%s can't be blank.", field),
 		}
 	}
 	return nil
@@ -34,7 +35,7 @@ func ValidatePhone(phone string) error {
 		return errors.LogicError{
 			Type:    "Validate",
 			Field:   "phone",
-			Message: "invalid.",
+			Message: "phone invalid.",
 		}
 	}
 	return nil
@@ -47,7 +48,7 @@ func ValidateEmail(email string) error {
 		return errors.LogicError{
 			Type:    "Validate",
 			Field:   "email",
-			Message: "invalid.",
+			Message: "email invalid.",
 		}
 	}
 
@@ -60,7 +61,7 @@ func ValidatePassword(password string) error {
 		return errors.LogicError{
 			Type:    "Validate",
 			Field:   "password",
-			Message: "too short",
+			Message: "password too short.",
 		}
 	}
 	return nil
@@ -73,21 +74,11 @@ func ValidateAccess(params *graphql.ResolveParams, privSign string) error {
 	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 
 	if role, err = user.LoadRole(); err != nil {
-		return errors.LogicError{
-			Type:    "Validate",
-			Field:   "role",
-			Message: "load error",
-			OriErr:  err,
-		}
+		return err
 	}
 
 	if err := role.Validate(privSign); err != nil {
-		return errors.LogicError{
-			Type:    "Validate",
-			Field:   "privilege",
-			Message: "access error",
-			OriErr:  err,
-		}
+		return err
 	}
 
 	return nil

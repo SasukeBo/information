@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/SasukeBo/information/models/errors"
@@ -15,13 +16,19 @@ type DeviceCharge struct {
 	UpdatedAt time.Time `orm:"auto_now;type(datetime)"`
 }
 
+// TableUnique 自定义唯一键
+func (dc *DeviceCharge) TableUnique() [][]string {
+	return [][]string{
+		[]string{"device_id", "user_id"},
+	}
+}
+
 // Get get device_charge by id
 func (dc *DeviceCharge) Get() error {
 	if err := Repo.Read(dc); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceCharge",
-			Message: "Get() error",
+			Message: "get device_charge error",
 			OriErr:  err,
 		}
 	}
@@ -34,8 +41,7 @@ func (dc *DeviceCharge) Insert() error {
 	if _, err := Repo.Insert(dc); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceCharge",
-			Message: "Insert() error",
+			Message: "insert device_charge error",
 			OriErr:  err,
 		}
 	}
@@ -52,8 +58,7 @@ func (dc *DeviceCharge) Delete() error {
 	if _, err := Repo.Delete(dc); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceCharge",
-			Message: "Delete() error",
+			Message: "delete device_charge error",
 			OriErr:  err,
 		}
 	}
@@ -66,8 +71,7 @@ func (dc *DeviceCharge) Update(cols ...string) error {
 	if _, err := Repo.Update(dc, cols...); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceCharge",
-			Message: "Update() error",
+			Message: "update device_charge error",
 			OriErr:  err,
 		}
 	}
@@ -80,8 +84,7 @@ func (dc *DeviceCharge) LoadUser() (*User, error) {
 	if _, err := Repo.LoadRelated(dc, "User"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceCharge",
-			Message: "LoadUser() error",
+			Message: "device_charge load user error",
 			OriErr:  err,
 		}
 	}
@@ -94,11 +97,26 @@ func (dc *DeviceCharge) LoadDevice() (*Device, error) {
 	if _, err := Repo.LoadRelated(dc, "Device"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceCharge",
-			Message: "LoadDevice() error",
+			Message: "device_charge load device error",
 			OriErr:  err,
 		}
 	}
 
 	return dc.Device, nil
+}
+
+// Validate _
+func (dc *DeviceCharge) Validate(sign string) error {
+	qs := Repo.QueryTable("device_charge_ability").Filter("device_charge__id", dc.ID).Filter("privilege__sign", sign)
+	var dca DeviceChargeAbility
+	if err := qs.One(&dca); err != nil {
+		return errors.LogicError{
+			Type:    "Validate",
+			Field:   sign,
+			Message: fmt.Sprintf("can't access without %s ability", sign),
+			OriErr:  err,
+		}
+	}
+
+	return nil
 }

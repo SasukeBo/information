@@ -25,8 +25,7 @@ func (dsl *DeviceStatusLog) LoadDevice() (*Device, error) {
 	if _, err := Repo.LoadRelated(dsl, "Device"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceStatusLog",
-			Message: "LoadDevice() error",
+			Message: "device_status_log load device error",
 			OriErr:  err,
 		}
 	}

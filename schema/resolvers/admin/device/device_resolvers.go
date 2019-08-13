@@ -6,8 +6,8 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
 
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
 )
 
@@ -107,9 +107,8 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	var devices []*models.Device
 	if _, err := qs.All(&devices); err != nil {
 		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "Device",
-			Message: "List() error",
+			Type:    "Model",
+			Message: "get device list error",
 			OriErr:  err,
 		}
 	}

@@ -23,7 +23,7 @@ func authenticate(ctx *context.Context) error {
 		if currentUser.Status == models.BaseStatus.Block {
 			return errors.LogicError{
 				Type:    "Controller",
-				Field:   "Auth",
+				Field:   "status",
 				Message: "account has been blocked",
 			}
 		}
@@ -44,7 +44,6 @@ func authenticate(ctx *context.Context) error {
 		// 查找userLogin失败，返回身份验证失败
 		return errors.LogicError{
 			Type:    "Controller",
-			Field:   "Auth",
 			Message: "user not authenticated.",
 		}
 	}
@@ -53,7 +52,7 @@ func authenticate(ctx *context.Context) error {
 	if userLogin.Logout {
 		return errors.LogicError{
 			Type:    "Controller",
-			Field:   "Auth",
+			Field:   "logout",
 			Message: "user already logout.",
 		}
 	}
@@ -62,7 +61,7 @@ func authenticate(ctx *context.Context) error {
 	if !userLogin.Remembered {
 		return errors.LogicError{
 			Type:    "Controller",
-			Field:   "Auth",
+			Field:   "remembered",
 			Message: "user login unremembered.",
 		}
 	}
@@ -78,8 +77,8 @@ func authenticate(ctx *context.Context) error {
 		// 登录记录的密码与用户密码不匹配，验证失败
 		return errors.LogicError{
 			Type:    "Controller",
-			Field:   "Auth",
-			Message: "password unmatch.",
+			Field:   "password",
+			Message: "user password unmatch.",
 		}
 	}
 
@@ -88,7 +87,7 @@ func authenticate(ctx *context.Context) error {
 
 	userLogin.SessionID = sessionID
 
-	ctx.Output.Session("currentUser", currentUser)
+	ctx.Output.Session("currentUser", *currentUser)
 	models.Repo.Update(&userLogin)
 
 	expires, err := beego.AppConfig.Int("SessionCookieLifeTime")

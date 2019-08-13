@@ -22,8 +22,7 @@ func (dp *DeviceParam) Get() error {
 	if err := Repo.Read(dp); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceParam",
-			Message: "Get() error",
+			Message: "get device_param error",
 			OriErr:  err,
 		}
 	}
@@ -39,8 +38,7 @@ func (dp *DeviceParam) Delete() error {
 	if _, err := Repo.Delete(dp); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceParam",
-			Message: "Delete() error",
+			Message: "delete device_param error",
 			OriErr:  err,
 		}
 	}
@@ -53,8 +51,7 @@ func (dp *DeviceParam) Insert() error {
 	if _, err := Repo.Insert(dp); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceParam",
-			Message: "Insert() error",
+			Message: "insert device_param error",
 			OriErr:  err,
 		}
 	}
@@ -67,8 +64,7 @@ func (dp *DeviceParam) Update(cols ...string) error {
 	if _, err := Repo.Update(dp, cols...); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceParam",
-			Message: "Update() error",
+			Message: "update device_param error",
 			OriErr:  err,
 		}
 	}
@@ -81,8 +77,7 @@ func (dp *DeviceParam) LoadAuthor() (*User, error) {
 	if _, err := Repo.LoadRelated(dp, "Author"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceParam",
-			Message: "LoadAuthor() error",
+			Message: "device_param load author error",
 			OriErr:  err,
 		}
 	}
@@ -95,8 +90,7 @@ func (dp *DeviceParam) LoadDevice() (*Device, error) {
 	if _, err := Repo.LoadRelated(dp, "Device"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "DeviceParam",
-			Message: "LoadDevice() error",
+			Message: "device_param load device error",
 			OriErr:  err,
 		}
 	}

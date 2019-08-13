@@ -25,8 +25,7 @@ func (p *Privilege) Get() error {
 	if err := Repo.Read(p); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "Privilege",
-			Message: "Get() error",
+			Message: "get privilege error",
 			OriErr:  err,
 		}
 	}
@@ -39,8 +38,8 @@ func (p *Privilege) GetBy(col string) error {
 	if err := Repo.Read(p, col); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "Privilege",
-			Message: fmt.Sprintf("GetBy(%s) error", col),
+			Field:   col,
+			Message: fmt.Sprintf("get privilege by %s error", col),
 			OriErr:  err,
 		}
 	}
@@ -57,8 +56,7 @@ func (p *Privilege) Delete() error {
 	if _, err := Repo.Delete(p); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "Privilege",
-			Message: "Delete() error",
+			Message: "delete privilege error",
 			OriErr:  err,
 		}
 	}

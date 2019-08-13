@@ -23,8 +23,7 @@ func (rp *RolePriv) Get() error {
 	if err := Repo.Read(rp); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "RolePriv",
-			Message: "Get() error",
+			Message: "get role_priv error",
 			OriErr:  err,
 		}
 	}
@@ -37,8 +36,7 @@ func (rp *RolePriv) Insert() error {
 	if _, err := Repo.Insert(rp); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "RolePriv",
-			Message: "Insert() error",
+			Message: "insert role_priv error",
 			OriErr:  err,
 		}
 	}
@@ -55,8 +53,7 @@ func (rp *RolePriv) Delete() error {
 	if _, err := Repo.Delete(rp); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
-			Field:   "RolePriv",
-			Message: "Delete() error",
+			Message: "delete role_priv error",
 			OriErr:  err,
 		}
 	}
@@ -69,8 +66,7 @@ func (rp *RolePriv) LoadPrivilege() (*Privilege, error) {
 	if _, err := Repo.LoadRelated(rp, "Privilege"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "RolePriv",
-			Message: "LoadPrivilege() error",
+			Message: "role_priv load privilege error",
 			OriErr:  err,
 		}
 	}
@@ -83,8 +79,7 @@ func (rp *RolePriv) LoadRole() (*Role, error) {
 	if _, err := Repo.LoadRelated(rp, "Role"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Field:   "RolePriv",
-			Message: "LoadRole() error",
+			Message: "role_priv load role error",
 			OriErr:  err,
 		}
 	}
