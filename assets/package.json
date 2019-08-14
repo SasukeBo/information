@@ -26,7 +26,8 @@
     "vue-loader": "^15.7.0",
     "vue-template-compiler": "^2.6.10",
     "webpack": "^4.35.3",
-    "webpack-cli": "^3.3.5"
+    "webpack-cli": "^3.3.5",
+    "webpack-livereload-plugin": "^2.2.0"
   },
   "dependencies": {
     "apollo-cache-inmemory": "^1.6.2",

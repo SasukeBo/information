@@ -1,4 +1,5 @@
 const path = require('path');
+const LiveReloadPlugin = require('webpack-livereload-plugin');
 // const glob = require('glob');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
@@ -84,6 +85,7 @@ module.exports = (env, options) => ({
   plugins: [
     new MiniCssExtractPlugin({ filename: isProd ? 'css/[name].[contenthash].css' : 'css/[name].css' }),
     new VueLoaderPlugin(),
-    new AssetPlugin({ filename: '../static/manifest.json' })
+    new AssetPlugin({ filename: '../static/manifest.json' }),
+    new LiveReloadPlugin({delay: 200})
   ]
 });

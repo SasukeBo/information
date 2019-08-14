@@ -128,12 +128,11 @@ func HandleGraphql(ctx *context.Context) {
 
 // HandleAdminGraphql validate user role isAdmin before HandleGraphql
 func HandleAdminGraphql(ctx *context.Context) {
-	if currentUser := ctx.Input.Session("currentUser"); currentUser != nil {
+	if currentUser, ok := ctx.Input.Session("currentUser").(models.User); ok {
 		var role *models.Role
 		var err error
-		user := currentUser.(models.User)
 
-		if role, err = user.LoadRole(); err != nil {
+		if role, err = currentUser.LoadRole(); err != nil {
 			ctx.Input.SetData("gql_error", err)
 		}
 
