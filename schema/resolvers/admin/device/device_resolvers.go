@@ -13,7 +13,7 @@ import (
 
 // Get is a gql resolver, get a device
 func Get(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "device_r"); err != nil {
+	if err := utils.ValidateAccess(&params, "admin_device_r", models.PrivType.Admin); err != nil {
 		return nil, err
 	}
 
@@ -29,7 +29,7 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 
 // List _
 func List(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "device_r"); err != nil {
+	if err := utils.ValidateAccess(&params, "admin_device_r", models.PrivType.Admin); err != nil {
 		return nil, err
 	}
 
@@ -135,7 +135,7 @@ func listIDInQS(qs orm.QuerySeter, r orm.RawSeter) orm.QuerySeter {
 
 // Update _
 func Update(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "device_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "admin_device_u", models.PrivType.Admin); err != nil {
 		return nil, err
 	}
 
@@ -176,14 +176,16 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 
 // Delete _
 func Delete(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "device_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "admin_device_d", models.PrivType.Admin); err != nil {
 		return nil, err
 	}
 
-	uuid := params.Args["uuid"].(string)
+	device := models.Device{UUID: params.Args["uuid"].(string)}
+	if err := device.GetBy("uuid"); err != nil {
+		return nil, err
+	}
 
-	device := models.Device{UUID: uuid}
-	if err := device.DeleteByUUID(); err != nil {
+	if err := device.Delete(); err != nil {
 		return nil, err
 	}
 

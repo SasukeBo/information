@@ -1,10 +1,10 @@
-package public
+package admin
 
 import (
 	"github.com/graphql-go/graphql"
 
 	"github.com/SasukeBo/information/schema/fields"
-	"github.com/SasukeBo/information/schema/resolvers/privilege"
+	"github.com/SasukeBo/information/schema/resolvers/admin/privilege"
 	"github.com/SasukeBo/information/schema/scalars"
 	"github.com/SasukeBo/information/schema/types"
 )

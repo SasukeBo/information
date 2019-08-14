@@ -30,3 +30,20 @@ var UserDeleteField = &graphql.Field{
 	},
 	Resolve: user.Delete,
 }
+
+// UserListField _
+var UserListField = &graphql.Field{
+	Type: graphql.NewList(types.User),
+	Args: graphql.FieldConfigArgument{
+		"limit":           fields.GenArg(graphql.Int, "返回最大条数"),
+		"offset":          fields.GenArg(graphql.Int, "返回列表偏移量"),
+		"namePattern":     fields.GenArg(graphql.String, "用户名称模糊匹配"),
+		"phone":           fields.GenArg(graphql.String, "用户手机号"),
+		"email":           fields.GenArg(graphql.String, "用户邮箱"),
+		"status":          fields.GenArg(graphql.NewList(scalars.BaseStatus), "用户状态集合，可以写多个状态"),
+		"roleNamePattern": fields.GenArg(graphql.String, "用户角色名称模糊匹配"),
+		"roleID":          fields.GenArg(graphql.Int, "用户角色ID"),
+	},
+	Resolve:     user.List,
+	Description: "默认按照账号注册时间倒序排列",
+}

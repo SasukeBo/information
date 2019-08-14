@@ -12,7 +12,7 @@ import (
 
 // Create is a gql resolver, create role
 func Create(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "role_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "admin_role_c", models.PrivType.Admin); err != nil {
 		return nil, err
 	}
 
@@ -31,7 +31,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 
 // Update is a gql resolver, update role
 func Update(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "role_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "admin_role_u", models.PrivType.Admin); err != nil {
 		return nil, err
 	}
 
@@ -61,9 +61,9 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 
 // Get is a gql resolver, get role by id
 func Get(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "role_r"); err != nil {
-		return nil, err
-	}
+	// if err := utils.ValidateAccess(&params, "role_r"); err != nil {
+	// return nil, err
+	// }
 
 	id := params.Args["id"].(int)
 	role := &models.Role{ID: id}
@@ -76,9 +76,9 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 
 // GetByName is a gql resolver, get role by name
 func GetByName(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "role_r"); err != nil {
-		return nil, err
-	}
+	// if err := utils.ValidateAccess(&params, "role_r"); err != nil {
+	// return nil, err
+	// }
 
 	roleNameStr := params.Args["roleName"].(string)
 
@@ -92,9 +92,9 @@ func GetByName(params graphql.ResolveParams) (interface{}, error) {
 
 // List _
 func List(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "role_r"); err != nil {
-		return nil, err
-	}
+	// if err := utils.ValidateAccess(&params, "role_r"); err != nil {
+	// return nil, err
+	// }
 
 	roleNamePattern := params.Args["roleNamePattern"]
 	status := params.Args["status"]
@@ -123,7 +123,7 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 // Delete _
 func Delete(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "role_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "admin_role_d", models.PrivType.Admin); err != nil {
 		return nil, err
 	}
 

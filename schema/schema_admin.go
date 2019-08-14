@@ -21,6 +21,8 @@ var AdminQueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	禁止在前台中调用管理员接口。
 	`,
 	Fields: graphql.Fields{
+		/* user */
+		"adminUserList": fields.UserListField,
 		/*    role    */
 		"adminRoleGet":       fields.RoleGetField,
 		"adminRoleGetByName": fields.RoleGetByNameField,
@@ -32,6 +34,9 @@ var AdminQueryRoot = graphql.NewObject(graphql.ObjectConfig{
 
 		/* userLogin */
 		"adminUserLoginList": fields.UserLoginListField,
+
+		/* privilege */
+		"privilegeList": fields.PrivilegeListField,
 	},
 })
 

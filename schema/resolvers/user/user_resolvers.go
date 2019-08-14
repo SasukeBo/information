@@ -136,22 +136,18 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 	var users []*models.User
 
-	if namePattern == nil && phone == nil && email == nil {
-		return users, nil
-	}
-
 	qs := models.Repo.QueryTable("user")
 
 	if namePattern != nil {
-		qs = qs.Filter("user_extend__name__icontains", namePattern.(string))
+		qs = qs.Filter("user_extend__name__icontains", namePattern)
 	}
 
 	if phone != nil {
-		qs = qs.Filter("phone", phone.(string))
+		qs = qs.Filter("phone", phone)
 	}
 
 	if email != nil {
-		qs = qs.Filter("user_extend__email", email.(string))
+		qs = qs.Filter("user_extend__email", email)
 	}
 
 	if _, err := qs.All(&users); err != nil {

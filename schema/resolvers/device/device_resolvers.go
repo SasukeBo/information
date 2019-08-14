@@ -4,6 +4,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 
+	// "github.com/astaxie/beego/logs"
+
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
@@ -18,37 +20,64 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	if err := device.ValidateAccess(params, "device_charge_r"); err != nil {
+	if err := device.ValidateAccess(params); err != nil {
 		return nil, err
 	}
 
 	return device, nil
 }
 
-// List _
+// List 获取负责或创建的设备
 func List(params graphql.ResolveParams) (interface{}, error) {
-	dType := params.Args["type"]
-	namePattern := params.Args["namePattern"]
-	status := params.Args["status"]
-	userUUID := params.Args["userUUID"]
-
 	qs := models.Repo.QueryTable("device")
+	cond1 := models.NewCond()
 
-	if dType != nil {
-		qs = qs.Filter("type", dType.(string))
+	if dType := params.Args["type"]; dType != nil {
+		cond1 = cond1.And("type", dType)
 	}
 
-	if namePattern != nil {
-		qs = qs.Filter("name__icontains", namePattern.(string))
+	if namePattern := params.Args["namePattern"]; namePattern != nil {
+		cond1 = cond1.And("name__icontains", namePattern)
 	}
 
-	if status != nil {
-		qs = qs.Filter("status", status.(int))
+	if status := params.Args["status"]; status != nil {
+		cond1 = cond1.And("status", status)
 	}
 
-	if userUUID != nil {
-		qs = qs.Filter("user__uuid", userUUID.(string))
+	// 限定用户查询设备列表值域为 负责的设备 + 注册的设备 -- begin
+	var charges []*models.DeviceCharge
+	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
+
+	if _, err := models.Repo.QueryTable("device_charge").Filter("user_id", currentUser.ID).All(&charges); err != nil {
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Field:   "userUUID",
+			Message: "get device_charge list error",
+			OriErr:  err,
+		}
 	}
+
+	var ids []int
+	for _, charge := range charges { // 获取用户charge的设备id列表
+		ids = append(ids, charge.Device.ID)
+	}
+
+	if userUUID := params.Args["userUUID"]; userUUID != nil {
+		// 如果提供了注册人uuid，则从当前用户负责的设备中挑出注册人为uuid的设备
+		if len(ids) == 0 {
+			// 如果用户负责设备个数为0，返回空列表
+			return []interface{}{}, nil
+		}
+
+		// 获取该用户负责的且由userUUID的用户注册的设备
+		cond := models.NewCond().AndCond(cond1).AndCond(models.NewCond().And("id__in", ids).And("user__uuid", userUUID))
+		qs = qs.SetCond(cond)
+	} else {
+		// 获取用户负责的或注册的设备
+		cond := models.NewCond().AndCond(cond1).AndCond(models.NewCond().And("id__in", ids).Or("user_id", currentUser.ID))
+		qs = qs.SetCond(cond).Distinct()
+	}
+	// 限定用户查询设备列表值域为 负责的设备 + 注册的设备 -- end
 
 	var devices []*models.Device
 
@@ -65,6 +94,11 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 // Create 创建设备
 func Create(params graphql.ResolveParams) (interface{}, error) {
+	// 验证用户是否有创建设备的权限
+	if err := utils.ValidateAccess(&params, "device_c", models.PrivType.Default); err != nil {
+		return nil, err
+	}
+
 	rootValue := params.Info.RootValue.(map[string]interface{})
 
 	dType := params.Args["type"].(string)
@@ -100,10 +134,12 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 
 // Update 更新设备
 func Update(params graphql.ResolveParams) (interface{}, error) {
-	uuid := params.Args["uuid"].(string)
-
-	device := models.Device{UUID: uuid}
+	device := models.Device{UUID: params.Args["uuid"].(string)}
 	if err := device.GetBy("uuid"); err != nil {
+		return nil, err
+	}
+
+	if err := device.ValidateAccess(params, "device_u"); err != nil {
 		return nil, err
 	}
 
@@ -138,10 +174,16 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 
 // Delete 更新设备
 func Delete(params graphql.ResolveParams) (interface{}, error) {
-	uuid := params.Args["uuid"].(string)
+	device := models.Device{UUID: params.Args["uuid"].(string)}
+	if err := device.GetBy("uuid"); err != nil {
+		return nil, err
+	}
 
-	device := models.Device{UUID: uuid}
-	if err := device.DeleteByUUID(); err != nil {
+	if err := device.ValidateAccess(params, "device_d"); err != nil {
+		return nil, err
+	}
+
+	if err := device.Delete(); err != nil {
 		return nil, err
 	}
 
@@ -150,25 +192,24 @@ func Delete(params graphql.ResolveParams) (interface{}, error) {
 
 // Bind 绑定设备Mac地址，需要权限验证
 func Bind(params graphql.ResolveParams) (interface{}, error) {
-	// rootValue := params.Info.RootValue.(map[string]interface{})
-	token := params.Args["token"].(string)
-	// user := rootValue["currentUser"].(models.User)
-
 	mac := params.Args["mac"].(string)
 	if err := utils.ValidateStringEmpty(mac, "mac"); err != nil {
 		return nil, err
 	}
 
-	// TODO: 验证绑定设备的权限
-	device := models.Device{Token: token}
+	device := models.Device{Token: params.Args["token"].(string)}
 	if err := device.GetBy("token"); err != nil {
 		return nil, err
 	}
 
-	// TODO: 设备状态
+	if err := device.ValidateAccess(params, "device_u"); err != nil {
+		return nil, err
+	}
+
+	device.Status = models.BaseStatus.Publish
 	device.Mac = mac
 
-	if err := device.Update("mac"); err != nil {
+	if err := device.Update("mac", "status"); err != nil {
 		return nil, err
 	}
 

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/graphql-go/graphql"
 	"time"
 
 	"github.com/SasukeBo/information/models/errors"
@@ -32,9 +33,6 @@ func (dp *DeviceParam) Get() error {
 
 // Delete delete device_param by id
 func (dp *DeviceParam) Delete() error {
-	if err := dp.Get(); err != nil {
-		return err
-	}
 	if _, err := Repo.Delete(dp); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
@@ -96,4 +94,19 @@ func (dp *DeviceParam) LoadDevice() (*Device, error) {
 	}
 
 	return dp.Device, nil
+}
+
+// ValidateAccess _
+func (dp *DeviceParam) ValidateAccess(params graphql.ResolveParams, sign ...string) error {
+	var device *Device
+	var err error
+	if device, err = dp.LoadDevice(); err != nil {
+		return err
+	}
+
+	if err := device.ValidateAccess(params, sign...); err != nil {
+		return err
+	}
+
+	return nil
 }

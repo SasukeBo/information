@@ -1,37 +1,42 @@
 package device
 
 import (
-  "time"
+	"github.com/graphql-go/graphql"
 
-  "github.com/SasukeBo/information/models"
-  "github.com/graphql-go/graphql"
+	"github.com/SasukeBo/information/models"
 )
 
 // StatusLogList 设备参数创建
 func StatusLogList(params graphql.ResolveParams) (interface{}, error) {
-  deviceID := params.Args["deviceID"].(int)
-  status := params.Args["status"]
-  beforeTime := params.Args["beforeTime"]
-  afterTime := params.Args["afterTime"]
 
-  qs := models.Repo.QueryTable("device_status_log").Filter("device_id", deviceID)
+	device := models.Device{UUID: params.Args["deviceUUID"].(string)}
+	if err := device.GetBy("uuid"); err != nil {
+		return nil, err
+	}
 
-  if status != nil {
-    qs = qs.Filter("status", status.(int))
-  }
+	// 验证权限
+	if accessErr := device.ValidateAccess(params); accessErr != nil {
+		return nil, accessErr
+	}
 
-  if beforeTime != nil {
-    qs = qs.Filter("change_at__lt", beforeTime.(time.Time))
-  }
+	qs := models.Repo.QueryTable("device_status_log").Filter("device_id", device.ID)
 
-  if afterTime != nil {
-    qs = qs.Filter("change_at__gt", afterTime.(time.Time))
-  }
+	if status := params.Args["status"]; status != nil {
+		qs = qs.Filter("status", status)
+	}
 
-  var statusLogs []*models.DeviceStatusLog
-  if _, err := qs.All(&statusLogs); err != nil {
-    return nil, err
-  }
+	if beforeTime := params.Args["beforeTime"]; beforeTime != nil {
+		qs = qs.Filter("change_at__lt", beforeTime)
+	}
 
-  return statusLogs, nil
+	if afterTime := params.Args["afterTime"]; afterTime != nil {
+		qs = qs.Filter("change_at__gt", afterTime)
+	}
+
+	var statusLogs []*models.DeviceStatusLog
+	if _, err := qs.All(&statusLogs); err != nil {
+		return nil, err
+	}
+
+	return statusLogs, nil
 }

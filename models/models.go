@@ -61,6 +61,11 @@ func init() {
 	Repo = orm.NewOrm()
 }
 
+// NewCond return a orm.Condition
+func NewCond() *orm.Condition {
+	return orm.NewCondition()
+}
+
 func handleError(err error) {
 	if err != nil {
 		logs.Error(err)

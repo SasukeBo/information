@@ -9,7 +9,7 @@ import (
 
 // Update _
 func Update(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "user_extend_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "admin_user_extend_w", models.PrivType.Admin); err != nil {
 		return nil, err
 	}
 

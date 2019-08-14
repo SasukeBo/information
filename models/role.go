@@ -10,9 +10,10 @@ import (
 // Role 角色模型
 type Role struct {
 	ID        int         `orm:"auto;pk;column(id)"`
-	RoleName  string      `orm:"unique"`        // 角色名称
-	Status    int         `orm:"default(0)"`    // 基础状态
-	RolePriv  []*RolePriv `orm:"reverse(many)"` // 角色权限关联关系
+	RoleName  string      `orm:"unique"`         // 角色名称
+	Status    int         `orm:"default(0)"`     // 基础状态
+	IsAdmin   bool        `orm:"default(false)"` // 是否为管理员角色
+	RolePriv  []*RolePriv `orm:"reverse(many)"`  // 角色权限关联关系
 	CreatedAt time.Time   `orm:"auto_now_add;type(datetime)"`
 	UpdatedAt time.Time   `orm:"auto_now;type(datetime)"`
 }
@@ -88,8 +89,8 @@ func (r *Role) LoadRolePriv() ([]*RolePriv, error) {
 }
 
 // Validate _
-func (r *Role) Validate(sign string) error {
-	qs := Repo.QueryTable("role_priv").Filter("role_id", r.ID).Filter("privilege__sign", sign)
+func (r *Role) Validate(sign string, privType int) error {
+	qs := Repo.QueryTable("role_priv").Filter("role_id", r.ID).Filter("privilege__sign", sign).Filter("privilege__priv_type", privType)
 
 	var rp RolePriv
 	if err := qs.One(&rp, "id"); err != nil {

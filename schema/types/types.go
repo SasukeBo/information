@@ -88,6 +88,11 @@ func init() {
 				"user":      &graphql.Field{Type: User, Description: "负责人", Resolve: user.RelatedLoad},
 				"createdAt": &graphql.Field{Type: graphql.DateTime},
 				"updatedAt": &graphql.Field{Type: graphql.DateTime},
+				"deviceChargeAbilities": &graphql.Field{
+					Type:        graphql.NewList(DeviceChargeAbility),
+					Description: "负责人权限",
+					Resolve:     device.ChargeAbilityRelatedLoad,
+				},
 			}
 		}),
 	})
@@ -135,17 +140,18 @@ func init() {
 		Name: "Device",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
 			return graphql.Fields{
-				"type":        &graphql.Field{Type: graphql.String, Description: "设备类型"},
-				"name":        &graphql.Field{Type: graphql.String, Description: "设备名称"},
-				"mac":         &graphql.Field{Type: graphql.String, Description: "设备Mac地址"},
-				"token":       &graphql.Field{Type: graphql.String, Description: "设备token，用于数据加密"},
-				"status":      &graphql.Field{Type: scalars.BaseStatus, Description: "基础状态"},
-				"id":          &graphql.Field{Type: graphql.Int},
-				"uuid":        &graphql.Field{Type: graphql.String, Description: "设备UUID"},
-				"user":        &graphql.Field{Type: User, Description: "注册人用户", Resolve: user.RelatedLoad},
-				"description": &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
-				"createdAt":   &graphql.Field{Type: graphql.DateTime},
-				"updatedAt":   &graphql.Field{Type: graphql.DateTime},
+				"type":          &graphql.Field{Type: graphql.String, Description: "设备类型"},
+				"name":          &graphql.Field{Type: graphql.String, Description: "设备名称"},
+				"mac":           &graphql.Field{Type: graphql.String, Description: "设备Mac地址"},
+				"token":         &graphql.Field{Type: graphql.String, Description: "设备token，用于数据加密"},
+				"status":        &graphql.Field{Type: scalars.BaseStatus, Description: "基础状态"},
+				"id":            &graphql.Field{Type: graphql.Int},
+				"uuid":          &graphql.Field{Type: graphql.String, Description: "设备UUID"},
+				"user":          &graphql.Field{Type: User, Description: "注册人用户", Resolve: user.RelatedLoad},
+				"deviceCharges": &graphql.Field{Type: graphql.NewList(DeviceCharge), Description: "设备负责人", Resolve: device.ChargeRelatedLoad},
+				"description":   &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
+				"createdAt":     &graphql.Field{Type: graphql.DateTime},
+				"updatedAt":     &graphql.Field{Type: graphql.DateTime},
 			}
 		}),
 	})
@@ -184,6 +190,7 @@ func init() {
 					Description: "role and privilege relationship",
 					Resolve:     rolepriv.RelatedLoad,
 				},
+				"isAdmin":   &graphql.Field{Type: graphql.Boolean, Description: "是否为管理员角色，仅管理员角色才可以调用管理员API"},
 				"createdAt": &graphql.Field{Type: graphql.DateTime},
 				"updatedAt": &graphql.Field{Type: graphql.DateTime},
 			}

@@ -68,7 +68,9 @@ func ValidatePassword(password string) error {
 }
 
 // ValidateAccess _
-func ValidateAccess(params *graphql.ResolveParams, privSign string) error {
+// privSign 权限 sign
+// privType 权限类型
+func ValidateAccess(params *graphql.ResolveParams, privSign string, privType int) error {
 	var role *models.Role
 	var err error
 	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
@@ -77,7 +79,7 @@ func ValidateAccess(params *graphql.ResolveParams, privSign string) error {
 		return err
 	}
 
-	if err := role.Validate(privSign); err != nil {
+	if err := role.Validate(privSign, privType); err != nil {
 		return err
 	}
 

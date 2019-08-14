@@ -11,6 +11,7 @@ import (
 var PrivTypeMap = VMap{
 	"default": models.PrivType.Default,
 	"device":  models.PrivType.Device,
+	"admin":   models.PrivType.Admin,
 }
 
 // PrivType is a scalars graphql type

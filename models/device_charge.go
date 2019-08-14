@@ -4,16 +4,19 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/graphql-go/graphql"
+
 	"github.com/SasukeBo/information/models/errors"
 )
 
 // DeviceCharge 设备负责人关系模型
 type DeviceCharge struct {
-	ID        int       `orm:"auto;pk;column(id)"`
-	User      *User     `orm:"rel(fk);on_delete()"` // 设备负责人，用户删除时删除
-	Device    *Device   `orm:"rel(fk);on_delete()"` // 设备，删除时删除
-	CreatedAt time.Time `orm:"auto_now_add;type(datetime)"`
-	UpdatedAt time.Time `orm:"auto_now;type(datetime)"`
+	ID                    int                    `orm:"auto;pk;column(id)"`
+	User                  *User                  `orm:"rel(fk);on_delete()"` // 设备负责人，用户删除时删除
+	Device                *Device                `orm:"rel(fk);on_delete()"` // 设备，删除时删除
+	DeviceChargeAbilities []*DeviceChargeAbility `orm:"reverse(many)"`
+	CreatedAt             time.Time              `orm:"auto_now_add;type(datetime)"`
+	UpdatedAt             time.Time              `orm:"auto_now;type(datetime)"`
 }
 
 // TableUnique 自定义唯一键
@@ -51,10 +54,6 @@ func (dc *DeviceCharge) Insert() error {
 
 // Delete _
 func (dc *DeviceCharge) Delete() error {
-	if err := dc.Get(); err != nil {
-		return err
-	}
-
 	if _, err := Repo.Delete(dc); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
@@ -105,9 +104,34 @@ func (dc *DeviceCharge) LoadDevice() (*Device, error) {
 	return dc.Device, nil
 }
 
-// Validate _
+// LoadDeviceChargeAbility _
+func (dc *DeviceCharge) LoadDeviceChargeAbility() ([]*DeviceChargeAbility, error) {
+	if _, err := Repo.LoadRelated(dc, "DeviceChargeAbilities"); err != nil {
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Message: "device_charge load device_charge_abilitis error",
+			OriErr:  err,
+		}
+	}
+
+	return dc.DeviceChargeAbilities, nil
+}
+
+// Validate 最终对deviceCharge验证是否有权限sign
 func (dc *DeviceCharge) Validate(sign string) error {
-	qs := Repo.QueryTable("device_charge_ability").Filter("device_charge__id", dc.ID).Filter("privilege__sign", sign)
+	qs := Repo.QueryTable(
+		"device_charge_ability",
+	).Filter(
+		"device_charge_id",
+		dc.ID,
+	).Filter(
+		"privilege__sign",
+		sign,
+	).Filter(
+		"privilege__priv_type",
+		PrivType.Device,
+	)
+
 	var dca DeviceChargeAbility
 	if err := qs.One(&dca); err != nil {
 		return errors.LogicError{
@@ -116,6 +140,21 @@ func (dc *DeviceCharge) Validate(sign string) error {
 			Message: fmt.Sprintf("can't access without %s ability", sign),
 			OriErr:  err,
 		}
+	}
+
+	return nil
+}
+
+// ValidateAccess _
+func (dc *DeviceCharge) ValidateAccess(params graphql.ResolveParams, sign ...string) error {
+	var device *Device
+	var err error
+	if device, err = dc.LoadDevice(); err != nil {
+		return err
+	}
+
+	if err := device.ValidateAccess(params, sign...); err != nil {
+		return err
 	}
 
 	return nil

@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"github.com/graphql-go/graphql"
+
 	"github.com/SasukeBo/information/models/errors"
 )
 
@@ -16,6 +19,33 @@ func (dca *DeviceChargeAbility) TableUnique() [][]string {
 	return [][]string{
 		[]string{"device_charge_id", "privilege_id"},
 	}
+}
+
+// GetBy _
+func (dca *DeviceChargeAbility) GetBy(col string) error {
+	if err := Repo.Read(dca, col); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   col,
+			Message: fmt.Sprintf("get device_charge_ability by %s error", col),
+			OriErr:  err,
+		}
+	}
+
+	return nil
+}
+
+// Delete _
+func (dca *DeviceChargeAbility) Delete() error {
+	if _, err := Repo.Delete(dca); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Message: "device_charge_ability delete error",
+			OriErr:  err,
+		}
+	}
+
+	return nil
 }
 
 // LoadDeviceCharge related load device_charge
@@ -42,4 +72,19 @@ func (dca *DeviceChargeAbility) LoadPrivilege() (*Privilege, error) {
 	}
 
 	return dca.Privilege, nil
+}
+
+// ValidateAccess _
+func (dca *DeviceChargeAbility) ValidateAccess(params graphql.ResolveParams, sign ...string) error {
+	var deviceCharge *DeviceCharge
+	var err error
+	if deviceCharge, err = dca.LoadDeviceCharge(); err != nil {
+		return err
+	}
+
+	if err := deviceCharge.ValidateAccess(params, sign...); err != nil {
+		return err
+	}
+
+	return nil
 }

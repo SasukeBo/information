@@ -11,17 +11,18 @@ import (
 
 // Device 设备模型
 type Device struct {
-	Type        string    // 类型
-	Name        string    // 设备名称
-	Mac         string    // 设备Mac地址
-	Token       string    `orm:"unique;index"`                     // 设备Token，用于数据加密
-	Status      int       `orm:"default(0)"`                       // 基础状态
-	ID          int       `orm:"auto;pk;column(id)"`               // PKey 主键
-	UUID        string    `orm:"column(uuid);unique;index"`        // 通用唯一标识符
-	User        *User     `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
-	Description string    `orm:"null"`                             // 描述
-	CreatedAt   time.Time `orm:"auto_now_add;type(datetime)"`
-	UpdatedAt   time.Time `orm:"auto_now;type(datetime)"`
+	Type          string          // 类型
+	Name          string          // 设备名称
+	Mac           string          // 设备Mac地址
+	Token         string          `orm:"unique;index"`                     // 设备Token，用于数据加密
+	Status        int             `orm:"default(0)"`                       // 基础状态
+	ID            int             `orm:"auto;pk;column(id)"`               // PKey 主键
+	UUID          string          `orm:"column(uuid);unique;index"`        // 通用唯一标识符
+	User          *User           `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
+	DeviceCharges []*DeviceCharge `orm:"reverse(many)"`
+	Description   string          `orm:"null"` // 描述
+	CreatedAt     time.Time       `orm:"auto_now_add;type(datetime)"`
+	UpdatedAt     time.Time       `orm:"auto_now;type(datetime)"`
 }
 
 // GetBy get device by col
@@ -64,12 +65,8 @@ func (d *Device) Update(cols ...string) error {
 	return nil
 }
 
-// DeleteByUUID _
-func (d *Device) DeleteByUUID() error {
-	if err := d.GetBy("uuid"); err != nil {
-		return err
-	}
-
+// Delete _
+func (d *Device) Delete() error {
 	if _, err := Repo.Delete(d); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
@@ -95,8 +92,21 @@ func (d *Device) LoadUser() (*User, error) {
 	return d.User, nil
 }
 
+// LoadDeviceCharge _
+func (d *Device) LoadDeviceCharge() ([]*DeviceCharge, error) {
+	if _, err := Repo.LoadRelated(d, "DeviceCharges"); err != nil {
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Message: "device load device_charges error",
+			OriErr:  err,
+		}
+	}
+
+	return d.DeviceCharges, nil
+}
+
 // ValidateAccess validate access to device
-func (d *Device) ValidateAccess(params graphql.ResolveParams, sign string) error {
+func (d *Device) ValidateAccess(params graphql.ResolveParams, args ...string) error {
 	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(User)
 
 	if d.User.ID == currentUser.ID {
@@ -115,8 +125,12 @@ func (d *Device) ValidateAccess(params graphql.ResolveParams, sign string) error
 		}
 	}
 
+	if len(args) == 0 {
+		return nil
+	}
+
 	// charge 权限验证
-	if err := dc.Validate(sign); err != nil {
+	if err := dc.Validate(args[0]); err != nil {
 		return err
 	}
 

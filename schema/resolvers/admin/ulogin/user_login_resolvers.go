@@ -10,7 +10,7 @@ import (
 
 // List _
 func List(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "user_login_r"); err != nil {
+	if err := utils.ValidateAccess(&params, "admin_user_login_r", models.PrivType.Admin); err != nil {
 		return nil, err
 	}
 

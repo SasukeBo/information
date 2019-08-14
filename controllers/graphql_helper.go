@@ -11,6 +11,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
 
+	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/models/errors"
 )
 
@@ -123,6 +124,29 @@ func HandleGraphql(ctx *context.Context) {
 	}
 
 	ctx.Input.SetData("query_params", params)
+}
+
+// HandleAdminGraphql validate user role isAdmin before HandleGraphql
+func HandleAdminGraphql(ctx *context.Context) {
+	if currentUser := ctx.Input.Session("currentUser"); currentUser != nil {
+		var role *models.Role
+		var err error
+		user := currentUser.(models.User)
+
+		if role, err = user.LoadRole(); err != nil {
+			ctx.Input.SetData("gql_error", err)
+		}
+
+		if !role.IsAdmin {
+			ctx.Input.SetData("gql_error", errors.LogicError{
+				Type:    "Validate",
+				Field:   "is_admin",
+				Message: "user role is not a admin role",
+			})
+		}
+	}
+
+	HandleGraphql(ctx)
 }
 
 // 解析gql请求参数JSON到结构体中

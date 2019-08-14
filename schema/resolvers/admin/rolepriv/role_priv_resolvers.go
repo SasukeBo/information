@@ -9,7 +9,7 @@ import (
 
 // Create _
 func Create(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "role_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "admin_role_priv_w", models.PrivType.Admin); err != nil {
 		return nil, err
 	}
 
@@ -33,7 +33,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 
 // Delete _
 func Delete(params graphql.ResolveParams) (interface{}, error) {
-	if err := utils.ValidateAccess(&params, "role_w"); err != nil {
+	if err := utils.ValidateAccess(&params, "admin_role_priv_w", models.PrivType.Admin); err != nil {
 		return nil, err
 	}
 

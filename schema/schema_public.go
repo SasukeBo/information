@@ -9,7 +9,8 @@ import (
 )
 
 // MutateRoot is mutation root
-var MutateRoot = graphql.NewObject(graphql.ObjectConfig{Name: "RootMutation",
+var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
+	Name: "RootMutation",
 	Fields: graphql.Fields{
 		/*    user    */
 		"register":           fields.UserCreateField,
@@ -62,32 +63,22 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		"getSmsCode": fields.GetSmsCodeField,
 
 		/*    device    */
-		"deviceGet":  fields.DeviceGetField,
-		"deviceList": fields.DeviceListField,
-
-		/*    deviceCharge    */
-		"deviceChargeGet":  fields.DeviceChargeGetField,
-		"deviceChargeList": fields.DeviceChargeListField,
-
-		/*    deviceParam    */
-		"deviceParamGet":  fields.DeviceParamGetField,
-		"deviceParamList": fields.DeviceParamListField,
-
-		/*    deviceChargeAbility    */
-		"deviceChargePrivGet":  fields.DeviceChargePrivGetField,
-		"deviceChargePrivList": fields.DeviceChargePrivListField,
-
-		/*    deviceParamValue    */
+		"deviceGet":            fields.DeviceGetField,
+		"deviceList":           fields.DeviceListField,
+		"deviceChargeGet":      fields.DeviceChargeGetField,
+		"deviceChargeList":     fields.DeviceChargeListField,
+		"deviceParamGet":       fields.DeviceParamGetField,
+		"deviceParamList":      fields.DeviceParamListField,
 		"deviceParamValueList": fields.DeviceParamValueListField,
-
-		/*    deviceStatusLog    */
-		"deviceStatusLogList": fields.DeviceStatusLogListField,
+		"deviceStatusLogList":  fields.DeviceStatusLogListField,
+		/*
+			FIXME: 暂时不需要的接口
+			"deviceChargePrivGet":  fields.DeviceChargePrivGetField,
+			"deviceChargePrivList": fields.DeviceChargePrivListField,
+		*/
 
 		/* userLogin */
 		"userLoginList": fields.UserLoginListField,
-
-		/* privilege */
-		"privilegeList": fields.PrivilegeListField,
 	},
 })
 

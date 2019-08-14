@@ -10,7 +10,7 @@ import (
 
 // Update _
 func Update(params graphql.ResolveParams) (interface{}, error) {
-	user := params.Info.RootValue.(map[interface{}]interface{})["currentUser"].(models.User)
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	user.LoadUserExtend()
 	userExtend := user.UserExtend
 
