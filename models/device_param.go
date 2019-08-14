@@ -11,12 +11,20 @@ import (
 type DeviceParam struct {
 	Name      string    // 参数名称
 	Sign      string    // 参数签名（标识），要求英文及数字组合的字符串
-	Type      string    // 参数值类型，string？int？bool？
+	Type      int       // 参数值类型，string？int？bool？
 	Device    *Device   `orm:"rel(fk);on_delete()"`
 	ID        int       `orm:"auto;pk;column(id)"`
 	Author    *User     `orm:"rel(fk);null;on_delete(set_null)"` // 创建人，删除时置空
 	CreatedAt time.Time `orm:"auto_now_add;type(datetime)"`
 }
+
+// DeviceParamValueType 设备参数值类型
+var DeviceParamValueType = struct {
+	String  int
+	Boolean int
+	Integer int
+	Float   int
+}{0, 1, 2, 3}
 
 // Get get device_param by id
 func (dp *DeviceParam) Get() error {

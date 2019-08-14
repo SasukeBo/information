@@ -31,10 +31,7 @@ func ParamCreate(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	pType := params.Args["type"].(string)
-	if err := utils.ValidateStringEmpty(pType, "type"); err != nil {
-		return nil, err
-	}
+	pType := params.Args["type"].(int)
 
 	deviceParam := models.DeviceParam{Name: name, Sign: sign, Type: pType, Author: &user, Device: &device}
 	if err := deviceParam.Insert(); err != nil {
@@ -71,10 +68,7 @@ func ParamUpdate(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	if pType := params.Args["type"]; pType != nil {
-		if err := utils.ValidateStringEmpty(pType.(string), "type"); err != nil {
-			return nil, err
-		}
-		deviceParam.Type = pType.(string)
+		deviceParam.Type = pType.(int)
 	}
 
 	if err := deviceParam.Update("name", "sign", "type"); err != nil {

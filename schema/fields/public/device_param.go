@@ -5,6 +5,7 @@ import (
 
 	"github.com/SasukeBo/information/schema/fields"
 	"github.com/SasukeBo/information/schema/resolvers/device"
+	"github.com/SasukeBo/information/schema/scalars"
 	"github.com/SasukeBo/information/schema/types"
 )
 
@@ -15,7 +16,7 @@ var DeviceParamCreateField = &graphql.Field{
 		"deviceID": fields.GenArg(graphql.Int, "设备ID", false),
 		"name":     fields.GenArg(graphql.String, "参数名称", false),
 		"sign":     fields.GenArg(graphql.String, "参数签名", false),
-		"type":     fields.GenArg(graphql.String, "参数值类型", false),
+		"type":     fields.GenArg(scalars.DeviceParamValueType, "参数值类型", false),
 	},
 	Resolve: device.ParamCreate,
 }
@@ -27,7 +28,7 @@ var DeviceParamUpdateField = &graphql.Field{
 		"id":   fields.GenArg(graphql.Int, "ID", false),
 		"name": fields.GenArg(graphql.String, "参数名称"),
 		"sign": fields.GenArg(graphql.String, "参数签名"),
-		"type": fields.GenArg(graphql.String, "参数值类型，可以为 number/string/boolean"),
+		"type": fields.GenArg(scalars.DeviceParamValueType, "参数值类型"),
 	},
 	Resolve: device.ParamUpdate,
 }
@@ -58,7 +59,7 @@ var DeviceParamListField = &graphql.Field{
 		"deviceUUID":  fields.GenArg(graphql.String, "设备UUID"),
 		"namePattern": fields.GenArg(graphql.String, "参数名称模糊匹配"),
 		"signPattern": fields.GenArg(graphql.String, "参数签名模糊匹配"),
-		"type":        fields.GenArg(graphql.String, "参数值类型"),
+		"type":        fields.GenArg(scalars.DeviceParamValueType, "参数值类型"),
 		"userUUID":    fields.GenArg(graphql.String, "创建人UUID"),
 	},
 	Resolve:     device.ParamList,

@@ -104,7 +104,7 @@ func init() {
 				"id":        &graphql.Field{Type: graphql.Int},
 				"name":      &graphql.Field{Type: graphql.String, Description: "参数名称"},
 				"sign":      &graphql.Field{Type: graphql.String, Description: "参数签名"},
-				"type":      &graphql.Field{Type: graphql.String, Description: "参数值类型"},
+				"type":      &graphql.Field{Type: scalars.DeviceParamValueType, Description: "参数值类型"},
 				"author":    &graphql.Field{Type: User, Description: "创建人", Resolve: user.RelatedLoad},
 				"device":    &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
 				"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
