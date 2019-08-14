@@ -1,31 +1,36 @@
 package device
 
 import (
-	"time"
+	"github.com/graphql-go/graphql"
 
 	"github.com/SasukeBo/information/models"
-	"github.com/graphql-go/graphql"
 )
 
 // StatusLogList 设备参数创建
 func StatusLogList(params graphql.ResolveParams) (interface{}, error) {
-	deviceID := params.Args["deviceID"].(int)
-	status := params.Args["status"]
-	beforeTime := params.Args["beforeTime"]
-	afterTime := params.Args["afterTime"]
 
-	qs := models.Repo.QueryTable("device_status_log").Filter("device_id", deviceID)
-
-	if status != nil {
-		qs = qs.Filter("status", status.(int))
+	device := models.Device{UUID: params.Args["deviceUUID"].(string)}
+	if err := device.GetBy("uuid"); err != nil {
+		return nil, err
 	}
 
-	if beforeTime != nil {
-		qs = qs.Filter("change_at__lt", beforeTime.(time.Time))
+	// 验证权限
+	if accessErr := device.ValidateAccess(params); accessErr != nil {
+		return nil, accessErr
 	}
 
-	if afterTime != nil {
-		qs = qs.Filter("change_at__gt", afterTime.(time.Time))
+	qs := models.Repo.QueryTable("device_status_log").Filter("device_id", device.ID)
+
+	if status := params.Args["status"]; status != nil {
+		qs = qs.Filter("status", status)
+	}
+
+	if beforeTime := params.Args["beforeTime"]; beforeTime != nil {
+		qs = qs.Filter("change_at__lt", beforeTime)
+	}
+
+	if afterTime := params.Args["afterTime"]; afterTime != nil {
+		qs = qs.Filter("change_at__gt", afterTime)
 	}
 
 	var statusLogs []*models.DeviceStatusLog

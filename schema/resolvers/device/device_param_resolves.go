@@ -1,25 +1,40 @@
 package device
 
 import (
-	"github.com/SasukeBo/information/models"
 	"github.com/graphql-go/graphql"
+
+	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
+	"github.com/SasukeBo/information/utils"
 )
 
 // ParamCreate 设备参数创建
 func ParamCreate(params graphql.ResolveParams) (interface{}, error) {
-	rootValue := params.Info.RootValue.(map[string]interface{})
-	name := params.Args["name"].(string)
-	sign := params.Args["sign"].(string)
-	pType := params.Args["type"].(string)
-	currentUserUUID := rootValue["currentUserUUID"].(string)
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 
-	user := models.User{UUID: currentUserUUID}
-	if err := models.Repo.Read(&user, "uuid"); err != nil {
+	device := models.Device{ID: params.Args["deviceID"].(int)}
+	if err := device.GetBy("id"); err != nil {
+		return nil, err
+	}
+	// 创建参数的权限验证
+	if accessErr := device.ValidateAccess(params, "device_param_c"); accessErr != nil {
+		return nil, accessErr
+	}
+
+	name := params.Args["name"].(string)
+	if err := utils.ValidateStringEmpty(name, "name"); err != nil {
 		return nil, err
 	}
 
-	deviceParam := models.DeviceParam{Name: name, Sign: sign, Type: pType, Author: &user}
-	if _, err := models.Repo.Insert(&deviceParam); err != nil {
+	sign := params.Args["sign"].(string)
+	if err := utils.ValidateStringEmpty(sign, "sign"); err != nil {
+		return nil, err
+	}
+
+	pType := params.Args["type"].(int)
+
+	deviceParam := models.DeviceParam{Name: name, Sign: sign, Type: pType, Author: &user, Device: &device}
+	if err := deviceParam.Insert(); err != nil {
 		return nil, err
 	}
 
@@ -28,30 +43,35 @@ func ParamCreate(params graphql.ResolveParams) (interface{}, error) {
 
 // ParamUpdate 设备参数修改
 func ParamUpdate(params graphql.ResolveParams) (interface{}, error) {
-	id := params.Args["id"].(int)
-
-	deviceParam := models.DeviceParam{ID: id}
-	if err := models.Repo.Read(&deviceParam); err != nil {
+	deviceParam := models.DeviceParam{ID: params.Args["id"].(int)}
+	if err := deviceParam.Get(); err != nil {
 		return nil, err
 	}
 
-	name := params.Args["name"]
-	sign := params.Args["sign"]
-	pType := params.Args["type"]
+	// 修改设备参数的权限
+	if accessErr := deviceParam.ValidateAccess(params, "device_param_u"); accessErr != nil {
+		return nil, accessErr
+	}
 
-	if name != nil {
+	if name := params.Args["name"]; name != nil {
+		if err := utils.ValidateStringEmpty(name.(string), "name"); err != nil {
+			return nil, err
+		}
 		deviceParam.Name = name.(string)
 	}
 
-	if sign != nil {
+	if sign := params.Args["sign"]; sign != nil {
+		if err := utils.ValidateStringEmpty(sign.(string), "sign"); err != nil {
+			return nil, err
+		}
 		deviceParam.Sign = sign.(string)
 	}
 
-	if pType != nil {
-		deviceParam.Type = pType.(string)
+	if pType := params.Args["type"]; pType != nil {
+		deviceParam.Type = pType.(int)
 	}
 
-	if _, err := models.Repo.Update(&deviceParam); err != nil {
+	if err := deviceParam.Update("name", "sign", "type"); err != nil {
 		return nil, err
 	}
 
@@ -63,7 +83,16 @@ func ParamDelete(params graphql.ResolveParams) (interface{}, error) {
 	id := params.Args["id"].(int)
 
 	deviceParam := models.DeviceParam{ID: id}
-	if _, err := models.Repo.Delete(&deviceParam); err != nil {
+	if err := deviceParam.Get(); err != nil {
+		return nil, err
+	}
+
+	// 删除权限验证
+	if accessErr := deviceParam.ValidateAccess(params, "device_param_u"); accessErr != nil {
+		return nil, accessErr
+	}
+
+	if err := deviceParam.Delete(); err != nil {
 		return nil, err
 	}
 
@@ -75,8 +104,12 @@ func ParamGet(params graphql.ResolveParams) (interface{}, error) {
 	id := params.Args["id"].(int)
 
 	deviceParam := models.DeviceParam{ID: id}
-	if err := models.Repo.Read(&deviceParam); err != nil {
+	if err := deviceParam.Get(); err != nil {
 		return nil, err
+	}
+
+	if accessErr := deviceParam.ValidateAccess(params); accessErr != nil {
+		return nil, accessErr
 	}
 
 	return deviceParam, nil
@@ -84,34 +117,58 @@ func ParamGet(params graphql.ResolveParams) (interface{}, error) {
 
 // ParamList 根据条件获取设备参数列表
 func ParamList(params graphql.ResolveParams) (interface{}, error) {
-	qs := models.Repo.QueryTable("device_param")
-
-	namePattern := params.Args["namePattern"]
-	signPattern := params.Args["signPattern"]
-	pType := params.Args["type"]
-	userUUID := params.Args["userUUID"]
-
-	if namePattern != nil {
-		qs = qs.Filter("name__icontains", namePattern.(string))
+	device := models.Device{UUID: params.Args["deviceUUID"].(string)}
+	if err := device.GetBy("uuid"); err != nil {
+		return nil, err
 	}
 
-	if signPattern != nil {
-		qs = qs.Filter("name__icontains", signPattern.(string))
+	// 验证访问权限
+	if accessErr := device.ValidateAccess(params); accessErr != nil {
+		return nil, accessErr
 	}
 
-	if pType != nil {
-		qs = qs.Filter("type", pType.(string))
+	qs := models.Repo.QueryTable("device_param").Filter("device_id", device.ID)
+
+	if namePattern := params.Args["namePattern"]; namePattern != nil {
+		qs = qs.Filter("name__icontains", namePattern)
 	}
 
-	if userUUID != nil {
-		qs = qs.Filter("author__uuid", userUUID.(string))
+	if signPattern := params.Args["signPattern"]; signPattern != nil {
+		qs = qs.Filter("name__icontains", signPattern)
+	}
+
+	if pType := params.Args["type"]; pType != nil {
+		qs = qs.Filter("type", pType)
+	}
+
+	if userUUID := params.Args["userUUID"]; userUUID != nil {
+		qs = qs.Filter("author__uuid", userUUID)
 	}
 
 	var deviceParams []*models.DeviceParam
 
 	if _, err := qs.All(&deviceParams); err != nil {
-		return nil, err
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Message: "get device_param list error",
+			OriErr:  err,
+		}
 	}
 
 	return deviceParams, nil
+}
+
+// ParamRelatedLoad 根据条件获取设备参数列表
+func ParamRelatedLoad(params graphql.ResolveParams) (interface{}, error) {
+	switch v := params.Source.(type) {
+	case models.DeviceParamValue:
+		return v.LoadDeviceParam()
+	case *models.DeviceParamValue:
+		return v.LoadDeviceParam()
+	default:
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Message: "load related source type unmatched error.",
+		}
+	}
 }

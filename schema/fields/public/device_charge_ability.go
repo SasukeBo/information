@@ -8,24 +8,27 @@ import (
 	"github.com/SasukeBo/information/schema/types"
 )
 
+/*
+FIXME: 暂时不需要这两个接口
 // DeviceChargePrivGetField doc false
 var DeviceChargePrivGetField = &graphql.Field{
-	Type: types.DeviceChargeAbility,
-	Args: graphql.FieldConfigArgument{
-		"id": fields.GenArg(graphql.Int, "负责人权限ID", false),
-	},
-	Resolve: device.ChargePrivGet,
+  Type: types.DeviceChargeAbility,
+  Args: graphql.FieldConfigArgument{
+    "id": fields.GenArg(graphql.Int, "负责人权限ID", false),
+  },
+  Resolve: device.ChargePrivGet,
 }
 
 // DeviceChargePrivListField doc false
 var DeviceChargePrivListField = &graphql.Field{
-	Type: graphql.NewList(types.DeviceChargeAbility),
-	Args: graphql.FieldConfigArgument{
-		"deviceChargeID": fields.GenArg(graphql.Int, "负责人关系ID", false),
-	},
-	Description: "根据设备负责人关系获取权限list",
-	Resolve:     device.ChargePrivList,
+  Type: graphql.NewList(types.DeviceChargeAbility),
+  Args: graphql.FieldConfigArgument{
+    "deviceChargeID": fields.GenArg(graphql.Int, "负责人关系ID", false),
+  },
+  Description: "根据设备负责人关系获取权限list",
+  Resolve:     device.ChargePrivList,
 }
+*/
 
 // DeviceChargePrivCreateField doc false
 var DeviceChargePrivCreateField = &graphql.Field{

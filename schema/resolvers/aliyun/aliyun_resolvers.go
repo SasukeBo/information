@@ -3,10 +3,11 @@ package aliyun
 import (
 	"encoding/json"
 
-	"github.com/SasukeBo/information/schema/resolvers"
-	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego"
 	"github.com/graphql-go/graphql"
+
+	"github.com/SasukeBo/information/models/errors"
+	"github.com/SasukeBo/information/utils"
 )
 
 type sendSmsCodeResponse struct {
@@ -23,7 +24,7 @@ func SendSmsCode(p graphql.ResolveParams) (interface{}, error) {
 
 	phone := p.Args["phone"].(string)
 	// validate phone
-	if err := resolvers.ValidatePhone(phone); err != nil {
+	if err := utils.ValidatePhone(phone); err != nil {
 		return nil, err
 	}
 	smsCode := utils.GenSmsCode()
@@ -56,15 +57,18 @@ func SendSmsCode(p graphql.ResolveParams) (interface{}, error) {
 // 仅在测试环境下有效
 func GetSmsCode(p graphql.ResolveParams) (interface{}, error) {
 	if beego.AppConfig.String("runmode") != "dev" {
-		return nil, utils.LogicError{
+		return nil, errors.LogicError{
+			Type:    "Resolver",
 			Message: "this api only work on dev environment.",
 		}
 	}
 	rootValue := p.Info.RootValue.(map[string]interface{})
 	smsCode := rootValue["smsCode"]
 	if smsCode == nil {
-		return nil, utils.LogicError{
-			Message: "smsCode not find.",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "smsCode",
+			Message: "smsCode not found.",
 		}
 	}
 

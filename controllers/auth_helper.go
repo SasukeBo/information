@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
-	// "github.com/astaxie/beego/logs"
+
+	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // authenticate 校验用户登录有效性
@@ -13,10 +13,23 @@ import (
 // 至少会放入 currentUser 信息
 // 验证失败则返回 error
 func authenticate(ctx *context.Context) error {
-	currentUserUUID := ctx.Input.Session("currentUserUUID")
+	// 如果当前 session 中有 currentUser
+	if currentUser, ok := ctx.Input.Session("currentUser").(models.User); ok {
+		if err := currentUser.GetBy("id"); err != nil {
+			return err
+		}
 
-	// 如果当前 session 中有 currentUserUUID，则验证成功
-	if currentUserUUID != nil {
+		// 且用户当前状态正常
+		if currentUser.Status == models.BaseStatus.Block {
+			return errors.LogicError{
+				Type:    "Controller",
+				Field:   "status",
+				Message: "account has been blocked",
+			}
+		}
+
+		// 则验证成功
+		ctx.Output.Session("currentUser", currentUser)
 		return nil
 	}
 
@@ -29,39 +42,43 @@ func authenticate(ctx *context.Context) error {
 	// 获取 userLogin
 	if err := models.Repo.Read(&userLogin, "session_id"); err != nil {
 		// 查找userLogin失败，返回身份验证失败
-		return utils.LogicError{
+		return errors.LogicError{
+			Type:    "Controller",
 			Message: "user not authenticated.",
 		}
 	}
 
 	// 用户已经登出
 	if userLogin.Logout {
-		return utils.LogicError{
+		return errors.LogicError{
+			Type:    "Controller",
+			Field:   "logout",
 			Message: "user already logout.",
 		}
 	}
 
 	// 用户没有记住登录
 	if !userLogin.Remembered {
-		return utils.LogicError{
-			Message: "user login not remembered.",
+		return errors.LogicError{
+			Type:    "Controller",
+			Field:   "remembered",
+			Message: "user login unremembered.",
 		}
 	}
 
-	// userLogin有效，获取用户信息
-	user := userLogin.User
-	if err := models.Repo.Read(user); err != nil {
-		// 查找user失败后，返回身份验证失败
-		return utils.LogicError{
-			Message: "user not find.",
-		}
-	}
+	var currentUser *models.User
+	var err error
 
+	if currentUser, err = userLogin.LoadUser(); err != nil {
+		return err
+	}
 	// 判断密码是否匹配
-	if user.Password != userLogin.EncryptedPasswd {
+	if currentUser.Password != userLogin.EncryptedPasswd {
 		// 登录记录的密码与用户密码不匹配，验证失败
-		return utils.LogicError{
-			Message: "password unmatch, maybe changed.",
+		return errors.LogicError{
+			Type:    "Controller",
+			Field:   "password",
+			Message: "user password unmatch.",
 		}
 	}
 
@@ -70,7 +87,7 @@ func authenticate(ctx *context.Context) error {
 
 	userLogin.SessionID = sessionID
 
-	ctx.Output.Session("currentUserUUID", user.UUID)
+	ctx.Output.Session("currentUser", *currentUser)
 	models.Repo.Update(&userLogin)
 
 	expires, err := beego.AppConfig.Int("SessionCookieLifeTime")

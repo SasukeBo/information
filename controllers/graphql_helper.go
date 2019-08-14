@@ -6,7 +6,13 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/logs"
+	"github.com/graphql-go/graphql"
+	"github.com/graphql-go/graphql/gqlerrors"
+
+	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // graphiqlData is the page data structure of the rendered GraphiQL page
@@ -21,21 +27,21 @@ type graphiqlData struct {
 type gqlRootObject map[string]interface{}
 
 // 匹配 graphql query oprtationName
-var operationNameRegStr = `^query (\w+) {`
+var operationNameRegStr = `^((query)|(mutation))\s*(\w+)?\s*(\([\w\d\s$!:,]*\))?\s*{\s*(\w+:)?\s*(\w+)\s*(\((\n|.)*\))?\s*({(\n|.)*})?\s*}`
 
 /*
-	gqlGetSession 获取 session 中的数据到 gqlRootObject 中。
-	conn - controller 对象
-	obj - gqlRootObject graphql 根对象
-	opName - string graphq 操作名
+  gqlGetSession 获取 session 中的数据到 gqlRootObject 中。
+  conn - controller 对象
+  obj - gqlRootObject graphql 根对象
+  opName - string graphq 操作名
 */
-func gqlGetSession(conn *beego.Controller, obj gqlRootObject, opName string) {
-	switch opName {
-	case "IntrospectionQuery", "sendSmsCode":
-		// graphiql schema query
-		break
-
-	case "register", "resetPassword", "getSmsCode":
+func gqlGetSession(conn *beego.Controller, obj gqlRootObject, rootFieldName string) {
+	switch rootFieldName {
+	case
+		"register",
+		"resetPassword",
+		"getSmsCode",
+		"userUpdatePhone":
 		obj["phone"] = conn.GetSession("phone")
 		obj["smsCode"] = conn.GetSession("smsCode")
 
@@ -50,7 +56,7 @@ func gqlGetSession(conn *beego.Controller, obj gqlRootObject, opName string) {
 		obj["session_id"] = conn.Ctx.Input.CruSession.SessionID()
 	}
 
-	obj["currentUserUUID"] = conn.GetSession("currentUserUUID")
+	obj["currentUser"] = conn.GetSession("currentUser")
 }
 
 // gqlSetSession 根据 graphql.Params.RootObject 中 set session 对应的
@@ -84,20 +90,97 @@ type queryParams struct {
 	Query         string                 `json:"query"`
 	Variables     map[string]interface{} `json:"variables"`
 	OperationName string                 `json:"operationName"`
+	RootFieldName string
+	Type          string
+}
+
+// HandleGraphql graphql request fetch queryParams
+func HandleGraphql(ctx *context.Context) {
+	params := fetchParams(ctx)
+	ctx.Input.SetData("need_auth", true)
+
+	if params.RootFieldName == "" && params.OperationName != "IntrospectionQuery" {
+		ctx.Input.SetData(
+			"gql_error",
+			errors.LogicError{
+				Type:    "Controller",
+				Message: "query root field name missing",
+			},
+		)
+	}
+
+	if params.OperationName == "IntrospectionQuery" {
+		ctx.Input.SetData("need_auth", false)
+	}
+
+	switch params.RootFieldName {
+	case
+		"sendSmsCode",
+		"register",
+		"resetPassword",
+		"getSmsCode",
+		"loginByPassword":
+		ctx.Input.SetData("need_auth", false)
+	}
+
+	ctx.Input.SetData("query_params", params)
+}
+
+// HandleAdminGraphql validate user role isAdmin before HandleGraphql
+func HandleAdminGraphql(ctx *context.Context) {
+	if currentUser := ctx.Input.Session("currentUser"); currentUser != nil {
+		var role *models.Role
+		var err error
+		user := currentUser.(models.User)
+
+		if role, err = user.LoadRole(); err != nil {
+			ctx.Input.SetData("gql_error", err)
+		}
+
+		if !role.IsAdmin {
+			ctx.Input.SetData("gql_error", errors.LogicError{
+				Type:    "Validate",
+				Field:   "is_admin",
+				Message: "user role is not a admin role",
+			})
+		}
+	}
+
+	HandleGraphql(ctx)
 }
 
 // 解析gql请求参数JSON到结构体中
-func fetchParams(conn *beego.Controller) queryParams {
+func fetchParams(ctx *context.Context) queryParams {
 	var params queryParams
-	json.NewDecoder(conn.Ctx.Request.Body).Decode(&params)
+	json.NewDecoder(ctx.Request.Body).Decode(&params)
+	reg := regexp.MustCompile(operationNameRegStr)
+	matches := reg.FindStringSubmatch(strings.TrimSpace(params.Query))
 
-	if params.OperationName == "" {
-		// 解决 query 中包含了 operationName 但是请求体 JSON 缺失 operationName 选项。
-		reg := regexp.MustCompile(operationNameRegStr)
-		if matches := reg.FindStringSubmatch(strings.TrimSpace(params.Query)); len(matches) > 1 {
-			params.OperationName = matches[1]
-		}
+	if len(matches) > 1 {
+		params.Type = matches[1]
 	}
+
+	if params.OperationName == "" && len(matches) > 4 {
+		params.OperationName = matches[4]
+	}
+
+	if len(matches) > 7 {
+		params.RootFieldName = matches[7]
+	}
+
 	logs.Info(params.Query)
+
 	return params
+}
+
+// 封装GQL error result
+func genGQLError(e error) *graphql.Result {
+	// 返回错误信息
+	return &graphql.Result{
+		Errors: []gqlerrors.FormattedError{
+			gqlerrors.FormattedError{
+				Message: e.Error(),
+			},
+		},
+	}
 }

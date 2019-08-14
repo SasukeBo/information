@@ -13,7 +13,7 @@ import (
 var DeviceStatusLogListField = &graphql.Field{
 	Type: graphql.NewList(types.DeviceStatusLog),
 	Args: graphql.FieldConfigArgument{
-		"deviceID":   fields.GenArg(graphql.Int, "设备ID", false),
+		"deviceUUID": fields.GenArg(graphql.String, "设备UUID", false),
 		"status":     fields.GenArg(scalars.DeviceStatus, "运行状态"),
 		"beforeTime": fields.GenArg(graphql.DateTime, "开始时间"),
 		"afterTime":  fields.GenArg(graphql.DateTime, "结束时间"),

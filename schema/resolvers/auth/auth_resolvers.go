@@ -1,10 +1,12 @@
 package auth
 
 import (
-	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
+
+	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
+	"github.com/SasukeBo/information/utils"
 )
 
 // LoginByPassword 使用账号密码方式登录
@@ -15,22 +17,24 @@ func LoginByPassword(params graphql.ResolveParams) (interface{}, error) {
 	remember := params.Args["remember"].(bool)
 
 	user := models.User{Phone: phoneStr}
-	if err := models.Repo.Read(&user, "phone"); err != nil {
-		return nil, utils.LogicError{
-			Message: "account not exist!",
-		}
+	if err := user.GetBy("phone"); err != nil {
+		return nil, err
 	}
 
 	if user.Password != utils.Encrypt(passwordStr) {
-		return nil, utils.LogicError{
-			Message: "password not correct!",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "password",
+			Message: "password incorrect.",
 		}
 	}
 
 	sessionID := rootValue["session_id"]
 	if sessionID == nil {
-		return nil, utils.LogicError{
-			Message: "missing session_id",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "session_id",
+			Message: "session_id lost.",
 		}
 	}
 
@@ -52,20 +56,22 @@ func LoginByPassword(params graphql.ResolveParams) (interface{}, error) {
 			userLogin.UserAgent = userAgent.(string)
 		}
 
-		if _, err := models.Repo.Insert(&userLogin); err != nil {
+		if err := userLogin.Insert(); err != nil {
 			return nil, err
 		}
 	} else if err == nil {
 		// 存在 user_uuid 和 session_id 匹配的 user_login
 		// 更新此 user_login logout 字段为 false
 		userLogin.Logout = false
-		models.Repo.Update(&userLogin)
+		if err := userLogin.Update("logout"); err != nil {
+			return nil, err
+		}
 	} else {
 		return nil, err
 	}
 
-	rootValue["currentUserUUID"] = user.UUID
-	rootValue["setSession"] = []string{"currentUserUUID"}
+	rootValue["currentUser"] = user
+	rootValue["setSession"] = []string{"currentUser"}
 	rootValue["remember"] = remember
 
 	return user.UUID, nil
@@ -74,38 +80,32 @@ func LoginByPassword(params graphql.ResolveParams) (interface{}, error) {
 // Logout 登出系统
 func Logout(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
-	currentUserUUID := rootValue["currentUserUUID"]
 	sessionID := rootValue["session_id"]
-	if currentUserUUID == nil {
-		return nil, utils.LogicError{
-			Message: "user not authenticated.",
-		}
-	}
-
-	user := models.User{UUID: currentUserUUID.(string)}
-	if err := models.Repo.Read(&user, "uuid"); err != nil {
-		return nil, utils.LogicError{
-			Message: "user not find.",
-		}
-	}
+	currentUser := rootValue["currentUser"].(models.User)
 
 	var userLogin models.UserLogin
-	err := models.Repo.QueryTable("user_login").Filter("user_id", user.ID).Filter("session_id", sessionID.(string)).One(&userLogin)
+	err := models.Repo.QueryTable("user_login").Filter("user_id", currentUser.ID).Filter("session_id", sessionID.(string)).One(&userLogin)
 	if err == orm.ErrMultiRows {
-		return nil, utils.LogicError{
-			Message: "returned mutil rows not one.",
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Message: "logout error",
+			OriErr:  err,
 		}
 	}
+
 	if err == orm.ErrNoRows {
-		return nil, utils.LogicError{
+		return nil, errors.LogicError{
+			Type:    "Resolver",
 			Message: "user not authenticated.",
 		}
 	}
 	userLogin.Logout = true
-	models.Repo.Update(&userLogin, "logout")
+	if err := userLogin.Update("logout"); err != nil {
+		return nil, err
+	}
 
-	rootValue["currentUserUUID"] = nil
-	rootValue["setSession"] = []string{"currentUserUUID"}
+	rootValue["currentUser"] = nil
+	rootValue["setSession"] = []string{"currentUser"}
 
 	return "ok", nil
 }
@@ -113,19 +113,7 @@ func Logout(params graphql.ResolveParams) (interface{}, error) {
 // CurrentUser 获取当前用户
 func CurrentUser(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
-	currentUserUUID := rootValue["currentUserUUID"]
-	if currentUserUUID == nil {
-		return nil, utils.LogicError{
-			Message: "user not authenticated.",
-		}
-	}
+	currentUser := rootValue["currentUser"].(models.User)
 
-	user := models.User{UUID: currentUserUUID.(string)}
-	if err := models.Repo.Read(&user, "uuid"); err != nil {
-		return nil, utils.LogicError{
-			Message: "user not found.",
-		}
-	}
-
-	return user, nil
+	return currentUser, nil
 }

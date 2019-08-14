@@ -13,7 +13,7 @@ var DeviceChargeCreateField = &graphql.Field{
 	Type: types.DeviceCharge,
 	Args: graphql.FieldConfigArgument{
 		"uuid":     fields.GenArg(graphql.String, "设备UUID", false),
-		"userUuid": fields.GenArg(graphql.String, "指派人UUID", false),
+		"userUUID": fields.GenArg(graphql.String, "指派人UUID", false),
 	},
 	Resolve: device.ChargeCreate,
 }
@@ -32,7 +32,7 @@ var DeviceChargeUpdateField = &graphql.Field{
 	Type: types.DeviceCharge,
 	Args: graphql.FieldConfigArgument{
 		"id":       fields.GenArg(graphql.Int, "设备指派ID", false),
-		"userUuid": fields.GenArg(graphql.String, "指派人UUID", false),
+		"userUUID": fields.GenArg(graphql.String, "指派人UUID", false),
 	},
 	Resolve: device.ChargeUpdate,
 }
@@ -51,9 +51,11 @@ var DeviceChargeGetField = &graphql.Field{
 var DeviceChargeListField = &graphql.Field{
 	Type: graphql.NewList(types.DeviceCharge),
 	Args: graphql.FieldConfigArgument{
-		"userUUID":   fields.GenArg(graphql.String, "设备负责人uuid"),
 		"deviceUUID": fields.GenArg(graphql.String, "设备uuid"),
 	},
-	Description: "通过负责人uuid或设备uuid获取设备负责关系列表",
-	Resolve:     device.ChargeList,
+	Description: `
+	查询本人负责的设备或创建的设备的设备负责关系列表，
+	可通过设备uuid指定某台设备，但必须是当前用户可访问的设备
+	`,
+	Resolve: device.ChargeList,
 }
