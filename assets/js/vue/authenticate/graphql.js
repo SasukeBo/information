@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import { parseGQLError } from '../../utils'
 
 function login(app) {
   app.$apollo.mutate({
@@ -16,12 +17,12 @@ function login(app) {
       }
     `,
     variables: app.loginForm,
-  }).then(({ data: { loginByPassword: r } }) => {
+  }).then(() => {
     app.$router.push({ name: 'home' });
-    console.log("login success: ", r)
   }).catch(e => {
-    app.message = e.message
-    console.log(e);
+    console.log(e)
+    var error  = parseGQLError(e)
+    app.message = error.message
   })
 }
 
@@ -44,6 +45,8 @@ function sendSmsCode(app) {
       if (res.message !== 'OK') console.log(res.message);
     })
     .catch(e => {
+      var error = parseGQLError(e)
+      app.message = error.message
       console.log(e);
     });
 };

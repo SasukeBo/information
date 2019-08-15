@@ -12,6 +12,7 @@ import (
 // 根据 gql 操作名称向 graphql.Params.RootObject 中放入值
 // 至少会放入 currentUser 信息
 // 验证失败则返回 error
+// FIXME: 设计有漏洞，拿到sessionID可以冒充登录
 func authenticate(ctx *context.Context) error {
 	// 如果当前 session 中有 currentUser
 	if currentUser, ok := ctx.Input.Session("currentUser").(models.User); ok {
@@ -85,10 +86,25 @@ func authenticate(ctx *context.Context) error {
 	// 当前session ID
 	sessionID = ctx.Input.CruSession.SessionID()
 
-	userLogin.SessionID = sessionID
+	userLogin.Logout = true
+	if err := userLogin.Update("logout"); err != nil {
+		return err
+	}
+	userLogin.ID = 0
+
+	newUserLogin := models.UserLogin{
+		EncryptedPasswd: userLogin.EncryptedPasswd,
+		UserAgent:       userLogin.UserAgent,
+		User:            userLogin.User,
+		RemoteIP:        userLogin.RemoteIP,
+		SessionID:       sessionID,
+		Remembered:      userLogin.Remembered,
+	}
 
 	ctx.Output.Session("currentUser", *currentUser)
-	models.Repo.Update(&userLogin)
+	if err := newUserLogin.Insert(); err != nil {
+		return err
+	}
 
 	expires, err := beego.AppConfig.Int("SessionCookieLifeTime")
 	if err != nil {

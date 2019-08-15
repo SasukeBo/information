@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/SasukeBo/information/models/errors"
@@ -26,6 +27,20 @@ func (ul *UserLogin) TableUnique() [][]string {
 	return [][]string{
 		[]string{"user_id", "session_id"},
 	}
+}
+
+// GetBy _
+func (ul *UserLogin) GetBy(col string) error {
+	if err := Repo.Read(ul, col); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   col,
+			Message: fmt.Sprintf("get user_login by %s error", col),
+			OriErr:  err,
+		}
+	}
+
+	return nil
 }
 
 // Insert _

@@ -6,6 +6,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
 )
@@ -23,6 +24,15 @@ func SendSmsCode(p graphql.ResolveParams) (interface{}, error) {
 	var response sendSmsCodeResponse
 
 	phone := p.Args["phone"].(string)
+	user := models.User{Phone: phone}
+	if err := user.GetBy("phone"); err == nil {
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Field:   "phone",
+			Message: "phone has already been registered.",
+		}
+	}
+
 	// validate phone
 	if err := utils.ValidatePhone(phone); err != nil {
 		return nil, err

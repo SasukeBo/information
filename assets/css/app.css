@@ -1,15 +1,17 @@
-@import '~css/vars.scss';
-@import '~css/fonts/iconfont.css';
+@import "~css/vars.scss";
+@import "~css/fonts/iconfont.css";
 
-html, body {
+html,
+body {
   height: 100%;
-  width: 100%;
 }
 
-.app {
+#app {
   height: 100%;
-  width: 100%;
-  background: linear-gradient(darken($--color-theme__main, 20%), $--color-theme__white);
+  overflow: auto;
+  background: #f2f2f2;
+  color: $--color-font__dark;
+  font-size: 0.875rem;
 }
 
 * {
@@ -24,4 +26,18 @@ a {
   &:hover {
     color: lighten($color: $--color-theme__main, $amount: 20);
   }
+}
+
+.global-card {
+  background: $--color-theme__white;
+  box-shadow: $--shadow__base;
+  border-radius: 0.25rem;
+  padding: 0.75rem 1rem;
+}
+
+.global-card .global-card__title {
+  display: block;
+  font-size: 1.25rem;
+  padding-bottom: 1rem;
+  color: $--color-font__dark;
 }

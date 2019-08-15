@@ -41,7 +41,12 @@
       ></el-input>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" size="large" @click="beforeSubmit">{{ submitName }}</el-button>
+      <el-button
+        type="primary"
+        size="large"
+        @click="beforeSubmit"
+        class="passport-form__btn"
+      >{{ submitName }}</el-button>
     </el-form-item>
   </el-form>
 </template>

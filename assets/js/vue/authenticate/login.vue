@@ -9,7 +9,6 @@
         <el-form-item prop="phone">
           <el-input
             placeholder="手机号"
-            size="large"
             @keyup.native.enter="beforeSubmit"
             v-model="loginForm.phone"
             prefix-icon="iconfont icon-shouji"
@@ -36,7 +35,7 @@
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="large" @click="beforeSubmit">登录</el-button>
+          <el-button type="primary" size="large" @click="beforeSubmit" class="passport-form__btn">登录</el-button>
         </el-form-item>
       </el-form>
       <div class="link form-item">
@@ -46,7 +45,7 @@
   </div>
 </template>
 <script>
-import gql from './graphql'
+import gql from './graphql';
 export default {
   name: 'login',
   data() {
@@ -91,7 +90,7 @@ export default {
           console.log('submit failed');
         }
       });
-    },
+    }
   }
 };
 </script>

@@ -1,19 +1,24 @@
-import { load } from './utils'
+import { load, denyIfLoggedIn } from './utils'
 
 function defaultRoutes() {
   return [
     {
       path: '/',
-      redirect: { path: '/login' }
-    },
-    {
-      path: '/home',
-      name: 'home',
-      component: load('home')
+      name: 'index',
+      component: load('main'),
+      redirect: '/home',
+      children: [
+        {
+          path: 'home',
+          name: 'home',
+          component: load('main/pages/home')
+        }
+      ]
     },
     {
       path: '/auth',
       component: load('authenticate'),
+      beforeEnter: denyIfLoggedIn(),
       children: [
         {
           path: 'register',
