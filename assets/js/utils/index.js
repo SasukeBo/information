@@ -11,7 +11,7 @@ function parseUserAgent(ua) {
   var reg = new RegExp()
   reg.compile('[\\w/\\d\\.\\s]*\\(([^\\(\\)]+)\\) .*')
   var matches = reg.exec(ua)
-  if (matches.length > 1) return matches[1]
+  if (matches && matches.length > 1) return matches[1]
 
   return '未知设备'
 }

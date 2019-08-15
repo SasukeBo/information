@@ -62,7 +62,7 @@
               </div>
               <div>
                 <span class="data-label">登录设备信息</span>
-                <span>{{ thisLoginDevice }}</span>
+                <span>{{ lastLoginDevice }}</span>
               </div>
               <div>
                 <span class="data-label">登录时间</span>
