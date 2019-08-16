@@ -24,7 +24,9 @@ export default {
           _this.closeDialog();
           _this.$emit('verified');
         }, 1000);
-      }
+      },
+      url: '/images',
+      limit: 200
     });
     setTimeout(() => (_this.$refs.dialog.style.opacity = 1), 100);
   },

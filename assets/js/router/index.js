@@ -3,7 +3,6 @@ import tag from 'graphql-tag'
 import store from '../vuex'
 
 import { defaultRoutes } from './routes.js'
-import { parseGQLError } from '../utils'
 
 const router = new VueRouter({
   mode: 'history',
@@ -27,14 +26,11 @@ router.beforeEach((to, from, next) => {
       } else {
         next()
       }
-    }).catch((e) => { // 获取失败
-      var error = parseGQLError(e)
+    }).catch((_) => { // 获取失败
       // 未登录状态下如果是 auth 相关页面则继续
       if (isAuthPage(to)) {
         next()
       } else {
-        // 否则前往登录页，加上 return_to
-        app.$message({ message: error.message, type: 'warning' })
         next({ path: '/login', query: { return_to: to.name } })
       }
     })
