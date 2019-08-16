@@ -32,7 +32,8 @@ module.exports = (env, options) => ({
   devtool: 'source-map',
   output: {
     publicPath: '/',
-    filename: isProd ? 'js/[name].[contenthash].js' : 'js/[name].js',
+    // filename: isProd ? 'js/[name].[contenthash].js' : 'js/[name].js',
+    filename: 'js/[name].[contenthash].js',
     path: path.resolve(__dirname, '../static/')
   },
   module: {
@@ -86,6 +87,6 @@ module.exports = (env, options) => ({
     new MiniCssExtractPlugin({ filename: isProd ? 'css/[name].[contenthash].css' : 'css/[name].css' }),
     new VueLoaderPlugin(),
     new AssetPlugin({ filename: '../static/manifest.json' }),
-    new LiveReloadPlugin({delay: 200})
+    isProd ? undefined : new LiveReloadPlugin({delay: 200})
   ]
 });
