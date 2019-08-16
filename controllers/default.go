@@ -37,7 +37,6 @@ func (conn *MainController) Get() {
 	}
 
 	conn.Data["AppCSS"] = manifest.App["css"]
-	conn.Data["ElCSS"] = manifest.El["css"]
 
 	conn.Data["AppJS"] = manifest.App["js"]
 	conn.Data["ElJS"] = manifest.El["js"]
