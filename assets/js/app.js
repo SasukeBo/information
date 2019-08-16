@@ -1,5 +1,4 @@
 import 'css/app.css';
-import 'css/theme/index.css';
 import Vue from 'vue';
 import apolloProvider from './apollo-provider';
 
