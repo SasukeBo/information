@@ -21,9 +21,7 @@ import IHeader from './components/header';
 
 export default {
   name: 'vue-main',
-  components: {
-    IHeader
-  },
+  components: { IHeader },
   data() {
     return {
       menuOpen: false,

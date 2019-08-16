@@ -80,7 +80,7 @@
   </div>
 </template>
 <script>
-import { getWeekDay, parseUserAgent } from '../../../utils';
+import { getWeekDay, parseUserAgent } from 'js/utils';
 import { mapState } from 'vuex';
 import { apollo } from './graphql';
 

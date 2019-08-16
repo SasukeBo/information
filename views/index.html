@@ -6,11 +6,15 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="{{ .AppCSS }}" />
+  <link rel="stylesheet" href="{{ .ElCSS }}" />
 </head>
 
 <body style="margin: 0">
   <div id="vue-entry"></div>
-  <script type="text/javascript" src="{{ .BabelPolyfill }}"></script>
+  <script type="text/javascript" src="{{ .BabelPolyfillJS }}"></script>
+  <script type="text/javascript" src="{{ .VBabelPolyfillJS }}"></script>
+  <script type="text/javascript" src="{{ .ElJS }}"></script>
+  <script type="text/javascript" src="{{ .VueJS }}"></script>
   <script type="text/javascript" src="{{ .AppJS }}"></script>
   <script type="text/javascript" src="http://localhost:35729/livereload.js"></script>
 </body>

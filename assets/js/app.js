@@ -1,14 +1,36 @@
 import 'css/app.css';
 import 'css/theme/index.css';
-import ElementUI from 'element-ui';
 import Vue from 'vue';
-import Vuex from 'vuex';
-import VueRouter from 'vue-router';
 import apolloProvider from './apollo-provider';
 
+import Vuex from 'vuex';
+import VueRouter from 'vue-router';
 Vue.use(VueRouter);
-Vue.use(ElementUI);
 Vue.use(Vuex);
+
+import {
+  Form,
+  FormItem,
+  Button,
+  Input,
+  Checkbox,
+  Message,
+  Row,
+  Col,
+  Tag,
+  Drawer
+} from 'element-ui'
+
+Vue.use(Form);
+Vue.use(FormItem);
+Vue.use(Button);
+Vue.use(Input);
+Vue.use(Checkbox);
+Vue.use(Row);
+Vue.use(Col);
+Vue.use(Tag);
+Vue.use(Drawer);
+Vue.prototype.$message = Message;
 
 const info = document.querySelector('#vue-entry');
 

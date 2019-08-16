@@ -1,5 +1,4 @@
 import gql from 'graphql-tag';
-// import { parseGQLError } from '../../utils'
 
 var apollo = {
   lastLogin: {

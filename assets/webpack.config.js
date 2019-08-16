@@ -1,6 +1,5 @@
 const path = require('path');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
-// const glob = require('glob');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -8,6 +7,22 @@ const AssetPlugin = require('assets-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const isProd = process.env.NODE_ENV === 'production';
 const ROOT_PATH = path.resolve(__dirname, './');
+
+
+var plugins = function () {
+  var plugins =
+    [
+      new MiniCssExtractPlugin({ filename: isProd ? 'css/[name].[hash].css' : 'css/[name].css' }),
+      new VueLoaderPlugin(),
+      new AssetPlugin({ filename: '../static/manifest.json' }),
+    ]
+
+  if (!isProd) {
+    plugins.push(new LiveReloadPlugin({ delay: 200 }))
+  }
+
+  return plugins
+}()
 
 module.exports = (env, options) => ({
   optimization: {
@@ -26,14 +41,14 @@ module.exports = (env, options) => ({
     }
   },
   entry: {
-      'app': ['./js/app.js'],
-      'babel-polyfill': ['babel-polyfill']
+    'app': './js/app.js',
+    'babel-polyfill': 'babel-polyfill'
   },
   devtool: 'source-map',
   output: {
     publicPath: '/',
-    // filename: isProd ? 'js/[name].[contenthash].js' : 'js/[name].js',
-    filename: 'js/[name].[contenthash].js',
+    filename: isProd ? 'js/[name].[hash].js' : 'js/[name].js',
+    // filename: 'js/[name].[hash].js',
     path: path.resolve(__dirname, '../static/')
   },
   module: {
@@ -83,10 +98,34 @@ module.exports = (env, options) => ({
       }
     ]
   },
-  plugins: [
-    new MiniCssExtractPlugin({ filename: isProd ? 'css/[name].[contenthash].css' : 'css/[name].css' }),
-    new VueLoaderPlugin(),
-    new AssetPlugin({ filename: '../static/manifest.json' }),
-    isProd ? undefined : new LiveReloadPlugin({delay: 200})
-  ]
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      minSize: 30000,
+      maxSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3,
+      automaticNameDelimiter: '~',
+      name: true,
+      cacheGroups: {
+        element: {
+          test: /[\\/]node_modules[\\/]element-ui[\\/]/,
+          name: 'element',
+          chunks: 'all'
+        },
+        vue: {
+          test: /[\\/]node_modules[\\/]vue.*[\\/]/,
+          name: 'vue',
+          chunks: 'all'
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true
+        }
+      }
+    }
+  },
+  plugins,
 });
