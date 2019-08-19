@@ -1,19 +1,15 @@
 @import "css/vars.scss";
-@import './device';
-@import './login-log';
-@import './notice';
+@import "./device";
+@import "./login-log";
+@import "./notice";
 
-.page-home {
-  padding: 1rem;
+.page-home .greeting-title {
+  font-size: 2rem;
+}
 
-  .greeting-title {
-    font-size: 2rem;
-  }
-
-  .greeting-message {
-    font-size: 0.85rem;
-    color: $--color-font__gray;
-  }
+.page-home .greeting-message {
+  font-size: 0.85rem;
+  color: $--color-font__gray;
 }
 
 .page-home .home-body {

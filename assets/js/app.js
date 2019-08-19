@@ -17,7 +17,9 @@ import {
   Row,
   Col,
   Tag,
-  Drawer
+  Drawer,
+  CheckboxGroup,
+  CheckboxButton
 } from 'element-ui'
 
 Vue.use(Form);
@@ -29,6 +31,8 @@ Vue.use(Row);
 Vue.use(Col);
 Vue.use(Tag);
 Vue.use(Drawer);
+Vue.use(CheckboxGroup);
+Vue.use(CheckboxButton);
 Vue.prototype.$message = Message;
 
 const info = document.querySelector('#vue-entry');

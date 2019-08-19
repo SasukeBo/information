@@ -4,13 +4,14 @@
 html,
 body {
   height: 100%;
-  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial,
+    sans-serif;
 }
 
 #app {
   height: 100%;
   overflow: auto;
-  background: #f2f2f2;
+  background: linear-gradient(135deg, transparent, $borderc1);
   color: $--color-font__dark;
   font-size: 0.875rem;
 }
@@ -30,7 +31,7 @@ a {
 }
 
 .global-card {
-  background: $--color-theme__white;
+  background: radial-gradient($white, $borderc4);
   box-shadow: $--shadow__base;
   border-radius: 0.25rem;
   padding: 0.75rem 0;

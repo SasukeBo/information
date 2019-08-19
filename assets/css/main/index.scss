@@ -6,6 +6,10 @@
   margin-top: 50px;
 }
 
+.main-pages .page-body {
+  padding: 1rem 0.5rem;
+}
+
 .el-dialog__wrapper {
   position: fixed;
   top: 50px;
@@ -25,5 +29,9 @@
 @media only screen and (max-width: 400px) {
   .menu-drawer {
     width: 70% !important;
+  }
+
+  .main-pages .page-body {
+    padding: 1rem 0;
   }
 }

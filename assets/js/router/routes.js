@@ -14,8 +14,13 @@ function defaultRoutes() {
           component: load('main/pages/home')
         },
         {
-          path: 'user-device',
-          name: 'user-device',
+          path: 'devices',
+          name: 'device-list',
+          component: load('main/pages/devices')
+        },
+        {
+          path: 'device/:uuid',
+          name: 'device-show',
           component: load('main/pages/device')
         }
       ]

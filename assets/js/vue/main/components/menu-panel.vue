@@ -10,9 +10,9 @@
     </a>
 
     <a
-      href="user-device"
+      href="devices"
       :class="['menu-item', $route.name == 'user-device' ? 'is-active': '']"
-      @click.prevent="directTo('user-device')"
+      @click.prevent="directTo('device-list')"
     >
       <i class="iconfont icon-shebei"></i>
       <span>我的设备</span>
