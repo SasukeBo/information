@@ -1,0 +1,32 @@
+.page-home .notice-card {
+  .notice-item {
+    margin-bottom: 0.5rem;
+    background: $--color-border__3;
+    border-radius: 4px;
+    padding: 4px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .notice-item__message {
+    color: $--color-font__gray;
+    font-size: 0.85rem;
+    transition: color 0.3s ease;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    width: 100%;
+    overflow: hidden;
+
+    &:hover {
+      color: darken($--color-theme__main, 10%);
+    }
+  }
+
+  .notice-item__time {
+    font-size: 0.75rem;
+    color: $--color-font__light;
+  }
+}

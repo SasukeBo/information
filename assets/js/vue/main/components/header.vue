@@ -29,6 +29,3 @@ export default {
   props: ['menuOpen']
 };
 </script>
-<style lang="scss">
-@import 'css/main/header.scss';
-</style>

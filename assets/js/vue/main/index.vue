@@ -11,17 +11,19 @@
       :visible.sync="menuOpen"
       custom-class="menu-drawer"
       direction="ltr"
+      append-to-body
     >
-      <div>this is a menu panel</div>
+      <menu-panel></menu-panel>
     </el-drawer>
   </div>
 </template>
 <script>
 import IHeader from './components/header';
+import MenuPanel from './components/menu-panel';
 
 export default {
   name: 'vue-main',
-  components: { IHeader },
+  components: { IHeader, MenuPanel },
   data() {
     return {
       menuOpen: false,
@@ -43,9 +45,5 @@ export default {
 };
 </script>
 <style lang="scss">
-@import 'css/vars.scss';
-
-.main-pages {
-  margin-top: 50px;
-}
+@import 'css/main/index.scss';
 </style>

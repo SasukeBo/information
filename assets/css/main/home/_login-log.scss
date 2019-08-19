@@ -1,0 +1,54 @@
+.page-home .login-log-card {
+  min-width: 20.75rem;
+
+  .login-item__title {
+    margin-bottom: 1rem;
+  }
+
+  .login-time {
+    color: $--color-font__light;
+    padding-left: 1rem;
+    font-weight: 400;
+  }
+
+  .login-groups {
+    display: flex;
+    flex-flow: wrap;
+  }
+
+  .login-item {
+    flex: 1;
+    margin: 0 1rem;
+    min-width: 300px;
+    position: relative;
+
+    .login-logs-more {
+      position: absolute;
+      bottom: -0.5rem;
+      right: 0.5rem;
+    }
+  }
+
+  .data-item {
+    margin-bottom: 1rem;
+    color: $--color-font__gray;
+    background: $--color-border__3;
+    padding: 0.25rem 0;
+    border-radius: 4px;
+    display: table;
+    width: 100%;
+
+    i.iconfont {
+      font-size: 1.5rem;
+      padding: 0.5rem;
+      color: $--color-font__dark;
+      display: table-cell;
+      width: 50px;
+    }
+
+    .table-cell {
+      display: table-cell;
+      vertical-align: middle;
+    }
+  }
+}

@@ -1,0 +1,55 @@
+@import "css/vars.scss";
+@import './device';
+@import './login-log';
+@import './notice';
+
+.page-home {
+  padding: 1rem;
+
+  .greeting-title {
+    font-size: 2rem;
+  }
+
+  .greeting-message {
+    font-size: 0.85rem;
+    color: $--color-font__gray;
+  }
+}
+
+.page-home .home-body {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-flow: wrap;
+}
+
+.page-home .home-left {
+  flex: 3;
+  min-width: 20.75rem;
+  padding: 0 0.5rem;
+}
+
+.page-home .home-right {
+  flex: 1;
+  min-width: 17.5rem;
+  padding: 0 0.5rem;
+}
+
+.page-home .data-label {
+  font-size: 0.75rem;
+  color: $--color-font__dark;
+  font-weight: bold;
+  padding-right: 0.5rem;
+}
+
+@media only screen and (max-width: 38rem) {
+  .page-home .home-left {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+}
+
+@media only screen and (max-width: 32.25rem) {
+  .page-home {
+    padding: 1rem 0;
+  }
+}

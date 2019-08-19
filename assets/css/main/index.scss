@@ -1,0 +1,23 @@
+@import 'css/vars.scss';
+@import './header';
+@import './menu-panel';
+
+.main-pages {
+  margin-top: 50px;
+}
+
+.el-dialog__wrapper {
+  position: fixed;
+  top: 50px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+  margin: 0;
+}
+
+.menu-drawer {
+  .el-drawer__header {
+    display: none;
+  }
+}

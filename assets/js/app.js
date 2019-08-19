@@ -1,4 +1,4 @@
-import 'css/app.css';
+import 'css/app.scss';
 import Vue from 'vue';
 import apolloProvider from './apollo-provider';
 

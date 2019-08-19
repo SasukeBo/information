@@ -12,8 +12,8 @@
 
     <div class="home-body">
       <div class="home-left">
-        <status-card></status-card>
         <device-card></device-card>
+        <login-log-card></login-log-card>
       </div>
 
       <div class="home-right">
@@ -25,14 +25,14 @@
 <script>
 import { getWeekDay } from 'js/utils';
 import { mapState } from 'vuex';
-import StatusCard from './_status-card';
+import LoginLogCard from './_login-logs-card';
 import DeviceCard from './_device-card';
 import NoticeCard from './_notice-card';
 
 export default {
   name: 'page-home',
   components: {
-    StatusCard,
+    LoginLogCard,
     DeviceCard,
     NoticeCard
   },
@@ -49,5 +49,5 @@ export default {
 };
 </script>
 <style lang="scss">
-@import 'css/main/home.scss';
+@import 'css/main/home/index.scss';
 </style>

@@ -2,19 +2,47 @@
   <div class="global-card device-card">
     <span class="global-card__title">设备概览</span>
 
-    <div class="data-item">
-      <span class="data-label">创建的设备</span>
-      <div>
-        <el-tag type="info">共{{ own.total }}台</el-tag>
-        <el-tag type="success">{{ own.online }}台在线</el-tag>
-        <el-tag>{{ own.offline }}台离线</el-tag>
+    <div class="data-item device-groups">
+      <div class="device-group">
+        <div class="data-label device-group__title">创建的设备</div>
+
+        <div style="display: flex">
+          <div class="device-item">
+            <i class="iconfont icon-shebei"></i>
+            <span> {{ own.total }} 台</span>
+          </div>
+
+          <div class="device-item">
+            <i class="iconfont icon-on-line"></i>
+            <span>在线 {{ own.online }} 台</span>
+          </div>
+
+          <div class="device-item">
+            <i class="iconfont icon-off-line"></i>
+            <span>离线 {{ own.offline }} 台</span>
+          </div>
+        </div>
       </div>
 
-      <span class="data-label">负责的设备</span>
-      <div>
-        <el-tag type="info">共{{ charge.total }}台</el-tag>
-        <el-tag type="success">{{ charge.online }}台在线</el-tag>
-        <el-tag>{{ charge.offline }}台离线</el-tag>
+      <div class="device-group">
+        <div class="data-label device-group__title">负责的设备</div>
+
+        <div style="display: flex">
+          <div class="device-item">
+            <i class="iconfont icon-shebei"></i>
+            <span> {{ charge.total }} 台</span>
+          </div>
+
+          <div class="device-item">
+            <i class="iconfont icon-on-line"></i>
+            <span>在线 {{ charge.online }} 台</span>
+          </div>
+
+          <div class="device-item">
+            <i class="iconfont icon-off-line"></i>
+            <span>离线 {{ charge.offline }} 台</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
