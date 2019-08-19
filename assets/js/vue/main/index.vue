@@ -13,7 +13,7 @@
       direction="ltr"
       append-to-body
     >
-      <menu-panel></menu-panel>
+      <menu-panel :visible.sync="menuOpen"></menu-panel>
     </el-drawer>
   </div>
 </template>

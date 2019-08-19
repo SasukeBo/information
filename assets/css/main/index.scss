@@ -1,6 +1,6 @@
-@import 'css/vars.scss';
-@import './header';
-@import './menu-panel';
+@import "css/vars.scss";
+@import "./header";
+@import "./menu-panel";
 
 .main-pages {
   margin-top: 50px;
@@ -19,5 +19,11 @@
 .menu-drawer {
   .el-drawer__header {
     display: none;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .menu-drawer {
+    width: 70% !important;
   }
 }

@@ -12,6 +12,11 @@ function defaultRoutes() {
           path: 'home',
           name: 'home',
           component: load('main/pages/home')
+        },
+        {
+          path: 'user-device',
+          name: 'user-device',
+          component: load('main/pages/device')
         }
       ]
     },
