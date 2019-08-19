@@ -6,6 +6,7 @@ static
 
 assets/node_modules
 assets/yarn-error.log
+assets/css/fonts/demo*
 
 information.exe
 information
