@@ -1,5 +1,18 @@
 @import "../vars.scss";
 
+.page-home {
+  padding: 1rem;
+
+  .greeting-title {
+    font-size: 2rem;
+  }
+
+  .greeting-message {
+    font-size: 0.85rem;
+    color: $--color-font__gray;
+  }
+}
+
 .page-home .home-body {
   margin-top: 1.25rem;
   display: flex;
@@ -18,17 +31,11 @@
   padding: 0 0.5rem;
 }
 
-.page-home {
-  padding: 1rem;
-
-  .greeting-title {
-    font-size: 2rem;
-  }
-
-  .greeting-message {
-    font-size: 0.85rem;
-    color: $--color-font__gray;
-  }
+.page-home .data-label {
+  font-size: 0.75rem;
+  color: $--color-font__dark;
+  font-weight: bold;
+  padding-right: 0.5rem;
 }
 
 .page-home .status-card {
@@ -76,13 +83,6 @@
     &:last-child {
       padding-bottom: 0;
     }
-  }
-
-  .data-label {
-    font-size: 0.75rem;
-    color: $--color-font__dark;
-    font-weight: bold;
-    padding-right: 0.5rem;
   }
 
   .contact-item {
