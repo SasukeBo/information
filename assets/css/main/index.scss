@@ -2,8 +2,10 @@
 @import "./header";
 @import "./menu-panel";
 
-.main-pages {
-  margin-top: 50px;
+.main-pages:before {
+  content: ' ';
+  display: block;
+  height: 50px;
 }
 
 .main-pages .page-body {

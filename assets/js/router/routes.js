@@ -21,7 +21,47 @@ function defaultRoutes() {
         {
           path: 'device/:uuid',
           name: 'device-show',
-          component: load('main/pages/device')
+          props: true,
+          component: load('main/pages/device'),
+          redirect: { name: 'device-details' },
+          children: [
+            {
+              path: 'details',
+              name: 'device-details',
+              props: true,
+              component: load('main/pages/device/details')
+            },
+            {
+              path: 'charges',
+              name: 'device-charges',
+              props: true,
+              component: load('main/pages/device/_charge')
+            },
+            {
+              path: 'params',
+              name: 'device-params',
+              props: true,
+              component: load('main/pages/device/_params')
+            },
+            {
+              path: 'params-values',
+              name: 'device-params-values',
+              props: true,
+              component: load('main/pages/device/_params-values')
+            },
+            {
+              path: 'status-log',
+              name: 'device-status-log',
+              props: true,
+              component: load('main/pages/device/_status-log')
+            },
+            {
+              path: 'config',
+              name: 'device-config',
+              props: true,
+              component: load('main/pages/device/_config')
+            }
+          ]
         }
       ]
     },

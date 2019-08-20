@@ -36,7 +36,7 @@
         </div>
 
         <a href="javascript:;" class="login-logs-more">
-          查看更多
+          <span style="padding-right: 0.5rem">查看更多</span>
           <i class="el-icon-d-arrow-right"></i>
         </a>
       </div>

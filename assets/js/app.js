@@ -19,7 +19,7 @@ import {
   Tag,
   Drawer,
   CheckboxGroup,
-  CheckboxButton
+  CheckboxButton,
 } from 'element-ui'
 
 Vue.use(Form);

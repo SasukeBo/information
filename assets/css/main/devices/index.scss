@@ -1,4 +1,5 @@
 @import "css/vars.scss";
+@import "./device-card";
 
 .user-device {
   display: flex;
@@ -142,7 +143,7 @@
     box-shadow: none;
 
     &:before {
-      content: ' ';
+      content: " ";
       display: block;
       height: 48px;
     }
@@ -157,7 +158,6 @@
       z-index: 2;
       background: $white;
       padding: 0.5rem 1rem;
-      border-radius: 4px;
       font-size: 1.2rem;
       line-height: 2rem;
       margin-bottom: 0;
@@ -178,7 +178,7 @@
     .global-card {
       margin-bottom: 0;
       box-shadow: none;
-      border-bottom: 1px solid $--color-border__3;
+      border-bottom: 1px solid $--color-border__1;
       border-radius: 0;
     }
 
@@ -190,6 +190,10 @@
     .expand-leave-to,
     .expand-enter {
       transform: translateY(-264px);
+    }
+
+    .expand-panel {
+      background: $--color-theme__white;
     }
   }
 

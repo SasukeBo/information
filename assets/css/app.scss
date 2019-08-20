@@ -11,7 +11,7 @@ body {
 #app {
   height: 100%;
   overflow: auto;
-  background: linear-gradient(135deg, transparent, $borderc1);
+  background: linear-gradient(225deg, rgba(0, 0, 0, 0.3), transparent);
   color: $--color-font__dark;
   font-size: 0.875rem;
 }
@@ -22,7 +22,7 @@ body {
 
 a {
   text-decoration: none;
-  color: $--color-theme__main;
+  color: darken($--color-theme__main, 10%);
   transition: all 0.5s linear;
 
   &:hover {

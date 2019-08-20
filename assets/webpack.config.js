@@ -47,8 +47,8 @@ module.exports = (env, options) => ({
   devtool: 'source-map',
   output: {
     publicPath: '/',
-    // filename: isProd ? 'js/[name].[hash].js' : 'js/[name].js',
-    filename: 'js/[name].[hash].js',
+    filename: isProd ? 'js/[name].[hash].js' : 'js/[name].js',
+    // filename: 'js/[name].[hash].js',
     path: path.resolve(__dirname, '../static/')
   },
   module: {
