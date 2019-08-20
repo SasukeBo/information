@@ -1,5 +1,19 @@
 import gql from 'graphql-tag'
 
+var chartApollo = {
+  params: {
+    query: gql`
+    query ($uuid: String) {
+      params: deviceParamList(deviceUUID: $uuid) { name sign type }
+    }`,
+    variables() {
+      return {
+        uuid: this.uuid
+      }
+    }
+  }
+}
+
 var apollo = {
   device: {
     query: gql`
@@ -30,5 +44,6 @@ var apollo = {
 }
 
 export {
-  apollo
+  apollo,
+  chartApollo
 }

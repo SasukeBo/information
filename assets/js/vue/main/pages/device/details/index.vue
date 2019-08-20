@@ -183,6 +183,10 @@ export default {
   flex: 2;
   margin: 0.5rem;
 
+  .params-realtime-chart {
+    padding: 1rem;
+  }
+
   .device-status-card {
     display: flex;
     padding: 1rem;
