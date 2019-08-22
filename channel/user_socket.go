@@ -2,6 +2,7 @@ package channel
 
 import (
 	"golang.org/x/net/websocket"
+	"time"
 
 	"github.com/astaxie/beego/logs"
 )
@@ -11,9 +12,22 @@ func Connect(conn *websocket.Conn) {
 	userUUID := "" // TODO: 获取用户uuid
 	defer conn.Close()
 
+	msgChan := make(chan string, 2)
+
+	go func() {
+		for {
+			var msg string
+			err := websocket.Message.Receive(conn, &msg)
+			if err != nil {
+				return
+			}
+			msgChan <- msg
+		}
+	}()
+
 	for {
-		var msg string
-		if err := websocket.Message.Receive(conn, &msg); err == nil {
+		select {
+		case msg := <-msgChan:
 			var socketMsg SocketMsg
 			err := socketMsg.ParseMsg(msg)
 			if err != nil {
@@ -29,7 +43,15 @@ func Connect(conn *websocket.Conn) {
 
 			case "chat":
 				break
+
+			case "close":
+				return
+
+			case "heartbeat":
+				websocket.Message.Send(conn, `{"channel": "heartbeat", "payload": {"message": "pang"}}`)
 			}
+		case <-time.After(10 * time.Second):
+			return
 		}
 	}
 }

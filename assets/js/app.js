@@ -7,6 +7,9 @@ import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 Vue.use(Vuex);
 
+import Socket from './websocket';
+Vue.prototype.$socket = new Socket('/websocket');
+
 import {
   Form,
   FormItem,

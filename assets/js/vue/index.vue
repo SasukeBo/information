@@ -5,7 +5,14 @@
 </template>
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  created() {
+    this.$socket.connect();
+  },
+  beforeDestroy() {
+    this.$socket.close();
+    alert('destroy');
+  }
 };
 </script>
 

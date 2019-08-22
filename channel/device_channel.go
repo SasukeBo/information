@@ -23,9 +23,9 @@ type deviceChannel struct {
 // DeviceChannel 设备消息管道实例
 var DeviceChannel = deviceChannel{
 	Subscribes:    make(map[string]*list.List),
-	SubChan:       make(chan Subscribe, 10),
-	UnSubChan:     make(chan Subscribe, 10),
-	SocketMsgChan: make(chan SocketMsg, 100),
+	SubChan:       make(chan Subscribe, 5),
+	UnSubChan:     make(chan Subscribe, 5),
+	SocketMsgChan: make(chan SocketMsg, 10),
 }
 
 // hasTopic 话题是否存在
@@ -91,9 +91,9 @@ func (dc *deviceChannel) pushMessage(sm *SocketMsg) {
 			return
 		}
 
-		jsonBytes, err := json.MarshalIndent(sm.Payload, "", "  ")
+		jsonBytes, err := json.Marshal(sm)
 		if err != nil {
-			logs.Error("json.MarshalIndent sm.Payload error", err.Error())
+			logs.Error("json.Marshal sm error", err.Error())
 		}
 
 		err = websocket.Message.Send(subscribe.Socket, string(jsonBytes))

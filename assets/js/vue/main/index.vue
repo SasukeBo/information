@@ -27,19 +27,6 @@ export default {
   data() {
     return {
       menuOpen: false,
-
-      datalist: ''
-    };
-  },
-  mounted() {
-    var _this = this;
-    var ws = new WebSocket(`ws://${document.location.hostname}/websocket`);
-
-    ws.onopen = function() {
-      ws.send('fakeData');
-    };
-    ws.onmessage = function({ data }) {
-      _this.datalist = data;
     };
   }
 };

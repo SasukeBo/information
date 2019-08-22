@@ -10,8 +10,8 @@ import (
 
 // SocketMsg Socket message struct
 type SocketMsg struct {
-	Event   string                 `json:"event"`   // 消息类型
 	Channel string                 `json:"channel"` // socket channel
+	Event   string                 `json:"event"`   // 消息类型
 	Topic   string                 `json:"topic"`   // socket topic
 	Payload map[string]interface{} `json:"payload"` // 消息负载
 }

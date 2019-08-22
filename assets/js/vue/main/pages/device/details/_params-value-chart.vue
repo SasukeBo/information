@@ -21,7 +21,7 @@ export default {
     var el = this.$refs['realtimeChart'];
     var myChart = echarts.init(el);
     var params = [];
-    this.params.forEach(e => data.push(e.name))
+    // this.params.forEach(e => data.push(e.name))
 
     var option = {
       title: {
