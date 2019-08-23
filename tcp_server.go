@@ -57,13 +57,12 @@ func handleClient(conn net.Conn) {
 	for {
 		// 设置接收数据缓存大小为512
 		dataBytes := make([]byte, 512)
-		_, err := conn.Read(dataBytes)
+		n, err := conn.Read(dataBytes)
 		if err != nil {
 			break
 		}
 
-		dataStr := string(dataBytes)
-		// logs.Info("receive data from TCP: ", dataStr)
+		dataStr := string(dataBytes[:n])
 		dataRouter(conn, dataStr, &deviceIDs)
 	}
 

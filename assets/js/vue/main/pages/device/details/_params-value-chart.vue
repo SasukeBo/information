@@ -16,7 +16,7 @@ export default {
   data() {
     return {
       params: [],
-      myChart: null
+      chart: null
     };
   },
   computed: {
@@ -25,53 +25,59 @@ export default {
     })
   },
   mounted() {
-    var el = this.$refs['realtimeChart'];
-    this.myChart = echarts.init(el);
-    // var data = [];
-    // this.params.forEach(e => data.push(e.name))
+    var data = [];
+    var option = {};
 
-    this.deviceChannel.Join(`device_${this.device.id}`);
+    this.chart = echarts.init(this.$refs.realtimeChart);
+    option = {
+      title: {
+        text: '设备参数值实时波形图'
+      },
+      tooltip: {},
+      legend: {
+        data: []
+      },
+      xAxis: {
+        type: 'time',
+        splitLine: {
+          show: false
+        }
+      },
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%'],
+        splitLine: {
+          show: false
+        }
+      },
+      series: [
+        {
+          name: '模拟数据',
+          type: 'line',
+          showSymbol: true,
+          data: data
+        }
+      ]
+    };
+    this.chart.setOption(option);
+
+    if (!this.deviceChannel.topics.indexOf(`device_${this.device.id}`) > -1)
+      this.deviceChannel.Join(`device_${this.device.id}`);
+
     this.deviceChannel.onData = ({ payload }) => {
-      var data = [{name: 'hello', value: ['2019/08/23 15:23', 100]}]
-      var params = [];
       var time = new Date(payload._TIME_STAMP_);
+      if (data.length > 99) data.shift();
+      var h = time.getHours() < 10 ? `0${time.getHours()}` : `${time.getHours()}`;
+      var m = time.getMinutes() < 10 ? `0${time.getMinutes()}` : `${time.getMinutes()}`;
+      var s = time.getSeconds() < 10 ? `0${time.getSeconds()}` : `${time.getSeconds()}`;
       data.push({
-        name: time.toLocaleString(),
-        value: [time.toLocaleString(), payload.count]
-      });
-      var option = {
-        title: {
-          text: '设备参数值实时波形图'
-        },
-        tooltip: {},
-        legend: {
-          data: params
-        },
-        xAxis: {
-          type: 'time',
-          splitLine: {
-            show: false
-          }
-        },
-        yAxis: {
-          type: 'value',
-          boundaryGap: [0, '100%'],
-          splitLine: {
-            show: false
-          }
-        },
-        series: [
-          {
-            name: '模拟数据',
-            type: 'line',
-            showSymbol: false,
-            // hoverAnimation: false,
-            data: data
-          }
+        name: time.toString(),
+        value: [
+          `${time.toLocaleDateString()} ${h}:${m}:${s}`,
+          payload.count
         ]
-      };
-      console.log(option.series[0]);
-      this.myChart.setOption(option);
+      });
+      this.chart.setOption({ series: [{ data: data }] });
     };
   }
 };

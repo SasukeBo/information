@@ -63,7 +63,6 @@ func (dc *deviceChannel) SetSubscribes(sl SubscribeList) {
 // Broadcast 广播消息
 func (dc *deviceChannel) Broadcast(sm SocketMsg) {
 	if dc.hasTopic(&sm) {
-		logs.Warn("send to socketMsgChan: ", sm.Payload)
 		dc.SocketMsgChan <- sm
 	}
 }

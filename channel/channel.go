@@ -66,7 +66,7 @@ func subscribe(ch Channel, newsub Subscribe) {
 	topic := newsub.Topic
 	subscribes := ch.GetSubscribes()
 	for sub := subscribes[topic].Front(); sub != nil; sub = sub.Next() {
-		if sub.Value.(Subscribe).Topic == topic { // 有则替换
+		if sub.Value.(Subscribe).UserUUID == newsub.UserUUID { // 有则替换
 			sub.Value = newsub
 			return
 		}
