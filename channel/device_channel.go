@@ -27,6 +27,12 @@ var DeviceChannel = deviceChannel{
 	SocketMsgChan: make(chan SocketMsg, 10),
 }
 
+func (dc *deviceChannel) RegisterTopic(name string) {
+	if dc.Subscribes[name] == nil {
+		dc.Subscribes[name] = list.New()
+	}
+}
+
 // hasTopic 话题是否存在
 func (dc *deviceChannel) hasTopic(sm *SocketMsg) bool {
 	return dc.Subscribes[sm.Topic] != nil
@@ -34,14 +40,15 @@ func (dc *deviceChannel) hasTopic(sm *SocketMsg) bool {
 
 // JoinTopic 订阅话题
 func (dc *deviceChannel) JoinTopic(socket *websocket.Conn, sm *SocketMsg, uuid string) {
-	if !dc.hasTopic(sm) {
-		return
+	if dc.hasTopic(sm) {
+		dc.SubChan <- Subscribe{UserUUID: uuid, Topic: sm.Topic, Socket: socket}
 	}
+}
 
-	dc.SubChan <- Subscribe{
-		UserUUID: uuid,
-		Topic:    sm.Topic,
-		Socket:   socket,
+// LeaveTopic 取消订阅话题
+func (dc *deviceChannel) LeaveTopic(sm *SocketMsg, uuid string) {
+	if dc.hasTopic(sm) {
+		dc.UnSubChan <- Subscribe{UserUUID: uuid, Topic: sm.Topic}
 	}
 }
 
@@ -53,36 +60,17 @@ func (dc *deviceChannel) SetSubscribes(sl SubscribeList) {
 	dc.Subscribes = sl
 }
 
-// LeaveTopic 取消订阅话题
-func (dc *deviceChannel) LeaveTopic(sm *SocketMsg, uuid string) {
-	if !dc.hasTopic(sm) {
-		return
-	}
-
-	dc.UnSubChan <- Subscribe{
-		UserUUID: uuid,
-		Topic:    sm.Topic,
-	}
-}
-
 // Broadcast 广播消息
 func (dc *deviceChannel) Broadcast(sm SocketMsg) {
-	if !dc.hasTopic(&sm) {
-		return
+	if dc.hasTopic(&sm) {
+		logs.Warn("send to socketMsgChan: ", sm.Payload)
+		dc.SocketMsgChan <- sm
 	}
-
-	dc.SocketMsgChan <- sm
 }
 
 // HandleData 处理消息
 func (dc *deviceChannel) HandleReceive(sm *SocketMsg, uuid string) {
 	logs.Info("Socket handle %s data: %v, \n from user_uuid %s", sm.Topic, sm.Payload, uuid)
-}
-
-func (dc *deviceChannel) RegisterTopic(name string) {
-	if dc.Subscribes[name] == nil {
-		dc.Subscribes[name] = list.New()
-	}
 }
 
 // deviceChannelManager 处理device channel chan分发

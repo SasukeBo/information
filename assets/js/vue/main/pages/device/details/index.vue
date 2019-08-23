@@ -114,7 +114,7 @@
         </div>
       </div>
 
-      <params-value-chart :uuid="uuid"></params-value-chart>
+      <params-value-chart :device="device"></params-value-chart>
     </div>
   </div>
 </template>

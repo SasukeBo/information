@@ -76,8 +76,8 @@ export default {
         password: [{ validator: validatePasswd, trigger: 'blur' }]
       },
       loginForm: {
-        phone: '',
-        password: '',
+        phone: '13242931765',
+        password: 'wb1994@',
         remember: true
       },
       message: ''

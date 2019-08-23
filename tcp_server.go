@@ -63,7 +63,7 @@ func handleClient(conn net.Conn) {
 		}
 
 		dataStr := string(dataBytes)
-		logs.Info("receive data from TCP: ", dataStr)
+		// logs.Info("receive data from TCP: ", dataStr)
 		dataRouter(conn, dataStr, &deviceIDs)
 	}
 

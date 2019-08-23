@@ -16,14 +16,16 @@ router.beforeEach((to, from, next) => {
     app.$apollo.query({
       query: tag`query { currentUser { uuid phone status avatarURL userExtend { name email } role { roleName isAdmin } } }`
     }).then(({ data: { currentUser } }) => { // 获取成功
-      app.$socket.connect({ event: 'data', topic: 'auth', payload: { user_uuid: currentUser.uuid } });
       app.$store.dispatch('user/setUserData', currentUser)
+      app.$socket.connect({ event: 'data', topic: 'auth', payload: { user_uuid: currentUser.uuid } });
+      app.$store.dispatch('socket/setDeviceChannel', app.$socket.channel('device'));
+      app.$store.dispatch('socket/setSystemChannel', app.$socket.channel('system'));
 
-      if (isAuthPage(to)) {
+      if (isAuthPage(from)) {
         // 登录状态下如果是 auth 相关页面则导向 首页
         // 如果有 return_to 则导向 return_to
-        var return_to = to.query.return_to
-        return_to ? next({ name: return_to }) : next({ name: 'index' })
+        var return_to = from.query.return_to
+        return_to ? next({ name: return_to, params: from.query.params }) : next({ name: 'index' })
       } else {
         next()
       }
@@ -32,7 +34,7 @@ router.beforeEach((to, from, next) => {
       if (isAuthPage(to)) {
         next()
       } else {
-        next({ path: '/login', query: { return_to: to.name } })
+        next({ path: '/login', query: { return_to: to.name, params: to.params } })
       }
     })
   } else {
@@ -43,8 +45,7 @@ router.beforeEach((to, from, next) => {
 
 // 如果是 authenticate 相关页面则返回 true
 function isAuthPage(toPath) {
-  if (['login', 'register', 'reset_password'].indexOf(toPath.name) == -1) return false
-  else return true
+  return ['login', 'register', 'reset_password'].indexOf(toPath.name) > -1
 }
 
 export default router;

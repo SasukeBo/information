@@ -18,23 +18,38 @@ func Connect(conn *websocket.Conn) {
 	defer conn.Close()
 
 	msgChan := make(chan string, 5)
+	timeout := make(chan struct{})
+	refreshTimeout := make(chan struct{})
 
 	go func() {
 		for {
 			var msg string
 			err := websocket.Message.Receive(conn, &msg)
+			close(refreshTimeout)
+			refreshTimeout = make(chan struct{})
+
 			if err == io.EOF {
 				conn.Close()
 				return
-			} else if err != nil {
-				return
 			}
 
-			msgChan <- msg
+			if err == nil {
+				msgChan <- msg
+			}
 		}
 	}()
 
 	for {
+		go func() { // 可刷新的定时器
+			select {
+			case <-time.After(60 * time.Second): // 超过60s后发出超时信号
+				close(timeout)
+				timeout = make(chan struct{})
+			case <-refreshTimeout: // 接收到刷新计时器信号则退出 goroutine
+				return
+			}
+		}()
+
 		select {
 		case msg := <-msgChan:
 			var socketMsg SocketMsg
@@ -58,9 +73,7 @@ func Connect(conn *websocket.Conn) {
 					}
 
 					websocket.Message.Send(conn, socketError.Marshal())
-					return
 				}
-				defer SystemChannel.LeaveTopic(&socketMsg, currentUser.UUID)
 
 			case "device": // device channel
 				if err := deviceChannelHandleEvent(conn, &DeviceChannel, &socketMsg, &currentUser); err != nil {
@@ -74,14 +87,12 @@ func Connect(conn *websocket.Conn) {
 					}
 
 					websocket.Message.Send(conn, socketError.Marshal())
-					return
 				}
-				defer DeviceChannel.LeaveTopic(&socketMsg, currentUser.UUID)
 
 			case "heartbeat":
 				websocket.Message.Send(conn, `{"channel": "heartbeat", "payload": {"message": "pang"}}`)
 			}
-		case <-time.After(31 * time.Second): // 31秒心跳超时时间
+		case <-timeout: // 超时时间断开websocket连接
 			return
 		}
 	}
@@ -116,6 +127,7 @@ func deviceChannelHandleEvent(conn *websocket.Conn, channel Channel, socketMsg *
 	// TODO: 权限验证
 	switch socketMsg.Event {
 	case "join":
+		logs.Info("join: ", socketMsg.Topic)
 		channel.JoinTopic(conn, socketMsg, user.UUID)
 	case "leave":
 		channel.LeaveTopic(socketMsg, user.UUID)

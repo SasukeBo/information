@@ -8,7 +8,7 @@ var chartApollo = {
     }`,
     variables() {
       return {
-        uuid: this.uuid
+        uuid: this.device.uuid
       }
     }
   }
@@ -19,6 +19,7 @@ var apollo = {
     query: gql`
     query ($uuid: String!){
       device: deviceGet(uuid: $uuid) {
+        id
         uuid
         mac
         type

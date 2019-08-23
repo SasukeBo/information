@@ -62,15 +62,16 @@ type Channel interface {
 	SetSubscribes(sl SubscribeList)
 }
 
-func subscribe(ch Channel, sub Subscribe) {
-	topic := sub.Topic
+func subscribe(ch Channel, newsub Subscribe) {
+	topic := newsub.Topic
 	subscribes := ch.GetSubscribes()
 	for sub := subscribes[topic].Front(); sub != nil; sub = sub.Next() {
-		if sub.Value.(Subscribe).Topic == topic {
+		if sub.Value.(Subscribe).Topic == topic { // 有则替换
+			sub.Value = newsub
 			return
 		}
 	}
-	subscribes[topic].PushBack(sub)
+	subscribes[topic].PushBack(newsub) // 无则新增
 	ch.SetSubscribes(subscribes)
 }
 
@@ -92,4 +93,6 @@ func pushMessage(ch Channel, sm *SocketMsg) {
 			websocket.Message.Send(sub.Socket, sm.Marshal())
 		}
 	}
+
+	// logs.Warn("push message to topic: ", sm.Topic)
 }

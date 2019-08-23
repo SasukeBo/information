@@ -48,11 +48,6 @@ class Channel {
 
     this.socket.send(JSON.stringify(message))
   }
-
-  //
-  destroy() {
-
-  }
 }
 
 class Socket {
@@ -60,6 +55,7 @@ class Socket {
     this.socketUrl = `ws://${document.location.hostname}${endPoint}` // websocket 服务器链接
     this.socket = null // 实际的socket
     this.HartInterval = null // 心跳间隔
+    this.ReconnectDuration = 1000 // 重连间隔
     this.channels = {} // socket 中的 channel
     this.opts = null
   }
@@ -67,28 +63,30 @@ class Socket {
   // 发起 websocket 连接
   connect(opts) {
     this.opts = opts
-    console.log('WebSocket connecting...')
+    console.log('websocket connecting...')
     this.socket = new WebSocket(this.socketUrl)
+
     this.socket.onopen = () => {
-      console.log('WebSocket is open now.')
+      console.log('websocket is open now.')
       var message = {
         channel: 'system',
         ...opts
       }
-      this.socket.send(JSON.stringify(message))
-      this.rejoin()
-      this.HartCheck()
+      setTimeout(() => {
+        this.socket.send(JSON.stringify(message))
+        this.rejoin()
+        this.HartCheck()
+      }, 1000)
     }
+
     this.socket.onclose = () => {
-      console.log('WebSocket is closed now. try to reconnect')
-      var reconnInterval = setInterval(() => {
-        if (this.socket.readyState == this.socket.OPEN) {
-          clearInterval(reconnInterval)
-          return
-        }
-        if (this.socket.readyState == this.socket.CLOSED) this.connect(this.opts)
-      }, 5000)
+      console.log(`websocket is closed, try to reconnect after ${this.ReconnectDuration / 1000}s.`)
+      setTimeout(() => {
+        this.connect(this.opts)
+      }, this.ReconnectDuration)
+      this.ReconnectDuration += 2000
     }
+
     this.socket.onmessage = ({ data: dataStr }) => {
       var data = JSON.parse(dataStr)
       if (data.channel === 'system' && data.topic === 'error') {
