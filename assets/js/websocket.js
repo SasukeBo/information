@@ -131,7 +131,7 @@ class Socket {
     clearInterval(this.HartInterval)
     this.HartInterval = setInterval(() => {
       this.socket.send(`{"channel": "heartbeat", "payload": {"message": "ping"}}`)
-    }, 9000)
+    }, 30000)
   }
 }
 

@@ -81,7 +81,7 @@ func Connect(conn *websocket.Conn) {
 			case "heartbeat":
 				websocket.Message.Send(conn, `{"channel": "heartbeat", "payload": {"message": "pang"}}`)
 			}
-		case <-time.After(10 * time.Second): // 10秒心跳超时时间
+		case <-time.After(31 * time.Second): // 31秒心跳超时时间
 			return
 		}
 	}

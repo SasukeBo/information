@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -53,7 +52,7 @@ func RunTCP() {
 
 // handleClient 处理连接
 func handleClient(conn net.Conn) {
-	var topics []string // 存储当前连接注册的 topic
+	deviceIDs := []int{}
 
 	for {
 		// 设置接收数据缓存大小为512
@@ -65,32 +64,27 @@ func handleClient(conn net.Conn) {
 
 		dataStr := string(dataBytes)
 		logs.Info("receive data from TCP: ", dataStr)
-		if ts, ok := dataRouter(conn, dataStr, topics).([]string); ok {
-			topics = ts
-		}
+		dataRouter(conn, dataStr, &deviceIDs)
 	}
 
 	defer logs.Info("close connection from", conn.RemoteAddr())
 	defer conn.Close()
-	defer offlineDevices(topics)
+	defer offlineDevices(deviceIDs)
 }
 
 // dataRouter 分解数据string，处理元数据
-func dataRouter(conn net.Conn, dataStr string, topics []string) interface{} {
+func dataRouter(conn net.Conn, dataStr string, ids *[]int) {
 	dataAtoms := strings.Split(dataStr, "@")
 
 	for _, dataAtom := range dataAtoms {
 		if matches := connReg.FindStringSubmatch(dataAtom); len(matches) > 1 {
-			topic := handleStatus(conn, matches[1], "connect")
-			if v, ok := topic.(string); ok {
-				topics = append(topics, v)
-			}
+			handleStatus(conn, matches[1], "connect", ids)
 		} else if matches = discReg.FindStringSubmatch(dataAtom); len(matches) > 1 {
-			handleStatus(conn, matches[1], "disconnect")
+			handleStatus(conn, matches[1], "disconnect", ids)
 		} else if matches = stopReg.FindStringSubmatch(dataAtom); len(matches) > 1 {
-			handleStatus(conn, matches[1], "stop")
+			handleStatus(conn, matches[1], "stop", ids)
 		} else if matches = prodReg.FindStringSubmatch(dataAtom); len(matches) > 1 {
-			handleStatus(conn, matches[1], "producting")
+			handleStatus(conn, matches[1], "producting", ids)
 		} else if matches = dataReg.FindStringSubmatch(dataAtom); len(matches) > 2 {
 			keyAndValue := strings.Split(matches[2], ":")
 			payload := make(map[string]interface{})
@@ -107,27 +101,31 @@ func dataRouter(conn net.Conn, dataStr string, topics []string) interface{} {
 			channel.DeviceChannel.Broadcast(socketMsg)
 		}
 	}
-
-	return topics
 }
 
 // handleStatus 处理设备状态变更
-func handleStatus(conn net.Conn, token, action string) interface{} {
+func handleStatus(conn net.Conn, token, action string, ids *[]int) {
 	device := models.Device{Token: token}
 	if err := device.GetBy("token"); err != nil {
 		conn.Write([]byte(err.Error()))
 		logs.Error(err.Error())
-		return nil
+		return
 	}
 
 	var status int
-	var topic string
 
 	switch action {
 	case "connect":
 		status = models.DeviceStatus.OnLine
+		*ids = append(*ids, device.ID)
 	case "disconnect":
 		status = models.DeviceStatus.OffLine
+		deviceIDs := *ids
+		for index, id := range deviceIDs {
+			if id == device.ID {
+				*ids = append(deviceIDs[:index], deviceIDs[index+1:]...)
+			}
+		}
 	case "stop":
 		status = models.DeviceStatus.Stop
 	case "producting":
@@ -138,19 +136,11 @@ func handleStatus(conn net.Conn, token, action string) interface{} {
 	if err := deviceStatusLog.Insert(); err != nil {
 		logs.Error(err.Error())
 	}
-
-	return topic
 }
 
-func offlineDevices(topics []string) {
-	for _, topic := range topics {
-		if match := FetchIDReg.FindStringSubmatch(topic); len(match) > 1 {
-			if id, err := strconv.ParseInt(match[1], 10, 0); err == nil {
-				deviceStatusLog := models.DeviceStatusLog{Status: models.DeviceStatus.OffLine, Device: &models.Device{ID: int(id)}}
-				if err := deviceStatusLog.Insert(); err != nil {
-					logs.Error(err.Error())
-				}
-			}
-		}
+func offlineDevices(ids []int) {
+	for _, id := range ids {
+		deviceStatusLog := models.DeviceStatusLog{Status: models.DeviceStatus.OffLine, Device: &models.Device{ID: id}}
+		deviceStatusLog.Insert()
 	}
 }
