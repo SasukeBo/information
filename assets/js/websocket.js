@@ -1,12 +1,13 @@
 class Channel {
   constructor(channel, opts, socket) {
-    this.channel = channel
-    this.opts = opts
-    this.socket = socket
-    this._onData = null
-    this.topics = []
+    this.channel = channel // channel 名称
+    this.opts = opts // 其它选项
+    this.socket = socket // 实际的socket连接
+    this._onData = null // channel 接收消息处理的回调函数
+    this.topics = [] // 当前channel加入的topic，用于连接恢复时重新加入topic
   }
 
+  // channel 加入话题
   Join(topic) {
     if (!this.topics.includes(topic)) this.topics.push(topic)
     var message = {
@@ -18,10 +19,12 @@ class Channel {
     this.socket.send(JSON.stringify(message))
   }
 
+  // channel 消息处理回调函数
   set onData(func) {
     this._onData = func
   }
 
+  // channel 离开话题
   Leave(topic) {
     var index = this.topics.indexOf(topic)
     if (index > -1) this.topics.splice(index, 1)
@@ -34,6 +37,7 @@ class Channel {
     this.socket.send(JSON.stringify(message))
   }
 
+  // channel 发送数据
   Send(topic, payload) {
     var message = {
       channel: this.channel,
@@ -44,21 +48,34 @@ class Channel {
 
     this.socket.send(JSON.stringify(message))
   }
+
+  //
+  destroy() {
+
+  }
 }
 
 class Socket {
   constructor(endPoint) {
-    this.socketUrl = `ws://${document.location.hostname}${endPoint}`
-    this.socket = null
-    this.HartInterval = null
-    this.channels = {}
+    this.socketUrl = `ws://${document.location.hostname}${endPoint}` // websocket 服务器链接
+    this.socket = null // 实际的socket
+    this.HartInterval = null // 心跳间隔
+    this.channels = {} // socket 中的 channel
+    this.opts = null
   }
 
-  connect() {
+  // 发起 websocket 连接
+  connect(opts) {
+    this.opts = opts
     console.log('WebSocket connecting...')
     this.socket = new WebSocket(this.socketUrl)
     this.socket.onopen = () => {
       console.log('WebSocket is open now.')
+      var message = {
+        channel: 'system',
+        ...opts
+      }
+      this.socket.send(JSON.stringify(message))
       this.rejoin()
       this.HartCheck()
     }
@@ -69,12 +86,16 @@ class Socket {
           clearInterval(reconnInterval)
           return
         }
-        if (this.socket.readyState == this.socket.CLOSED) this.connect()
+        if (this.socket.readyState == this.socket.CLOSED) this.connect(this.opts)
       }, 5000)
     }
     this.socket.onmessage = ({ data: dataStr }) => {
       var data = JSON.parse(dataStr)
-      console.log('onmessage channel ', data.channel)
+      if (data.channel === 'system' && data.topic === 'error') {
+        console.error(data.payload)
+        this.close()
+      }
+
       var channel = this.channels[data.channel]
       if (channel && channel._onData) {
         channel._onData(data)
@@ -82,6 +103,7 @@ class Socket {
     }
   }
 
+  // 重新加入话题
   rejoin() {
     for (var chanName in this.channels) {
       var channel = this.channels[chanName]
@@ -92,8 +114,11 @@ class Socket {
     }
   }
 
+  // 关闭 socket
   close() {
-    this.socket.send(`{"channel": "close"}`)
+    clearInterval(this.HartInterval) // 关闭心跳
+    this.socket.onclose = undefined // 删除断连回调
+    this.socket.close() // 关闭 socket
   }
 
   channel(channel, opts) {

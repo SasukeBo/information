@@ -4,7 +4,6 @@ package channel
 
 import (
 	"container/list"
-	"encoding/json"
 	"fmt"
 	"golang.org/x/net/websocket"
 
@@ -14,15 +13,15 @@ import (
 
 // deviceChannel 设备消息管道
 type deviceChannel struct {
-	Subscribes    map[string]*list.List // 订阅队列
-	SubChan       chan Subscribe        // 订阅添加 chan
-	UnSubChan     chan Subscribe        // 订阅添加 chan
-	SocketMsgChan chan SocketMsg        // 消息 chan
+	Subscribes    SubscribeList  // 订阅队列
+	SubChan       chan Subscribe // 订阅添加 chan
+	UnSubChan     chan Subscribe // 订阅添加 chan
+	SocketMsgChan chan SocketMsg // 消息 chan
 }
 
 // DeviceChannel 设备消息管道实例
 var DeviceChannel = deviceChannel{
-	Subscribes:    make(map[string]*list.List),
+	Subscribes:    make(SubscribeList),
 	SubChan:       make(chan Subscribe, 5),
 	UnSubChan:     make(chan Subscribe, 5),
 	SocketMsgChan: make(chan SocketMsg, 10),
@@ -46,9 +45,12 @@ func (dc *deviceChannel) JoinTopic(socket *websocket.Conn, sm *SocketMsg, uuid s
 	}
 }
 
-func (dc *deviceChannel) subscribe(sub Subscribe) {
-	logs.Info("join topic ", sub.Topic)
-	dc.Subscribes[sub.Topic].PushBack(sub)
+func (dc *deviceChannel) GetSubscribes() SubscribeList {
+	return dc.Subscribes
+}
+
+func (dc *deviceChannel) SetSubscribes(sl SubscribeList) {
+	dc.Subscribes = sl
 }
 
 // LeaveTopic 取消订阅话题
@@ -63,17 +65,6 @@ func (dc *deviceChannel) LeaveTopic(sm *SocketMsg, uuid string) {
 	}
 }
 
-func (dc *deviceChannel) unsubscribe(unsub Subscribe) {
-	topic := unsub.Topic
-	subs := dc.Subscribes[topic]
-	for sub := subs.Front(); sub != nil; sub = sub.Next() {
-		if sub.Value.(Subscribe).UserUUID == unsub.UserUUID {
-			subs.Remove(sub)
-			dc.Subscribes[topic] = subs
-		}
-	}
-}
-
 // Broadcast 广播消息
 func (dc *deviceChannel) Broadcast(sm SocketMsg) {
 	if !dc.hasTopic(&sm) {
@@ -81,26 +72,6 @@ func (dc *deviceChannel) Broadcast(sm SocketMsg) {
 	}
 
 	dc.SocketMsgChan <- sm
-}
-
-func (dc *deviceChannel) pushMessage(sm *SocketMsg) {
-	subs := dc.Subscribes[sm.Topic]
-	for el := subs.Front(); el != nil; el = el.Next() {
-		subscribe, ok := el.Value.(Subscribe)
-		if !ok {
-			return
-		}
-
-		jsonBytes, err := json.Marshal(sm)
-		if err != nil {
-			logs.Error("json.Marshal sm error", err.Error())
-		}
-
-		err = websocket.Message.Send(subscribe.Socket, string(jsonBytes))
-		if err != nil {
-			logs.Error("WebSocket Send jsonBytes error", err.Error())
-		}
-	}
 }
 
 // HandleData 处理消息
@@ -119,11 +90,11 @@ func deviceChannelManager() {
 	for {
 		select {
 		case sub := <-DeviceChannel.SubChan:
-			DeviceChannel.subscribe(sub)
+			subscribe(&DeviceChannel, sub)
 		case socketMsg := <-DeviceChannel.SocketMsgChan:
-			DeviceChannel.pushMessage(&socketMsg)
+			pushMessage(&DeviceChannel, &socketMsg)
 		case unsub := <-DeviceChannel.UnSubChan:
-			DeviceChannel.unsubscribe(unsub)
+			unsubscribe(&DeviceChannel, unsub)
 		}
 	}
 }

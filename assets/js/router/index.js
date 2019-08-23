@@ -16,6 +16,7 @@ router.beforeEach((to, from, next) => {
     app.$apollo.query({
       query: tag`query { currentUser { uuid phone status avatarURL userExtend { name email } role { roleName isAdmin } } }`
     }).then(({ data: { currentUser } }) => { // 获取成功
+      app.$socket.connect({ event: 'data', topic: 'auth', payload: { user_uuid: currentUser.uuid } });
       app.$store.dispatch('user/setUserData', currentUser)
 
       if (isAuthPage(to)) {
