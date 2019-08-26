@@ -27,7 +27,7 @@ type graphiqlData struct {
 type gqlRootObject map[string]interface{}
 
 // 匹配 graphql query oprtationName
-var operationNameRegStr = `^((query|mutation)\s*(\w+)?\s*(\([\w\d\s$!:,]*\))?\s*|^){\s*(\w+:)?\s*(\w+)\s*(\((\n|.)*\))?\s*({(\n|.)*})?\s*}`
+var operationNameRegStr = `^((query|mutation)\s*(\w+)?\s*(\([\w\[\]\d\s$!:,]*\))?\s*|^){\s*(\w+:)?\s*(\w+)\s*(\((\n|.)*\))?\s*({(\n|.)*})?\s*}`
 
 /*
   gqlGetSession 获取 session 中的数据到 gqlRootObject 中。

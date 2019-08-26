@@ -9,7 +9,7 @@
       <div class="data-item device-status">
         <div class="label-center">设备状态</div>
         <i class="iconfont icon-production" :class="['device-' + device.status]"></i>
-        <div class="status">生产中</div>
+        <div class="status">{{ device.status }}</div>
       </div>
 
       <div class="data-item">
@@ -24,7 +24,7 @@
 
       <div class="data-item">
         <span class="label">注册日期</span>
-        {{ device.createdAt }}
+        {{ timeFormatter(device.createdAt) }}
       </div>
 
       <hr />
@@ -39,6 +39,18 @@
 <script>
 export default {
   name: 'device-card',
-  props: ['device']
+  props: ['device'],
+  methods: {
+    timeFormatter(timeStr) {
+      var time = new Date(timeStr);
+      var y = time.getFullYear();
+      var month = time.getMonth() + 1;
+      var day = time.getDate();
+      var h = time.getHours();
+      var m = time.getMinutes();
+      var s = time.getSeconds();
+      return `${y}年${month}月${day}日 ${h}:${m}:${s}`;
+    }
+  }
 };
 </script>

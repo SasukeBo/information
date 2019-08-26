@@ -23,6 +23,8 @@ import {
   Drawer,
   CheckboxGroup,
   CheckboxButton,
+  Select,
+  Option,
 } from 'element-ui'
 
 Vue.use(Form);
@@ -36,6 +38,8 @@ Vue.use(Tag);
 Vue.use(Drawer);
 Vue.use(CheckboxGroup);
 Vue.use(CheckboxButton);
+Vue.use(Select);
+Vue.use(Option);
 Vue.prototype.$message = Message;
 
 const info = document.querySelector('#vue-entry');

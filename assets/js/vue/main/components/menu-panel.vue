@@ -18,9 +18,13 @@
       <span>我的设备</span>
     </a>
 
-    <a href="javascript:;" :class="['menu-item', $route.name == 'devices' ? 'is-active': '']">
+    <a
+      href="device/new"
+      :class="['menu-item', $route.name == 'device-new' ? 'is-active': '']"
+      @click.prevent="directTo('device-new')"
+    >
       <i class="iconfont icon-shebei"></i>
-      <span>我的设备</span>
+      <span>注册设备</span>
     </a>
 
     <a href="javascript:;" :class="['menu-item', $route.name == 'devices' ? 'is-active': '']">

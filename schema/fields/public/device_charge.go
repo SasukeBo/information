@@ -14,6 +14,7 @@ var DeviceChargeCreateField = &graphql.Field{
 	Args: graphql.FieldConfigArgument{
 		"uuid":     fields.GenArg(graphql.String, "设备UUID", false),
 		"userUUID": fields.GenArg(graphql.String, "指派人UUID", false),
+		"privIDs":  fields.GenArg(graphql.NewList(graphql.Int), "权限ids", false),
 	},
 	Resolve: device.ChargeCreate,
 }

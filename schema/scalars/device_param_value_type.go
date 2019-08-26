@@ -9,17 +9,17 @@ import (
 
 // DeviceParamValueTypeMap 主要用于做graphql自定义的DeviceParamValueType类型转换
 var DeviceParamValueTypeMap = VMap{
-	"String":  models.DeviceParamValueType.String,
-	"Boolean": models.DeviceParamValueType.Boolean,
-	"Integer": models.DeviceParamValueType.Integer,
-	"Float":   models.DeviceParamValueType.Float,
+	"string": models.DeviceParamValueType.String,
+	"bool":   models.DeviceParamValueType.Boolean,
+	"int":    models.DeviceParamValueType.Integer,
+	"float":  models.DeviceParamValueType.Float,
 }
 
 // DeviceParamValueType is a scalars graphql type
 var DeviceParamValueType = graphql.NewScalar(graphql.ScalarConfig{
 	Name: "DeviceParamValueType",
 	Description: `DeviceParamValueType is represent device param value type,
-	can be "String"/"Boolean"/"Integer"/"Float",
+	can be string/bool/int/float,
   it convert string to int for DB,
   and convert int to string for output`,
 	Serialize: func(value interface{}) interface{} {

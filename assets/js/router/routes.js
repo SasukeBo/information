@@ -19,6 +19,11 @@ function defaultRoutes() {
           component: load('main/pages/devices')
         },
         {
+          path: 'device/new',
+          name: 'device-new',
+          component: load('main/pages/device-new')
+        },
+        {
           path: 'device/:uuid',
           name: 'device-show',
           props: true,

@@ -21,6 +21,19 @@ func (dca *DeviceChargeAbility) TableUnique() [][]string {
 	}
 }
 
+// Insert _
+func (dca *DeviceChargeAbility) Insert() error {
+	if _, err := Repo.Insert(dca); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Message: "insert device_charge_ability error",
+			OriErr:  err,
+		}
+	}
+
+	return nil
+}
+
 // GetBy _
 func (dca *DeviceChargeAbility) GetBy(col string) error {
 	if err := Repo.Read(dca, col); err != nil {

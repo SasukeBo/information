@@ -18,8 +18,18 @@ func ChargeCreate(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
+	if err := models.Repo.Begin(); err != nil {
+		models.Repo.Rollback()
+		return nil, errors.LogicError{
+			Type:    "Models",
+			Message: "transaction error.",
+			OriErr:  err,
+		}
+	}
+
 	user := models.User{UUID: params.Args["userUUID"].(string)}
 	if err := user.GetBy("uuid"); err != nil {
+		models.Repo.Rollback()
 		return nil, err
 	}
 
@@ -29,8 +39,32 @@ func ChargeCreate(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	if err := deviceCharge.Insert(); err != nil {
+		models.Repo.Rollback()
 		return nil, err
 	}
+
+	privIDs, ok := params.Args["privIDs"].([]interface{})
+	if !ok {
+		models.Repo.Rollback()
+		return nil, errors.LogicError{
+			Type:    "Resolvers",
+			Field:   "privIDs",
+			Message: "invalid privIDs, type assert []int failed.",
+		}
+	}
+
+	for _, id := range privIDs {
+		dca := models.DeviceChargeAbility{
+			DeviceCharge: &deviceCharge,
+			Privilege:    &models.Privilege{ID: id.(int)},
+		}
+		if err := dca.Insert(); err != nil {
+			models.Repo.Rollback()
+			return nil, err
+		}
+	}
+
+	models.Repo.Commit()
 
 	return deviceCharge, nil
 }

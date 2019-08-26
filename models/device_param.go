@@ -26,6 +26,13 @@ var DeviceParamValueType = struct {
 	Float   int
 }{0, 1, 2, 3}
 
+// TableUnique 自定义唯一键
+func (dp *DeviceParam) TableUnique() [][]string {
+	return [][]string{
+		[]string{"device_id", "sign"},
+	}
+}
+
 // Get get device_param by id
 func (dp *DeviceParam) Get() error {
 	if err := Repo.Read(dp); err != nil {

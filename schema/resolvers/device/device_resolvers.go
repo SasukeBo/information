@@ -30,53 +30,49 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 // List 获取负责或创建的设备
 func List(params graphql.ResolveParams) (interface{}, error) {
 	qs := models.Repo.QueryTable("device")
-	cond1 := models.NewCond()
+	cond := models.NewCond()
+
+	ownership, ok := params.Args["ownership"].(string)
+	if !ok {
+		return nil, errors.LogicError{
+			Type:    "Resolvers",
+			Field:   "ownership",
+			Message: "invalid value of ownership",
+		}
+	}
+
+	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
+
+	switch ownership {
+	case "register":
+		cond = cond.And("user_id", currentUser.ID)
+	case "charger":
+		ids := chargeIDs(&currentUser)
+		cond = cond.And("id__in", ids)
+	case "both":
+		ids := chargeIDs(&currentUser)
+		subCond := models.NewCond().And("id__in", ids).Or("user_id", currentUser.ID)
+		cond = cond.AndCond(subCond)
+	}
 
 	if dType := params.Args["type"]; dType != nil {
-		cond1 = cond1.And("type", dType)
+		cond = cond.And("type", dType)
 	}
 
 	if namePattern := params.Args["namePattern"]; namePattern != nil {
-		cond1 = cond1.And("name__icontains", namePattern)
+		cond = cond.And("name__icontains", namePattern)
 	}
 
 	if status := params.Args["status"]; status != nil {
-		cond1 = cond1.And("status", status)
+		cond = cond.And("status", status)
 	}
 
-	// 限定用户查询设备列表值域为 负责的设备 + 注册的设备 -- begin
-	var charges []*models.DeviceCharge
-	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
-
-	if _, err := models.Repo.QueryTable("device_charge").Filter("user_id", currentUser.ID).All(&charges); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Field:   "userUUID",
-			Message: "get device_charge list error",
-			OriErr:  err,
-		}
+	// 只有当用户本人是负责人时，创建者uuid才是有效筛选条件
+	if userUUID := params.Args["userUUID"]; userUUID != nil && ownership == "charger" {
+		cond = cond.And("user__uuid", userUUID)
 	}
 
-	var ids []int
-	for _, charge := range charges { // 获取用户charge的设备id列表
-		ids = append(ids, charge.Device.ID)
-	}
-
-	if userUUID := params.Args["userUUID"]; userUUID != nil {
-		// 如果提供了注册人uuid，则从当前用户负责的设备中挑出注册人为uuid的设备
-		if len(ids) == 0 {
-			// 如果用户负责设备个数为0，返回空列表
-			return []interface{}{}, nil
-		}
-
-		// 获取该用户负责的且由userUUID的用户注册的设备
-		cond := models.NewCond().AndCond(cond1).AndCond(models.NewCond().And("id__in", ids).And("user__uuid", userUUID))
-		qs = qs.SetCond(cond)
-	} else {
-		// 获取用户负责的或注册的设备
-		cond := models.NewCond().AndCond(cond1).AndCond(models.NewCond().And("id__in", ids).Or("user_id", currentUser.ID))
-		qs = qs.SetCond(cond).Distinct()
-	}
+	qs = qs.SetCond(cond).Distinct()
 	// 限定用户查询设备列表值域为 负责的设备 + 注册的设备 -- end
 
 	var devices []*models.Device
@@ -90,6 +86,21 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	return devices, nil
+}
+
+func chargeIDs(user *models.User) []int {
+	var charges []*models.DeviceCharge
+
+	if _, err := models.Repo.QueryTable("device_charge").Filter("user_id", user.ID).All(&charges); err != nil {
+		return []int{}
+	}
+
+	var ids []int
+	for _, charge := range charges { // 获取用户charge的设备id列表
+		ids = append(ids, charge.Device.ID)
+	}
+
+	return ids
 }
 
 // Create 创建设备
