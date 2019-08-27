@@ -16,7 +16,7 @@
           v-show="!formVisible"
           style="margin-right: 1rem"
         >增加</el-button>
-        <span v-if="charges.length == 0" style="color: #606266">暂无负责人</span>
+        <span v-if="charges.length == 0">暂无负责人</span>
       </el-form-item>
     </el-form>
 

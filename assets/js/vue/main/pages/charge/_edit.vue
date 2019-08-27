@@ -1,8 +1,8 @@
 <template>
-  <div>charge</div>
+  <div></div>
 </template>
 <script>
 export default {
-  name: 'device-charge'
+  name: 'charge-edit'
 }
 </script>

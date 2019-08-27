@@ -12,7 +12,7 @@
   left: 0;
   right: 0;
   top: 0;
-  box-shadow: 1px 3px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: $--shadow__global-card;
 }
 
 .com-header .com-header__left {
@@ -68,7 +68,7 @@
 
     div:last-child {
       line-height: 16px;
-      color: $--color-font__gray;
+      color: $--color-theme__gray;
       font-size: 16px;
       text-indent: 2px;
     }

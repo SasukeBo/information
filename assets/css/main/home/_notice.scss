@@ -1,9 +1,8 @@
 .page-home .notice-card {
   .notice-item {
     margin-bottom: 0.5rem;
-    background: $--color-border__3;
     border-radius: 4px;
-    padding: 4px;
+    padding: 4px 0;
 
     &:last-child {
       margin-bottom: 0;
@@ -21,7 +20,7 @@
     overflow: hidden;
 
     &:hover {
-      color: darken($--color-theme__main, 10%);
+      color: lighten($--color-theme__main, 20%);
     }
   }
 

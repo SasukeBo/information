@@ -9,7 +9,7 @@
       <div class="data-item device-status">
         <div class="label-center">设备状态</div>
         <i class="iconfont icon-production" :class="['device-' + device.status]"></i>
-        <div class="status">{{ device.status }}</div>
+        <div class="status">{{ status }}</div>
       </div>
 
       <div class="data-item">
@@ -37,19 +37,29 @@
   </div>
 </template>
 <script>
+import { timeFormatter } from 'js/utils';
+
 export default {
   name: 'device-card',
   props: ['device'],
+  data() {
+    return {
+      statusMap: {
+        prod: '生产中',
+        stop: '停机',
+        offline: '离线',
+        online: '在线'
+      }
+    };
+  },
+  computed: {
+    status() {
+      return this.statusMap[this.device.status];
+    }
+  },
   methods: {
     timeFormatter(timeStr) {
-      var time = new Date(timeStr);
-      var y = time.getFullYear();
-      var month = time.getMonth() + 1;
-      var day = time.getDate();
-      var h = time.getHours();
-      var m = time.getMinutes();
-      var s = time.getSeconds();
-      return `${y}年${month}月${day}日 ${h}:${m}:${s}`;
+      return timeFormatter(timeStr);
     }
   }
 };

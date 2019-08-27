@@ -137,6 +137,7 @@ export default {
 .device-new {
   height: calc(100% - 50px);
   overflow: auto;
+  color: $--color-font__light;
 }
 
 .device-new .form-title {
@@ -145,7 +146,7 @@ export default {
   margin: auto;
   margin-bottom: 2rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid $--color-border__0;
+  border-bottom: 1px solid $--color-theme__black;
 }
 
 .device-new .form-body {
@@ -163,10 +164,22 @@ export default {
   padding-top: 10px;
 }
 
+.device-new .device-form {
+  .el-form-item__label {
+    color: $--color-font__light;
+  }
+}
+
 .device-new .device-form .el-tag {
   margin-right: 0.5rem;
   cursor: pointer;
 }
+
+// .device-new .charge-form .el-transfer {
+// .el-checkbox__label {
+// color: $--color-font__light;
+// }
+// }
 
 @media only screen and(max-width: 664px) {
   .device-new .form-body {

@@ -9,35 +9,41 @@ $light: #909399;
 $silver: #c0c4cc;
 $white: #ffffff;
 $black: #000000;
-$borderc1: #dcdfe6;
-$borderc2: #e4e7ed;
-$borderc3: #ebeef5;
-$borderc4: #f2f6fc;
+$light-black: #222;
+$white4: #dcdfe6;
+$white3: #e4e7ed;
+$white2: #ebeef5;
+$white1: #f2f6fc;
 
+$--color-theme__bg: #282c34;
 $--color-theme__main: $blue;
 $--color-theme__success: $green;
 $--color-theme__warning: $orange;
 $--color-theme__danger: $red;
 $--color-theme__info: $info;
-$--color-theme__white: $white;
+
 $--color-theme__black: $black;
+$--color-theme__light-black: $light-black;
 $--color-theme__dark: $dark;
 $--color-theme__gray: $gray;
+$--color-theme__light: $light;
+$--color-theme__white: $white;
 
 $--color-font__white: $white;
-$--color-font__dark: $dark;
-$--color-font__gray: $gray;
-$--color-font__light: $light;
+$--color-font__light: $white4;
 $--color-font__silver: $silver;
+$--color-font__gray: $light;
+$--color-font__dark: $dark;
 
 $--color-border__0: rgba(0, 0, 0, 0.2);
-$--color-border__1: $borderc1;
-$--color-border__2: $borderc2;
-$--color-border__3: $borderc3;
-$--color-border__4: $borderc4;
+$--color-border__1: $white4;
+$--color-border__2: $white3;
+$--color-border__3: $white2;
+$--color-border__4: $white1;
 
 $--header__height: 50px;
 $--header__line_height: 50px;
 
-$--shadow__base: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+$--shadow__base: 0 2px 4px rgba(255, 255, 255, 0.12), 0 0 6px rgba(255, 255, 255, 0.04);
 $--shadow__light: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+$--shadow__global-card: 0 2px 3px rgba(0, 0, 0, 1);

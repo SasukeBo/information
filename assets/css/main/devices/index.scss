@@ -57,7 +57,7 @@
   .status-btn__icon {
     padding: 1rem 0;
     margin: 0.5rem;
-    background: $--color-border__3;
+    background: $--color-theme__light;
     border-radius: 4px;
     transition: all 0.3s ease;
     cursor: pointer;
@@ -87,7 +87,6 @@
   }
 
   .icon-production.animation {
-    animation: rotating 1.5s linear infinite;
     color: $--color-theme__success;
   }
 
@@ -116,6 +115,22 @@
 
   .el-checkbox-group {
     float: right;
+  }
+
+  .el-checkbox-button.is-checked,
+  .el-checkbox-button:hover {
+    .el-checkbox-button__inner {
+      border: 1px solid;
+      box-shadow: 0 0 2px $--color-font__light;
+      color: $--color-font__light;
+      background: $--color-theme__gray;
+    }
+  }
+
+  .el-checkbox-button__inner {
+    background: $--color-theme__dark;
+    color: $--color-font__gray;
+    border: 1px solid;
   }
 }
 
@@ -156,12 +171,12 @@
 
     .left-title {
       z-index: 2;
-      background: $white;
+      background: $--color-theme__bg;
       padding: 0.5rem 1rem;
       font-size: 1.2rem;
       line-height: 2rem;
       margin-bottom: 0;
-      box-shadow: $--shadow__base;
+      box-shadow: $--shadow__global-card;
       position: absolute;
       top: 0;
       right: 0;
@@ -172,13 +187,12 @@
       margin-bottom: 1rem;
       border-bottom-right-radius: 4px;
       border-bottom-left-radius: 4px;
-      box-shadow: 0px 5px 4px rgba(0, 0, 0, 0.12), 0px 0px 0px rgba(0, 0, 0, 0.04);
+      box-shadow: $--shadow__global-card;
     }
 
     .global-card {
       margin-bottom: 0;
       box-shadow: none;
-      border-bottom: 1px solid $--color-border__1;
       border-radius: 0;
     }
 
@@ -193,7 +207,7 @@
     }
 
     .expand-panel {
-      background: $--color-theme__white;
+      background: $--color-theme__bg;
     }
   }
 

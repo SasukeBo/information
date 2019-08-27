@@ -144,7 +144,7 @@ func init() {
 				"name":          &graphql.Field{Type: graphql.String, Description: "设备名称"},
 				"mac":           &graphql.Field{Type: graphql.String, Description: "设备Mac地址"},
 				"token":         &graphql.Field{Type: graphql.String, Description: "设备token，用于数据加密"},
-				"status":        &graphql.Field{Type: scalars.BaseStatus, Description: "基础状态"},
+				"status":        &graphql.Field{Type: scalars.DeviceStatus, Description: "基础状态"},
 				"id":            &graphql.Field{Type: graphql.Int},
 				"uuid":          &graphql.Field{Type: graphql.String, Description: "设备UUID"},
 				"user":          &graphql.Field{Type: User, Description: "注册人用户", Resolve: user.RelatedLoad},

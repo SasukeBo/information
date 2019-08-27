@@ -16,7 +16,7 @@
           size="small"
           type="primary"
         >增加</el-button>
-        <span v-if="params.length == 0" style="color: #606266">暂无参数</span>
+        <span v-if="params.length == 0">暂无参数</span>
       </el-form-item>
     </el-form>
 

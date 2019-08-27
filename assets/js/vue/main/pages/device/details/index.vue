@@ -61,12 +61,12 @@
 
         <div class="data-item">
           <span>创建日期</span>
-          <span>{{ device.createdAt }}</span>
+          <span>{{ timeFormatter(device.createdAt) }}</span>
         </div>
 
         <div class="data-item">
           <span>最近修改</span>
-          <span>{{ device.updatedAt }}</span>
+          <span>{{ timeFormatter(device.updatedAt) }}</span>
         </div>
       </div>
     </div>
@@ -120,6 +120,7 @@
 </template>
 <script>
 import { apollo } from './graphql';
+import { timeFormatter } from 'js/utils';
 import ParamsValueChart from './_params-value-chart.vue';
 
 export default {
@@ -131,6 +132,11 @@ export default {
     return {
       device: {}
     };
+  },
+  methods: {
+    timeFormatter(timeStr) {
+      return timeFormatter(timeStr);
+    }
   }
 };
 </script>
@@ -139,7 +145,7 @@ export default {
 
 .device-details {
   display: flex;
-  padding: 1rem 0.5rem;
+  padding: 0 0.5rem 1rem 0.5rem;
 }
 
 .device-details__left {
@@ -150,7 +156,7 @@ export default {
     padding: 0 0.8rem;
     font-size: 1rem;
     padding-bottom: 0.4rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid $--color-theme__black;
     margin-bottom: 0.6rem;
 
     i {

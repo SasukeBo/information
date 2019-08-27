@@ -2,8 +2,16 @@
   <div class="device-show">
     <div class="device-show__header">
       <div class="device-show__title">
-        <span class="device-show__title-name">{{ device.name }}</span>
-        <span class="device-show__title-type">{{ device.type }}</span>
+        <div class="device-title">
+          <span class="device-show__device-name">{{ device.name }}</span>
+          <span class="device-show__device-type">{{ device.type }}</span>
+        </div>
+        <hr style="margin-top: 0; border-color: #fff" />
+        <div class="device-show__tab-box">
+          <transition name="slide-fade" mode="out-in">
+            <div class="device-show__tab-name" :key="$route.name">{{ tagTitle }}</div>
+          </transition>
+        </div>
       </div>
 
       <div class="device-menu">
@@ -69,8 +77,21 @@ export default {
 
   data() {
     return {
-      device: {}
+      device: {},
+      tabNameMap: {
+        'device-details': '详情',
+        'device-charges': '负责人',
+        'device-params': '参数',
+        'device-params-values': '值记录',
+        'device-status-log': '状态变更',
+        'device-config': '设置'
+      }
     };
+  },
+  computed: {
+    tagTitle() {
+      return this.tabNameMap[this.$route.name];
+    }
   }
 };
 </script>

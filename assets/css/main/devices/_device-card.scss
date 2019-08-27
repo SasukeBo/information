@@ -9,7 +9,7 @@
   }
 
   &:hover .global-card {
-    background: $borderc4;
+    background: lighten($--color-theme__bg, 10%);
   }
 
   .data-item {
@@ -46,8 +46,8 @@
       font-size: 2rem;
     }
 
-    .device-producting {
-      animation: rotating 1.5s linear infinite;
+    .device-prod {
+      // animation: rotating 1.5s linear infinite;
       color: $--color-theme__success;
     }
 

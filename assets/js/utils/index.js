@@ -16,7 +16,17 @@ function parseUserAgent(ua) {
   return '未知设备'
 }
 
+function timeFormatter(timeStr) {
+  var time = new Date(timeStr);
+  var y = time.getFullYear();
+  var month = time.getMonth() + 1;
+  var day = time.getDate();
+  var timeString = time.toTimeString().slice(0, 8);
+  return `${y}年${month}月${day}日 ${timeString}`;
+}
+
 export {
+  timeFormatter,
   parseGQLError,
   getWeekDay,
   parseUserAgent

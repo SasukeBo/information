@@ -4,7 +4,7 @@ var apollo = {
   devices: {
     query: gql`
     query (
-      $status: BaseStatus
+      $status: DeviceStatus
       $ownership: String
       $namePattern: String
     ) {
