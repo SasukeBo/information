@@ -43,7 +43,7 @@ export default {
         1}月${now.getDate()}日${getWeekDay(now)}`;
     },
     ...mapState({
-      profile: state => state.user.profile
+      profile: state => state.user.userExtend
     })
   }
 };
