@@ -69,7 +69,7 @@ function defaultRoutes() {
               path: 'params',
               name: 'device-params',
               props: true,
-              component: load('main/pages/device/_params')
+              component: load('main/pages/device/params')
             },
             {
               path: 'params-values',

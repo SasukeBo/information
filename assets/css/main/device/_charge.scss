@@ -1,0 +1,184 @@
+.device-charge {
+  margin: 1rem;
+  margin-top: 3rem;
+  position: relative;
+}
+
+.device-charge .add-charge-btn {
+  font-size: 1.2rem;
+  font-weight: bolder;
+  padding: 1rem;
+  border-radius: 50%;
+  background: $--color-theme__main;
+  box-shadow: 0 0 3px darken($--color-theme__main, 80%), 0 0 5px $--color-theme__white;
+  position: absolute;
+  transition: background 0.3s ease;
+  top: -24px;
+  right: 32px;
+  cursor: pointer;
+  margin: auto;
+  z-index: 1;
+
+  &:hover {
+    background: darken($--color-theme__main, 15%);
+  }
+}
+
+.device-charge .charge-body {
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  .empty-tip {
+    text-align: center;
+  }
+}
+
+.device-charge .charge-search {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $--color-theme__black;
+
+  .el-input {
+    max-width: 300px;
+  }
+}
+
+.device-charge .charge-item {
+  margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .device-charge .add-charge-btn {
+    right: 0;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .device-charge .add-charge-btn {
+    right: calc(50% - 25px);
+  }
+
+  .device-charge .charge-search .el-input {
+    max-width: 100%;
+  }
+
+  .device-charge .charge-body {
+    padding-top: 2rem;
+  }
+}
+
+/*    charge-item
+--------------------- */
+
+.charge-item {
+  display: flex;
+  flex-flow: wrap;
+  background: $--color-theme__light-black;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.charge-item .charge-item__avatar {
+  flex: 1;
+  text-align: left;
+  margin-right: 1rem;
+
+  img {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+  }
+}
+
+.charge-item .name-phone {
+  flex: 3;
+  padding-right: 1rem;
+  line-height: 50px;
+
+  .name {
+    font-size: 1.2rem;
+    padding-bottom: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+.charge-item .create-at {
+  flex: 3;
+
+  .label {
+    font-size: 0.8rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+.charge-item .link {
+  flex: 1;
+  line-height: 50px;
+}
+
+.charge-item .delete-btn {
+  flex: 1;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    vertical-align: middle;
+    height: 50px;
+  }
+
+  .el-button {
+    vertical-align: middle;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .charge-item {
+    display: block;
+    padding: 0.5rem 1rem;
+  }
+
+  .charge-item .charge-item__avatar {
+    display: inline-block;
+    vertical-align: middle;
+
+    img {
+      width: 100px;
+      height: 100px;
+    }
+  }
+
+  .charge-item .name-phone {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 2rem;
+
+    .name {
+      display: block;
+    }
+
+    .phone {
+      display: block;
+    }
+  }
+
+  .charge-item .create-at {
+    margin-top: 0.5rem;
+  }
+
+  .charge-item .create-at div {
+    display: inline-block;
+  }
+
+  .link {
+    display: inline-block;
+    margin-right: 1rem;
+  }
+
+  .delete-btn {
+    display: inline-block;
+  }
+}

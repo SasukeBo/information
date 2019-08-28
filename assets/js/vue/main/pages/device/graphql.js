@@ -5,6 +5,7 @@ var apollo = {
     query: gql`
     query ($uuid: String!) {
       device: deviceGet(uuid: $uuid) {
+        id
         name
         type
         description

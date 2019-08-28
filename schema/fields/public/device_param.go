@@ -56,7 +56,7 @@ var DeviceParamGetField = &graphql.Field{
 var DeviceParamListField = &graphql.Field{
 	Type: graphql.NewList(types.DeviceParam),
 	Args: graphql.FieldConfigArgument{
-		"deviceUUID":  fields.GenArg(graphql.String, "设备UUID"),
+		"deviceUUID":  fields.GenArg(graphql.String, "设备UUID", false),
 		"namePattern": fields.GenArg(graphql.String, "参数名称模糊匹配"),
 		"signPattern": fields.GenArg(graphql.String, "参数签名模糊匹配"),
 		"type":        fields.GenArg(scalars.DeviceParamValueType, "参数值类型"),

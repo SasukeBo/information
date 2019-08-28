@@ -6,14 +6,14 @@ export default {
     avatarURL: null,
     phone: null,
     role: null,
-    profile: null,
+    userExtend: null,
   },
   mutations: {
     SET_USERUUID: (state, payload) => state.uuid = payload,
     SET_AVATARURL: (state, payload) => state.avatarURL = payload,
     SET_PHONE: (state, payload) => state.phone = payload,
     SET_ROLE: (state, payload) => state.role = payload,
-    SET_PROFILE: (state, payload) => state.profile = payload,
+    SET_USER_EXTEND: (state, payload) => state.userExtend = payload,
     SET_STATUS: (state, payload) => state.status = payload,
   },
   actions: {
@@ -22,7 +22,7 @@ export default {
       commit('SET_AVATARURL', payload.avatarURL)
       commit('SET_PHONE', payload.phone)
       commit('SET_ROLE', payload.role)
-      commit('SET_PROFILE', payload.userExtend)
+      commit('SET_USER_EXTEND', payload.userExtend)
       commit('SET_STATUS', payload.status)
     }
   }

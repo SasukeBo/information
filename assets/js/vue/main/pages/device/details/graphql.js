@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 var chartApollo = {
   params: {
     query: gql`
-    query ($uuid: String) {
+    query ($uuid: String!) {
       params: deviceParamList(deviceUUID: $uuid) { name sign type }
     }`,
     variables() {

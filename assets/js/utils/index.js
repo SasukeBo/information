@@ -17,6 +17,10 @@ function parseUserAgent(ua) {
 }
 
 function timeFormatter(timeStr) {
+  if (!timeStr) {
+    return '-';
+  }
+
   var time = new Date(timeStr);
   var y = time.getFullYear();
   var month = time.getMonth() + 1;

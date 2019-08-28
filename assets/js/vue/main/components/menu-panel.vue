@@ -26,51 +26,6 @@
       <i class="iconfont icon-shebei"></i>
       <span>注册设备</span>
     </a>
-
-    <a href="javascript:;" :class="['menu-item', $route.name == 'devices' ? 'is-active': '']">
-      <i class="iconfont icon-shebei"></i>
-      <span>我的设备</span>
-    </a>
-
-    <a href="javascript:;" :class="['menu-item', $route.name == 'devices' ? 'is-active': '']">
-      <i class="iconfont icon-shebei"></i>
-      <span>我的设备</span>
-    </a>
-
-    <a href="javascript:;" :class="['menu-item', $route.name == 'devices' ? 'is-active': '']">
-      <i class="iconfont icon-shebei"></i>
-      <span>我的设备</span>
-    </a>
-
-    <a href="javascript:;" :class="['menu-item', $route.name == 'devices' ? 'is-active': '']">
-      <i class="iconfont icon-shebei"></i>
-      <span>我的设备</span>
-    </a>
-
-    <a href="javascript:;" :class="['menu-item', $route.name == 'devices' ? 'is-active': '']">
-      <i class="iconfont icon-shebei"></i>
-      <span>我的设备</span>
-    </a>
-
-    <a href="javascript:;" :class="['menu-item', $route.name == 'devices' ? 'is-active': '']">
-      <i class="iconfont icon-shebei"></i>
-      <span>我的设备</span>
-    </a>
-
-    <a href="javascript:;" :class="['menu-item', $route.name == 'devices' ? 'is-active': '']">
-      <i class="iconfont icon-shebei"></i>
-      <span>我的设备</span>
-    </a>
-
-    <a href="javascript:;" :class="['menu-item', $route.name == 'devices' ? 'is-active': '']">
-      <i class="iconfont icon-shebei"></i>
-      <span>我的设备</span>
-    </a>
-
-    <a href="javascript:;" :class="['menu-item', $route.name == 'devices' ? 'is-active': '']">
-      <i class="iconfont icon-shebei"></i>
-      <span>我的设备</span>
-    </a>
   </div>
 </template>
 <script>

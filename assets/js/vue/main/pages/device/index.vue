@@ -65,7 +65,7 @@
       </div>
     </div>
 
-    <router-view></router-view>
+    <router-view :device="device"></router-view>
   </div>
 </template>
 <script>

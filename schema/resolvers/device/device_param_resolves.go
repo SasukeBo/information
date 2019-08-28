@@ -127,7 +127,7 @@ func ParamList(params graphql.ResolveParams) (interface{}, error) {
 		return nil, accessErr
 	}
 
-	qs := models.Repo.QueryTable("device_param").Filter("device_id", device.ID)
+	qs := models.Repo.QueryTable("device_param").Filter("device_id", device.ID).OrderBy("-created_at")
 
 	if namePattern := params.Args["namePattern"]; namePattern != nil {
 		qs = qs.Filter("name__icontains", namePattern)
