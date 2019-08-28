@@ -1,7 +1,7 @@
 <template>
   <div class="device-charge">
     <el-tooltip effect="dark" content="增加负责人" placement="left-end">
-      <i class="el-icon-plus add-charge-btn"></i>
+      <i class="el-icon-plus add-charge-btn" @click="$router.push({ name: 'charge-new' })"></i>
     </el-tooltip>
 
     <div class="global-card charge-body">

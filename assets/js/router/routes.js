@@ -24,24 +24,27 @@ function defaultRoutes() {
           component: load('main/pages/device-new')
         },
         {
-          path: 'device/:uuid/charge/:id',
+          path: 'device/:uuid/charge',
           name: 'device-charge',
           props: true,
           component: load('main/pages/charge'),
           children: [
             {
-              path: 'show',
+              path: ':id/show',
               name: 'charge-show',
+              props: true,
               component: load('main/pages/charge/_show.vue')
             },
             {
-              path: 'edit',
+              path: ':id/edit',
               name: 'charge-edit',
+              props: true,
               component: load('main/pages/charge/_edit.vue')
             },
             {
               path: 'new',
               name: 'charge-new',
+              props: true,
               component: load('main/pages/charge/_new.vue')
             }
           ]
