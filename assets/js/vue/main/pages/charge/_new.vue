@@ -8,30 +8,45 @@
     <div class="charge-new__body global-card">
       <el-form :model="form" label-position="left" label-width="100px" ref="chargeForm">
         <el-form-item label="负责人" prop="name">
-          <el-autocomplete
-            v-model="form.name"
-            :fetch-suggestions="querySearchUsers"
-            value-key="name"
-            placeholder="选择指派人"
-            @select="handleSelect"
-          ></el-autocomplete>
+          <el-select
+            v-model="form.userUUID"
+            remote
+            filterable
+            placeholder="搜索用户"
+            :remote-method="querySearchUsers"
+          >
+            <el-option
+              v-for="user in users"
+              :key="user.uuid"
+              :label="user.userExtend.name"
+              :value="user.uuid"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="负责人权限" prop="privIDs">
-          <el-transfer :titles="['可选权限', '已有权限']" v-model="form.privIDs" :data="devicePrivs"></el-transfer>
+          <el-transfer
+            :titles="['可选权限', '已有权限']"
+            v-model="form.privIDs"
+            :data="devicePrivs"
+            :props="{key: 'id', label: 'name'}"
+          ></el-transfer>
         </el-form-item>
 
         <el-form-item>
-          <el-button size="small" type="primary" class="submit" @click="saveCharge()">提交</el-button>
+          <el-button size="small" type="primary" class="submit" @click="submit()">提交</el-button>
         </el-form-item>
       </el-form>
     </div>
   </div>
 </template>
 <script>
-import { apollo } from '../device-new/graphql';
-import { newApollo } from './graphql';
 import { Autocomplete, Transfer } from 'element-ui';
+
+import usersQuery from './gql/query.users.gql';
+import chargesQuery from '../device/charge/gql/query.charges.gql';
+import devicePrivsQuery from './gql/query.device-privs.gql';
+import deviceChargeCreateMutation from './gql/mutation.device-charge-create.gql';
 
 export default {
   name: 'charge-new',
@@ -40,38 +55,66 @@ export default {
     ElAutocomplete: Autocomplete,
     ElTransfer: Transfer
   },
-  apollo: { ...apollo, ...newApollo },
+  apollo: {
+    users: {
+      query: usersQuery,
+      variables() {
+        return { namePattern: this.namePattern };
+      }
+    },
+    devicePrivs: {
+      query: devicePrivsQuery,
+      variables: { privType: 'device' }
+    }
+  },
   data() {
     return {
       form: {
-        name: '',
+        uuid: this.uuid,
         userUUID: '',
         privIDs: []
       },
+      namePattern: '',
       devicePrivs: [],
       users: []
     };
   },
   methods: {
-    querySearchUsers(queryString, cb) {
-      var users = this.users.map(user => {
-        return { name: user.userExtend.name, uuid: user.uuid };
-      });
-      var results = queryString
-        ? users.filter(this.createUserFilter(queryString))
-        : users;
-      cb(results);
+    querySearchUsers(queryString) {
+      this.namePattern = queryString;
     },
-    createUserFilter(queryString) {
-      return user => {
-        return user.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0;
-      };
-    },
-    handleSelect(user) {
-      this.form.userUUID = user.uuid;
-    },
-    saveCharge() {
-      console.log('saveCharge');
+    submit() {
+      this.$apollo
+        .mutate({
+          mutation: deviceChargeCreateMutation,
+          variables: this.form,
+          update: (store, { data: { deviceCharge } }) => {
+            try {
+              var data = store.readQuery({
+                query: chargesQuery,
+                variables: { uuid: this.uuid }
+              });
+              data.charges.unshift(deviceCharge);
+              store.writeQuery({
+                query: chargesQuery,
+                variables: { uuid: this.uuid },
+                data
+              });
+            } catch (e) {
+              console.log(e.name);
+            }
+          }
+        })
+        .then(({ data }) => {
+          this.$message({ type: 'success', message: '操作成功！' });
+          this.$router.push({
+            name: 'device-charges',
+            params: { uuid: this.uuid }
+          });
+        })
+        .catch(e => {
+          this.$message({ type: 'error', message: e.message });
+        });
     }
   }
 };

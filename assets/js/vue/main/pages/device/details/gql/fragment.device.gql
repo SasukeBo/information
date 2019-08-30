@@ -1,0 +1,16 @@
+fragment device on Device {
+  id
+  uuid
+  mac
+  type
+  name
+  description
+  status
+  token
+  createdAt
+  updatedAt
+  register: user {
+    phone
+    userExtend { name email }
+  }
+}

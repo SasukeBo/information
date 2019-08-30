@@ -1,0 +1,7 @@
+query {
+  lastLogin: getLastLogin {
+    remoteIP
+    userAgent
+    createdAt
+  }
+}

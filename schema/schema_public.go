@@ -80,7 +80,7 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		/* userLogin */
 		"userLoginList": fields.UserLoginListField,
 		"getLastLogin":  fields.UserLoginLastField,
-		"userLoginGet":  fields.UserLoginGetField,
+		"getThisLogin":  fields.UserLoginThisField,
 
 		/* privilege */
 		"privilegeList": fields.PrivilegeListField,

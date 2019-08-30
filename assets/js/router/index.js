@@ -17,7 +17,7 @@ router.beforeEach((to, from, next) => {
       query: tag`query { currentUser { uuid phone status avatarURL userExtend { name email } role { roleName isAdmin } } }`
     }).then(({ data: { currentUser } }) => { // 获取成功
       app.$store.dispatch('user/setUserData', currentUser)
-      app.$socket.connect({ event: 'data', topic: 'auth', payload: { user_uuid: currentUser.uuid } });
+      // app.$socket.connect({ event: 'data', topic: 'auth', payload: { user_uuid: currentUser.uuid } });
       app.$store.dispatch('socket/setDeviceChannel', app.$socket.channel('device'));
       app.$store.dispatch('socket/setSystemChannel', app.$socket.channel('system'));
 

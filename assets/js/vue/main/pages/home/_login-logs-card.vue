@@ -44,7 +44,8 @@
   </div>
 </template>
 <script>
-import { apollo } from './graphql';
+import thisLoginQuery from './gql/query.thisLogin.gql';
+import lastLoginQuery from './gql/query.lastLogin.gql';
 import { parseUserAgent } from 'js/utils';
 
 export default {
@@ -55,7 +56,10 @@ export default {
       thisLogin: {}
     };
   },
-  apollo,
+  apollo: {
+    thisLogin: { query: thisLoginQuery },
+    lastLogin: { query: lastLoginQuery }
+  },
   computed: {
     lastLoginTime() {
       if (this.lastLogin.createdAt) {

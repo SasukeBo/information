@@ -66,8 +66,8 @@ func Last(params graphql.ResolveParams) (interface{}, error) {
 	return userLogins[0], nil
 }
 
-// Get _
-func Get(params graphql.ResolveParams) (interface{}, error) {
+// This _
+func This(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
 	sessionID := rootValue["session_id"].(string)
 

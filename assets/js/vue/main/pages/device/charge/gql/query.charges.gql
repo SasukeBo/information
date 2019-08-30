@@ -1,0 +1,7 @@
+#import './fragment.device-charge.gql'
+
+query($uuid: String) {
+  charges: deviceChargeList(deviceUUID: $uuid) {
+    ...deviceCharge
+  }
+}

@@ -12,8 +12,8 @@ import (
 func ParamCreate(params graphql.ResolveParams) (interface{}, error) {
 	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 
-	device := models.Device{ID: params.Args["deviceID"].(int)}
-	if err := device.GetBy("id"); err != nil {
+	device := models.Device{UUID: params.Args["deviceUUID"].(string)}
+	if err := device.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 	// 创建参数的权限验证
@@ -96,7 +96,7 @@ func ParamDelete(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	return "ok", nil
+	return id, nil
 }
 
 // ParamGet ID获取设备参数

@@ -46,15 +46,13 @@
 </template>
 <script>
 import { timeFormatter } from 'js/utils';
-import {
-  deviceParamUpdate,
-  deviceParamCreate,
-  deviceParamDelete
-} from './graphql';
+import paramDelete from './gql/mutation.param-delete.gql';
+import paramUpdate from './gql/mutation.param-update.gql';
+import paramsQuery from './gql/query.params.gql';
 
 export default {
   name: 'param-item',
-  props: ['param', 'deviceID'],
+  props: ['param', 'uuid'],
   data() {
     return {
       saving: false,
@@ -71,6 +69,10 @@ export default {
         bool: '布尔值',
         int: '整数值',
         float: '浮点数'
+      },
+      paramListQueryOpts: {
+        query: paramsQuery,
+        variables: this.$parent.queryVariables
       }
     };
   },
@@ -107,28 +109,58 @@ export default {
       };
     },
     remove() {
-      deviceParamDelete(this).then(() => {
-        this.deleting = false;
-        this.$emit('remove', this.param.id);
-      });
+      this.$apollo
+        .mutate({
+          mutation: paramDelete,
+          variables: { id: this.param.id },
+          update: (store, { data: { id } }) => {
+            var data = store.readQuery(this.paramListQueryOpts);
+            var index = data.deviceParams.findIndex(p => p.id === id);
+            data.deviceParams.splice(index, 1);
+            store.writeQuery({ ...this.paramListQueryOpts, data });
+          }
+        })
+        .then(data => {
+          this.$message({ type: 'success', message: data });
+        });
     },
     save() {
       if (this.form.id) {
-        deviceParamUpdate(this)
-          .then(({ data: { deviceParamUpdate } }) => {
+        this.$apollo
+          .mutate({
+            mutation: paramUpdate,
+            variables: this.form,
+            update: (store, { data: { deviceParam } }) => {
+              var data = store.readQuery(this.paramListQueryOpts);
+              var index = data.deviceParams.findIndex(
+                dp => dp.id === deviceParam.id
+              );
+              data.deviceParams[index] = deviceParam;
+              store.writeQuery({ ...this.paramListQueryOpts, data });
+            }
+          })
+          .then(() => {
             this.saving = false;
-            this.form = {
-              edit: false,
-              ...deviceParamUpdate
-            };
           })
           .catch(e => console.log(e));
       } else {
-        deviceParamCreate(this)
-          .then(({ data: { deviceParamCreate } }) => {
+        this.$apollo
+          .mutate({
+            mutation: paramCreate,
+            variables: {
+              deviceUUID: this.uuid,
+              ...this.form
+            },
+            update: (store, { data: { deviceParam } }) => {
+              var data = store.readQuery(this.paramListQueryOpts);
+              data.deviceParams.unshift(deviceParam);
+              store.writeQuery({ ...this.paramListQueryOpts, data });
+            }
+          })
+          .then(() => {
             this.saving = false;
+            this.$emit('save');
             this.reset();
-            this.$emit('save', deviceParamCreate);
           })
           .catch(e => console.log(e));
       }

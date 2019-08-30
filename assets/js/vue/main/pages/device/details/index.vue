@@ -119,14 +119,21 @@
   </div>
 </template>
 <script>
-import { apollo } from './graphql';
 import { timeFormatter } from 'js/utils';
 import ParamsValueChart from './_params-value-chart.vue';
+import deviceQuery from './gql/query.device-get.gql';
 
 export default {
   name: 'device-details',
   props: ['uuid'],
-  apollo,
+  apollo: {
+    device: {
+      query: deviceQuery,
+      variables() {
+        return { uuid: this.uuid };
+      }
+    }
+  },
   components: { ParamsValueChart },
   data() {
     return {

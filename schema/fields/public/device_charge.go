@@ -21,7 +21,7 @@ var DeviceChargeCreateField = &graphql.Field{
 
 // DeviceChargeDeleteField doc false
 var DeviceChargeDeleteField = &graphql.Field{
-	Type: graphql.String,
+	Type: graphql.Int,
 	Args: graphql.FieldConfigArgument{
 		"id": fields.GenArg(graphql.Int, "设备指派ID", false),
 	},

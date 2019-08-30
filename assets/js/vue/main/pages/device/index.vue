@@ -69,12 +69,19 @@
   </div>
 </template>
 <script>
-import { apollo } from './graphql';
+import deviceQuery from './gql/query.device.gql'
+
 export default {
   name: 'device-show',
   props: ['uuid'],
-  apollo,
-
+  apollo: {
+    device: {
+      query: deviceQuery,
+      variables() {
+        return { uuid: this.uuid }
+      }
+    }
+  },
   data() {
     return {
       device: {},

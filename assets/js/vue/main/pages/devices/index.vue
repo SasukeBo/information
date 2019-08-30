@@ -61,18 +61,31 @@
 </template>
 <script>
 import DeviceCard from './_device-card';
-import { apollo } from './graphql';
+import devicesQuery from './gql/query.devices.gql';
 
 export default {
   name: 'devices',
   components: { DeviceCard },
-  apollo,
+  apollo: {
+    devices: {
+      query: devicesQuery,
+      variables() {
+        var ownership = 'both';
+        if (this.checkboxGroup.length === 1) ownership = this.checkboxGroup[0];
+
+        return {
+          ownership,
+          namePattern: this.search
+        };
+      }
+    }
+  },
   data() {
     return {
       search: '',
-      checkboxGroup: [],
+      checkboxGroup: ['register', 'charger'],
       isExpand: false,
-      devices: [],
+      devices: []
     };
   }
 };

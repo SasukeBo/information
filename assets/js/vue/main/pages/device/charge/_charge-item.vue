@@ -36,6 +36,8 @@
 </template>
 <script>
 import { timeFormatter } from 'js/utils';
+import chargsQuery from './gql/query.charges.gql';
+import deviceChargeDelete from './gql/mutation.device-charge-delete.gql';
 
 export default {
   name: 'charge-item',
@@ -45,7 +47,25 @@ export default {
       return timeFormatter(timeStr);
     },
     deleteCharge() {
-      console.log('click delete button');
+      this.$apollo
+        .mutate({
+          mutation: deviceChargeDelete,
+          variables: { id: this.charge.id },
+          update: (store, { data: { id } }) => {
+            var opts = {
+              query: chargsQuery,
+              variables: { uuid: this.$route.params.uuid }
+            };
+            var data = store.readQuery(opts);
+            var index = data.charges.findIndex(c => c.id === id);
+            data.charges.splice(index, 1);
+            store.writeQuery({ ...opts, data });
+          }
+        })
+        .then(() => {
+          this.$message({ type: 'success', message: '操作成功' });
+        })
+        .catch(e => console.error(e));
     }
   }
 };

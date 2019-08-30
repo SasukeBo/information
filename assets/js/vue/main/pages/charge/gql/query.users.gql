@@ -1,0 +1,6 @@
+query($namePattern: String) {
+  users: userList(namePattern: $namePattern) {
+    uuid
+    userExtend { name }
+  }
+}

@@ -87,7 +87,7 @@ func ChargeDelete(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	return "ok", nil
+	return id, nil
 }
 
 // ChargeUpdate 重新指定设备负责人

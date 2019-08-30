@@ -5,14 +5,21 @@
 </template>
 <script>
 import echarts from 'echarts';
-import { chartApollo } from './graphql';
+import paramsQuery from './gql/query.params.gql';
 import { mapState } from 'vuex';
 import 'echarts/lib/chart/line';
 
 export default {
   name: 'device-details-params-value-chart',
   props: ['device'],
-  apollo: chartApollo,
+  apollo: {
+    params: {
+      query: paramsQuery,
+      variables() {
+        return { deviceUUID: this.device.uuid };
+      }
+    }
+  },
   data() {
     return {
       params: [],
@@ -67,15 +74,19 @@ export default {
     this.deviceChannel.onData = ({ payload }) => {
       var time = new Date(payload._TIME_STAMP_);
       if (data.length > 99) data.shift();
-      var h = time.getHours() < 10 ? `0${time.getHours()}` : `${time.getHours()}`;
-      var m = time.getMinutes() < 10 ? `0${time.getMinutes()}` : `${time.getMinutes()}`;
-      var s = time.getSeconds() < 10 ? `0${time.getSeconds()}` : `${time.getSeconds()}`;
+      var h =
+        time.getHours() < 10 ? `0${time.getHours()}` : `${time.getHours()}`;
+      var m =
+        time.getMinutes() < 10
+          ? `0${time.getMinutes()}`
+          : `${time.getMinutes()}`;
+      var s =
+        time.getSeconds() < 10
+          ? `0${time.getSeconds()}`
+          : `${time.getSeconds()}`;
       data.push({
         name: time.toString(),
-        value: [
-          `${time.toLocaleDateString()} ${h}:${m}:${s}`,
-          payload.count
-        ]
+        value: [`${time.toLocaleDateString()} ${h}:${m}:${s}`, payload.count]
       });
       this.chart.setOption({ series: [{ data: data }] });
     };

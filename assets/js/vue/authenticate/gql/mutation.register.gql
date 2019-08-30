@@ -1,0 +1,13 @@
+mutation register (
+  $phone: String!
+  $password: String!
+  $smsCode: String!
+) {
+  register(
+    phone: $phone
+    password: $password
+    smsCode: $smsCode
+  ) {
+    uuid
+  }
+}

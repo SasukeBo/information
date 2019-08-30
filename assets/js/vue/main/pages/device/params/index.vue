@@ -20,30 +20,46 @@
           @save="handleSave"
           v-show="showFormItem"
           key="new-item"
-          :deviceID="device.id"
+          :uuid="uuid"
         ></param-item>
-        <param-item @remove="removeItem" v-for="param in params" :key="param.id" :param="param"></param-item>
+
+        <param-item
+          @remove="removeItem"
+          v-for="param in deviceParams"
+          :key="param.id"
+          :param="param"
+        ></param-item>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { apollo } from './graphql';
 import { Tooltip } from 'element-ui';
 import ParamItem from './_param-item';
+import deviceParamsQuery from './gql/query.params.gql'
 
 export default {
   name: 'device-params',
-  props: ['uuid', 'device'],
+  props: ['uuid'],
   components: {
     ParamItem,
     ElTooltip: Tooltip
   },
-  apollo,
+  apollo: {
+    deviceParams: {
+      query: deviceParamsQuery,
+      variables() {
+        return this.queryVariables;
+      }
+    }
+  },
   data() {
     return {
-      params: [],
-      namePattern: '',
+      deviceParams: [],
+      queryVariables: {
+        deviceUUID: this.uuid,
+        namePattern: ''
+      },
       showFormItem: false
     };
   },
@@ -55,7 +71,6 @@ export default {
       this.showFormItem = false;
     },
     handleSave(param) {
-      this.params.unshift(param);
       this.showFormItem = false;
     },
     removeItem(id) {

@@ -28,9 +28,9 @@ var UserLoginLastField = &graphql.Field{
 	Resolve:     userlogin.Last,
 }
 
-// UserLoginGetField _
-var UserLoginGetField = &graphql.Field{
+// UserLoginThisField _
+var UserLoginThisField = &graphql.Field{
 	Type:        types.UserLogin,
-	Description: "获取用户次登录记录。",
-	Resolve:     userlogin.Get,
+	Description: "获取用户此次登录记录。",
+	Resolve:     userlogin.This,
 }

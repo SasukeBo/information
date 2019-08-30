@@ -9,15 +9,20 @@
         <el-input v-model="search" placeholder="搜索名称" prefix-icon="el-icon-search"></el-input>
       </div>
 
-      <charge-item v-for="charge in charges" :key="charge.id" :charge="charge"></charge-item>
+      <charge-item
+        @remove="handleRemove"
+        v-for="charge in charges"
+        :key="charge.id"
+        :charge="charge"
+      ></charge-item>
       <div v-if="charges.length === 0" class="empty-tip">暂无负责人</div>
     </div>
   </div>
 </template>
 <script>
-import { apollo } from './graphql';
 import { Tooltip } from 'element-ui';
 import ChargeItem from './_charge-item';
+import chargesQuery from './gql/query.charges.gql';
 
 export default {
   name: 'device-charge',
@@ -26,12 +31,25 @@ export default {
     ElTooltip: Tooltip,
     ChargeItem
   },
-  apollo,
+  apollo: {
+    charges: {
+      query: chargesQuery,
+      variables() {
+        return { uuid: this.uuid };
+      }
+    }
+  },
   data() {
     return {
       charges: [],
       search: ''
     };
+  },
+  methods: {
+    handleRemove(id) {
+      var index = this.charges.findIndex(c => c.id === id);
+      this.charges.splice(index, 1);
+    }
   }
 };
 </script>

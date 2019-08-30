@@ -1,0 +1,11 @@
+mutation(
+  $name: String!
+  $type: String!
+  $description: String
+) {
+  device: deviceCreate(
+    name: $name
+    type: $type
+    description: $description
+  ) { uuid }
+}

@@ -1,0 +1,17 @@
+#import './fragment.param.gql'
+
+mutation (
+  $id: Int!
+  $name: String
+  $sign: String
+  $type: DeviceParamValueType
+) {
+  deviceParam: deviceParamUpdate(
+    id: $id
+    name: $name
+    sign: $sign
+    type: $type
+  ) {
+    ...param
+  }
+}

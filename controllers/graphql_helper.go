@@ -52,7 +52,7 @@ func gqlGetSession(conn *beego.Controller, obj gqlRootObject, rootFieldName stri
 		obj["user_agent"] = conn.Ctx.Input.UserAgent()
 		fallthrough
 
-	case "logout", "getLastLogin", "userLoginGet":
+	case "logout", "getLastLogin", "getThisLogin":
 		obj["session_id"] = conn.Ctx.Input.CruSession.SessionID()
 	}
 

@@ -45,7 +45,8 @@
   </div>
 </template>
 <script>
-import gql from './graphql';
+import loginByPassword from './gql/mutation.loginByPassword.gql';
+import { parseGQLError } from 'js/utils';
 
 export default {
   name: 'login',
@@ -87,9 +88,17 @@ export default {
     beforeSubmit() {
       this.$refs['loginForm'].validate(valid => {
         if (valid) {
-          gql.login(this);
-        } else {
-          console.log('submit failed');
+          this.$apollo
+            .mutate({
+              mutation: loginByPassword,
+              variables: this.loginForm
+            })
+            .then(() => {
+              this.$router.push({ name: 'home' });
+            })
+            .catch(e => {
+              this.message = parseGQLError(e).message;
+            });
         }
       });
     }

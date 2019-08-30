@@ -1,0 +1,9 @@
+query ($uuid: String!) {
+  device: deviceGet(uuid: $uuid) {
+    id
+    name
+    type
+    uuid
+    description
+  }
+}

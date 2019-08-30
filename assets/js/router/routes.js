@@ -21,33 +21,7 @@ function defaultRoutes() {
         {
           path: 'device/new',
           name: 'device-new',
-          component: load('main/pages/device-new')
-        },
-        {
-          path: 'device/:uuid/charge',
-          name: 'device-charge',
-          props: true,
-          component: load('main/pages/charge'),
-          children: [
-            {
-              path: ':id/show',
-              name: 'charge-show',
-              props: true,
-              component: load('main/pages/charge/_show.vue')
-            },
-            {
-              path: ':id/edit',
-              name: 'charge-edit',
-              props: true,
-              component: load('main/pages/charge/_edit.vue')
-            },
-            {
-              path: 'new',
-              name: 'charge-new',
-              props: true,
-              component: load('main/pages/charge/_new.vue')
-            }
-          ]
+          component: load('main/pages/device/new')
         },
         {
           path: 'device/:uuid',
@@ -91,6 +65,32 @@ function defaultRoutes() {
               name: 'device-config',
               props: true,
               component: load('main/pages/device/_config')
+            }
+          ]
+        },
+        {
+          path: 'device/:uuid/charge',
+          name: 'device-charge',
+          props: true,
+          component: load('main/pages/charge'),
+          children: [
+            {
+              path: ':id/show',
+              name: 'charge-show',
+              props: true,
+              component: load('main/pages/charge/_show.vue')
+            },
+            {
+              path: ':id/edit',
+              name: 'charge-edit',
+              props: true,
+              component: load('main/pages/charge/_edit.vue')
+            },
+            {
+              path: 'new',
+              name: 'charge-new',
+              props: true,
+              component: load('main/pages/charge/_new.vue')
             }
           ]
         }
