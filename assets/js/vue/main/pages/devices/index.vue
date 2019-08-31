@@ -70,11 +70,8 @@ export default {
     devices: {
       query: devicesQuery,
       variables() {
-        var ownership = 'both';
-        if (this.checkboxGroup.length === 1) ownership = this.checkboxGroup[0];
-
         return {
-          ownership,
+          ownership: this.checkboxGroup,
           namePattern: this.search
         };
       }

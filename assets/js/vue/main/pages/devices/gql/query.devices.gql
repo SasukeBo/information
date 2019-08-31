@@ -1,6 +1,6 @@
 query (
   $status: DeviceStatus
-  $ownership: String
+  $ownership: [String]
   $namePattern: String
 ) {
   devices: deviceList(

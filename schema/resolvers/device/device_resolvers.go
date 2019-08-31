@@ -29,10 +29,11 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 
 // List 获取负责或创建的设备
 func List(params graphql.ResolveParams) (interface{}, error) {
+	var devices []*models.Device
 	qs := models.Repo.QueryTable("device")
 	cond := models.NewCond()
 
-	ownership, ok := params.Args["ownership"].(string)
+	ownership, ok := params.Args["ownership"].([]interface{})
 	if !ok {
 		return nil, errors.LogicError{
 			Type:    "Resolvers",
@@ -43,16 +44,36 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 
-	switch ownership {
-	case "register":
-		cond = cond.And("user_id", currentUser.ID)
-	case "charger":
-		ids := chargeIDs(&currentUser)
-		cond = cond.And("id__in", ids)
-	case "both":
+	switch length := len(ownership); length {
+	case 2:
 		ids := chargeIDs(&currentUser)
 		subCond := models.NewCond().And("id__in", ids).Or("user_id", currentUser.ID)
 		cond = cond.AndCond(subCond)
+	case 1:
+		ship, ok := ownership[0].(string)
+		if !ok {
+			return nil, errors.LogicError{
+				Type:    "Resolvers",
+				Field:   "ownership",
+				Message: "ownership is not string type value!",
+			}
+		}
+
+		switch ship {
+		case "register":
+			cond = cond.And("user_id", currentUser.ID)
+		case "charger":
+			ids := chargeIDs(&currentUser)
+			cond = cond.And("id__in", ids)
+
+			// 只有当用户本人是负责人时，创建者uuid才是有效筛选条件
+			if userUUID := params.Args["userUUID"]; userUUID != nil {
+				cond = cond.And("user__uuid", userUUID)
+			}
+		}
+
+	case 0:
+		return devices, nil
 	}
 
 	if dType := params.Args["type"]; dType != nil {
@@ -67,15 +88,8 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 		cond = cond.And("status", status)
 	}
 
-	// 只有当用户本人是负责人时，创建者uuid才是有效筛选条件
-	if userUUID := params.Args["userUUID"]; userUUID != nil && ownership == "charger" {
-		cond = cond.And("user__uuid", userUUID)
-	}
-
 	qs = qs.SetCond(cond).Distinct()
 	// 限定用户查询设备列表值域为 负责的设备 + 注册的设备 -- end
-
-	var devices []*models.Device
 
 	if _, err := qs.All(&devices); err != nil {
 		return nil, errors.LogicError{

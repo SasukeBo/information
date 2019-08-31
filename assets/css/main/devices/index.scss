@@ -116,22 +116,6 @@
   .el-checkbox-group {
     float: right;
   }
-
-  .el-checkbox-button.is-checked,
-  .el-checkbox-button:hover {
-    .el-checkbox-button__inner {
-      border: 1px solid;
-      box-shadow: 0 0 2px $--color-font__light;
-      color: $--color-font__light;
-      background: $--color-theme__gray;
-    }
-  }
-
-  .el-checkbox-button__inner {
-    background: $--color-theme__dark;
-    color: $--color-font__gray;
-    border: 1px solid;
-  }
 }
 
 .user-device .page-right .device-card-list {

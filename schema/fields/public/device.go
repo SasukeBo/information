@@ -60,7 +60,7 @@ var DeviceListField = &graphql.Field{
 		"namePattern": fields.GenArg(graphql.String, "设备名称模糊匹配"),
 		"status":      fields.GenArg(scalars.DeviceStatus, "设备状态 prod/stop/offline/online"),
 		"userUUID":    fields.GenArg(graphql.String, "注册人uuid"),
-		"ownership":   fields.GenArg(graphql.String, "物主身份，register|charger|both", true, "both"),
+		"ownership":   fields.GenArg(graphql.NewList(graphql.String), "物主身份，register、charger", true, []string{}),
 	},
 	Description: "查询device列表",
 	Resolve:     device.List,
