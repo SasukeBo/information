@@ -18,9 +18,7 @@ const httpLink = new HttpLink({
 // 创建订阅的websocket连接
 const wsLink = new WebSocketLink({
   uri: 'ws://localhost/websocket',
-  options: {
-    reconnect: true
-  }
+  options: { reconnect: true }
 })
 
 const link = split(

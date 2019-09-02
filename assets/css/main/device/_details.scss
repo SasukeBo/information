@@ -48,6 +48,8 @@
 
   .params-realtime-chart {
     padding: 1rem;
+    flex: auto;
+    min-width: 300px;
   }
 
   .device-status-card {

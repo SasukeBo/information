@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 	"net"
@@ -143,3 +144,5 @@ func offlineDevices(ids []int) {
 		deviceStatusLog.Insert()
 	}
 }
+
+*/

@@ -17,7 +17,15 @@ func ParamValueList(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	qs := models.Repo.QueryTable("device_param_value").Filter("device_param_id", deviceParam.ID)
+	qs := models.Repo.QueryTable("device_param_value").Filter("device_param_id", deviceParam.ID).OrderBy("-created_at")
+
+	if limit := params.Args["limit"]; limit != nil {
+		qs = qs.Limit(limit)
+	}
+
+	if offset := params.Args["offset"]; offset != nil {
+		qs = qs.Offset(offset)
+	}
 
 	if beforeTime := params.Args["beforeTime"]; beforeTime != nil {
 		qs = qs.Filter("created_at__lt", beforeTime)
@@ -33,4 +41,11 @@ func ParamValueList(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	return paramValues, nil
+}
+
+// ParamValueAdd _
+func ParamValueAdd(params graphql.ResolveParams) (interface{}, error) {
+	// paramID := params.Args["deviceParamID"]
+
+	return nil, nil
 }

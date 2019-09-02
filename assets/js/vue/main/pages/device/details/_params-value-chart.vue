@@ -1,45 +1,55 @@
 <template>
   <div class="global-card params-realtime-chart">
-    <div ref="realtimeChart" style="width: 100%; height: 500px"></div>
+    <div ref="realtimeChart" style="width: 100%; height: 300px"></div>
   </div>
 </template>
 <script>
 import echarts from 'echarts';
-import paramsQuery from './gql/query.params.gql';
-import { mapState } from 'vuex';
 import { timeFormatter } from 'js/utils';
 import 'echarts/lib/chart/line';
+import valuesQuery from './gql/query.values.gql';
+import valuesSub from './gql/sub.values.gql';
 
 export default {
   name: 'device-details-params-value-chart',
-  props: ['device'],
+  props: ['param'],
   apollo: {
-    params: {
-      query: paramsQuery,
+    values: {
+      query: valuesQuery,
       variables() {
-        return { deviceUUID: this.device.uuid };
+        return {
+          paramID: this.param.id,
+          limit: 100
+        };
+      },
+      subscribeToMore: {
+        document: valuesSub,
+        variables() {
+          return {
+            id: this.param.id
+          };
+        },
+        updateQuery: (preData, { subscriptionData }) => {
+          console.log(subscriptionData);
+        }
       }
     }
   },
   data() {
     return {
-      params: [],
-      chart: null
+      chart: null,
+      values: []
     };
-  },
-  computed: {
-    ...mapState({
-      deviceChannel: state => state.socket.deviceChannel
-    })
   },
   mounted() {
     var data = [];
     var option = {};
 
     this.chart = echarts.init(this.$refs.realtimeChart);
+    var titleText = `参数 ${this.param.name} 实时数据`;
     option = {
       title: {
-        text: '设备参数值实时波形图',
+        text: titleText,
         textStyle: {
           color: '#dcdfe6',
           fontSize: 20,
@@ -85,6 +95,7 @@ export default {
     };
     this.chart.setOption(option);
 
+    /*
     if (!this.deviceChannel.topics.indexOf(`device_${this.device.id}`) > -1)
       this.deviceChannel.Join(`device_${this.device.id}`);
 
@@ -97,6 +108,7 @@ export default {
       });
       this.chart.setOption({ series: [{ data: data }] });
     };
+    */
   }
 };
 </script>
