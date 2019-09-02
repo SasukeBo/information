@@ -7,6 +7,7 @@
 import echarts from 'echarts';
 import paramsQuery from './gql/query.params.gql';
 import { mapState } from 'vuex';
+import { timeFormatter } from 'js/utils';
 import 'echarts/lib/chart/line';
 
 export default {
@@ -38,7 +39,13 @@ export default {
     this.chart = echarts.init(this.$refs.realtimeChart);
     option = {
       title: {
-        text: '设备参数值实时波形图'
+        text: '设备参数值实时波形图',
+        textStyle: {
+          color: '#dcdfe6',
+          fontSize: 20,
+          lineHeight: 30
+        },
+        left: 'center'
       },
       tooltip: {},
       legend: {
@@ -48,6 +55,11 @@ export default {
         type: 'time',
         splitLine: {
           show: false
+        },
+        axisLine: {
+          lineStyle: {
+            color: '#dcdf6e'
+          }
         }
       },
       yAxis: {
@@ -55,6 +67,11 @@ export default {
         boundaryGap: [0, '100%'],
         splitLine: {
           show: false
+        },
+        axisLine: {
+          lineStyle: {
+            color: '#dcdf6e'
+          }
         }
       },
       series: [
@@ -73,20 +90,10 @@ export default {
 
     this.deviceChannel.onData = ({ payload }) => {
       var time = new Date(payload._TIME_STAMP_);
-      if (data.length > 99) data.shift();
-      var h =
-        time.getHours() < 10 ? `0${time.getHours()}` : `${time.getHours()}`;
-      var m =
-        time.getMinutes() < 10
-          ? `0${time.getMinutes()}`
-          : `${time.getMinutes()}`;
-      var s =
-        time.getSeconds() < 10
-          ? `0${time.getSeconds()}`
-          : `${time.getSeconds()}`;
+      if (data.length === 100) data.shift();
       data.push({
         name: time.toString(),
-        value: [`${time.toLocaleDateString()} ${h}:${m}:${s}`, payload.count]
+        value: [timeFormatter(time, '%y/%m/%d %timestring'), payload.count]
       });
       this.chart.setOption({ series: [{ data: data }] });
     };

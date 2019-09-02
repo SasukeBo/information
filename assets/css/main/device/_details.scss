@@ -1,11 +1,13 @@
 .device-details {
   display: flex;
+  flex-flow: wrap;
   padding: 0 0.5rem 1rem 0.5rem;
 }
 
 .device-details__left {
   flex: 1;
   margin: 0.5rem;
+  min-width: 300px;
 
   .card-title {
     padding: 0 0.8rem;
@@ -41,7 +43,7 @@
 }
 
 .device-details__right {
-  flex: 2;
+  flex: 3;
   margin: 0.5rem;
 
   .params-realtime-chart {

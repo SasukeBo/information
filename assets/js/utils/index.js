@@ -16,17 +16,21 @@ function parseUserAgent(ua) {
   return '未知设备'
 }
 
-function timeFormatter(timeStr) {
+function timeFormatter(timeStr, format = '%y年%m月%d日 %timestring') {
   if (!timeStr) {
     return '-';
   }
 
   var time = new Date(timeStr);
   var y = time.getFullYear();
-  var month = time.getMonth() + 1;
-  var day = time.getDate();
+  var m = time.getMonth() + 1;
+  var d = time.getDate();
   var timeString = time.toTimeString().slice(0, 8);
-  return `${y}年${month}月${day}日 ${timeString}`;
+  format = format.replace('%y', y);
+  format = format.replace('%m', m);
+  format = format.replace('%d', d);
+  format = format.replace('%timestring', timeString);
+  return format
 }
 
 export {

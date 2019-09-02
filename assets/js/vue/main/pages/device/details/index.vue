@@ -8,11 +8,6 @@
         </div>
 
         <div class="data-item">
-          <span>ID</span>
-          <span>{{ device.uuid }}</span>
-        </div>
-
-        <div class="data-item">
           <span>名称</span>
           <span>{{ device.name }}</span>
         </div>
