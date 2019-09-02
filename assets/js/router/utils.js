@@ -11,11 +11,17 @@ function load(path) {
 // 如果用户已登录，拒绝访问目的页面
 function denyIfLoggedIn() {
   return (to, from, next) => {
-    var app = router.app
+    var app = router.app;
     // 如果用户未登录，继续访问
     // 否则返回原页面
-    app.$store.state.user.uuid ? next(from) : next()
-  }
+
+    if (app.$store.state.user.uuid) {
+      next(from);
+    } else {
+      app.$store.dispatch('user/clearUserData');
+      next();
+    }
+  };
 }
 
 export {

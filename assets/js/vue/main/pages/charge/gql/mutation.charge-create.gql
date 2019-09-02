@@ -1,12 +1,12 @@
-#import 'js/vue/main/pages/device/charge/gql/fragment.device-charge.gql'
+#import '../../device/charge/gql/fragment.device-charge.gql'
 
 mutation (
-  $uuid: String!
+  $deviceUUID: String!
   $userUUID: String!
   $privIDs: [Int]!
 ) {
   deviceCharge: deviceChargeCreate(
-    uuid: $uuid
+    uuid: $deviceUUID
     userUUID: $userUUID
     privIDs: $privIDs
   ) {

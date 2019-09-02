@@ -2,16 +2,25 @@
   <div class="param-item">
     <div class="table-cell" style="width: 15%">
       <span class="span-block" v-if="!form.edit">{{ form.name }}</span>
-      <el-input autofocus v-model="form.name" v-else @keyup.enter.native="save"></el-input>
+      <el-form :model="form" v-else :rules="rules">
+        <el-form-item prop="name">
+          <el-input placeholder="填写参数名" autofocus v-model="form.name"></el-input>
+        </el-form-item>
+      </el-form>
     </div>
 
     <div class="table-cell" style="width: 15%">
       <span class="span-block" v-if="!form.edit">{{ form.sign }}</span>
-      <el-input v-model="form.sign" v-else @keyup.enter.native="save"></el-input>
+      <el-form :model="form" v-else :rules="rules">
+        <el-form-item prop="sign">
+          <el-input placeholder="填写参数标识" v-model="form.sign"></el-input>
+        </el-form-item>
+      </el-form>
     </div>
 
     <div class="table-cell" style="width: 15%">
       <span class="span-block" v-if="!form.edit">{{ typeMap[form.type] }}</span>
+
       <el-select v-model="form.type" v-else placeholder="请选择">
         <el-option
           v-for="item in options"
@@ -45,7 +54,8 @@
   </div>
 </template>
 <script>
-import { timeFormatter } from 'js/utils';
+import { timeFormatter, parseGQLError } from 'js/utils';
+import paramCreate from './gql/mutation.param-create.gql';
 import paramDelete from './gql/mutation.param-delete.gql';
 import paramUpdate from './gql/mutation.param-update.gql';
 import paramsQuery from './gql/query.params.gql';
@@ -73,19 +83,16 @@ export default {
       paramListQueryOpts: {
         query: paramsQuery,
         variables: this.$parent.queryVariables
+      },
+      rules: {
+        name: [{ required: true, trigger: 'blur', message: '必填项' }],
+        sign: [{ required: true, trigger: 'blur', message: '必填项' }]
       }
     };
   },
-  watch: {
-    param: {
-      immediate: true,
-      handler: function(newVal) {
-        if (newVal) this.form = { edit: false, ...this.param };
-      }
-    }
-  },
   created() {
     if (!this.param) this.reset();
+    else this.form = { ...this.param, edit: false };
   },
   methods: {
     timeFormatter(timeStr) {
@@ -103,9 +110,9 @@ export default {
     reset() {
       this.form = {
         edit: true,
+        type: 'string',
         name: '',
-        sign: '',
-        type: ''
+        sign: ''
       };
     },
     remove() {
@@ -122,7 +129,13 @@ export default {
         })
         .then(data => {
           this.$message({ type: 'success', message: data });
-        });
+        })
+        .catch(e =>
+          this.$message({
+            type: 'error',
+            message: parseGQLError(e).message
+          })
+        );
     },
     save() {
       if (this.form.id) {
@@ -141,8 +154,14 @@ export default {
           })
           .then(() => {
             this.saving = false;
+            this.form.edit = false;
           })
-          .catch(e => console.log(e));
+          .catch(e =>
+            this.$message({
+              type: 'error',
+              message: parseGQLError(e).message
+            })
+          );
       } else {
         this.$apollo
           .mutate({
@@ -162,7 +181,12 @@ export default {
             this.$emit('save');
             this.reset();
           })
-          .catch(e => console.log(e));
+          .catch(e =>
+            this.$message({
+              type: 'error',
+              message: parseGQLError(e).message
+            })
+          );
       }
     }
   }

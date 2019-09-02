@@ -15,6 +15,10 @@ export default {
     SET_ROLE: (state, payload) => state.role = payload,
     SET_USER_EXTEND: (state, payload) => state.userExtend = payload,
     SET_STATUS: (state, payload) => state.status = payload,
+    LOGOUT: (state, callback) => {
+      state.uuid = null;
+      callback()
+    }
   },
   actions: {
     setUserData({ commit }, payload) {
@@ -24,6 +28,16 @@ export default {
       commit('SET_ROLE', payload.role)
       commit('SET_USER_EXTEND', payload.userExtend)
       commit('SET_STATUS', payload.status)
+    },
+    clearUserData({ commit }) {
+      commit('SET_AVATARURL', null)
+      commit('SET_PHONE', null)
+      commit('SET_ROLE', null)
+      commit('SET_USER_EXTEND', null)
+      commit('SET_STATUS', null)
+    },
+    logout({ commit }, callback) {
+      commit('LOGOUT', callback)
     }
   }
 };

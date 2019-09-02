@@ -1,0 +1,27 @@
+query ($id: Int!) {
+  charge: deviceChargeGet(id: $id) {
+    id
+    createdAt
+    updatedAt
+    device {
+      name
+      type
+    }
+    abilities: deviceChargeAbilities {
+      id
+      privilege {
+        id
+        name
+      }
+    }
+    user {
+      avatarURL
+      phone
+      uuid
+      userExtend {
+        name
+        email
+      }
+    }
+  }
+}

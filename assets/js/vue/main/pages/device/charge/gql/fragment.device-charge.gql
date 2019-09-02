@@ -6,4 +6,5 @@ fragment deviceCharge on DeviceCharge {
     userExtend { name }
   }
   createdAt
+  privs: deviceChargeAbilities { id }
 }

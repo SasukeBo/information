@@ -14,7 +14,25 @@ router.beforeEach((to, from, next) => {
 
   if (!store.state.user.uuid) { // 没有用户信息
     app.$apollo.query({
-      query: tag`query { currentUser { uuid phone status avatarURL userExtend { name email } role { roleName isAdmin } } }`
+      query: tag`
+      query {
+        currentUser
+        {
+          uuid
+          phone
+          status
+          avatarURL
+          userExtend {
+            name
+            email
+          }
+          role {
+            roleName
+            isAdmin
+          }
+        }
+      }`,
+      fetchPolicy: 'network-only'
     }).then(({ data: { currentUser } }) => { // 获取成功
       app.$store.dispatch('user/setUserData', currentUser)
       // app.$socket.connect({ event: 'data', topic: 'auth', payload: { user_uuid: currentUser.uuid } });

@@ -68,7 +68,8 @@ func ChargePrivCreate(params graphql.ResolveParams) (interface{}, error) {
 
 // ChargePrivDelete 删除设备负责人的权限
 func ChargePrivDelete(params graphql.ResolveParams) (interface{}, error) {
-	deviceChargeAbility := models.DeviceChargeAbility{ID: params.Args["id"].(int)}
+	id := params.Args["id"]
+	deviceChargeAbility := models.DeviceChargeAbility{ID: id.(int)}
 	if err := deviceChargeAbility.GetBy("id"); err != nil {
 		return nil, err
 	}
@@ -82,7 +83,7 @@ func ChargePrivDelete(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	return "ok", nil
+	return id, nil
 }
 
 // ChargeAbilityRelatedLoad _

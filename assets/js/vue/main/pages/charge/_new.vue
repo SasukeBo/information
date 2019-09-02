@@ -46,7 +46,7 @@ import { Autocomplete, Transfer } from 'element-ui';
 import usersQuery from './gql/query.users.gql';
 import chargesQuery from '../device/charge/gql/query.charges.gql';
 import devicePrivsQuery from './gql/query.device-privs.gql';
-import deviceChargeCreateMutation from './gql/mutation.device-charge-create.gql';
+import chargeCreate from './gql/mutation.charge-create.gql';
 
 export default {
   name: 'charge-new',
@@ -70,7 +70,7 @@ export default {
   data() {
     return {
       form: {
-        uuid: this.uuid,
+        deviceUUID: this.uuid,
         userUUID: '',
         privIDs: []
       },
@@ -86,7 +86,7 @@ export default {
     submit() {
       this.$apollo
         .mutate({
-          mutation: deviceChargeCreateMutation,
+          mutation: chargeCreate,
           variables: this.form,
           update: (store, { data: { deviceCharge } }) => {
             try {

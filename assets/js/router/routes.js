@@ -81,12 +81,6 @@ function defaultRoutes() {
               component: load('main/pages/charge/_show.vue')
             },
             {
-              path: ':id/edit',
-              name: 'charge-edit',
-              props: true,
-              component: load('main/pages/charge/_edit.vue')
-            },
-            {
               path: 'new',
               name: 'charge-new',
               props: true,

@@ -18,7 +18,7 @@
         <param-item
           @cancel="cancelParam"
           @save="handleSave"
-          v-show="showFormItem"
+          v-if="showFormItem"
           key="new-item"
           :uuid="uuid"
         ></param-item>
