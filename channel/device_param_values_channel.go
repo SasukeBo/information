@@ -6,7 +6,6 @@ package channel
 import (
 	"container/list"
 	"encoding/json"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/graphql-go/graphql"
 	"golang.org/x/net/websocket"
@@ -21,80 +20,30 @@ type dpvChannelType struct {
 	channelType
 }
 
-// dpvChannel device param value channel
-var dpvChannel = dpvChannelType{
-	channelType{
-		Subscribers: make(map[string]*list.List),
-		Messagechan: make(chan SocketMessage, 10),
-	},
-}
-
 // Join a topic
-func (dpv *dpvChannelType) Join(message *SocketMessage) {
-	conn := message.Socket
-	if conn == nil {
-		logs.Error("Can't create subscribe without socket object!")
-		return
-	}
-
-	subTopic := getSubTopic(message.Topic)
-	subs := dpv.Subscribers[subTopic]
-	if subs == nil {
-		subs = list.New()
-	}
-
-	sessionID, user, err := fetchSessionIDAndUserUUID(conn)
-	if err != nil {
+func (dpv *dpvChannelType) Join(msg *SocketMessage) {
+	if err := join(dpv, msg); err != nil {
 		logs.Error(err)
-		return
 	}
-	// TODO: validate privilege
-
-	sub := Subscribe{
-		Topic:     subTopic,
-		UserUUID:  user.(*models.User).UUID,
-		SessionID: sessionID.(string),
-		Socket:    conn,
-		Payload:   message.Payload,
-		ID:        message.Ref,
-	}
-
-	subs.PushBack(sub)
-	dpv.Subscribers[subTopic] = subs
-	logs.Warn("user:%s join %s", user.(*models.User).Phone, message.Topic)
 }
 
 // Leave 取消订阅
-func (dpv *dpvChannelType) Leave(message *SocketMessage) {
-	conn := message.Socket
-	if conn == nil {
-		logs.Error("Can't unsubscribe without socket object!")
-		return
-	}
-
-	subTopic := getSubTopic(message.Topic)
-	sessionID, user, err := fetchSessionIDAndUserUUID(conn)
-	if err != nil {
+func (dpv *dpvChannelType) Leave(msg *SocketMessage) {
+	if err := leave(dpv, msg); err != nil {
 		logs.Error(err)
-		return
 	}
-
-	subs := dpv.Subscribers[subTopic]
-	newSubs := unsubscribe(subs, sessionID.(string), user.(*models.User))
-	dpv.Subscribers[subTopic] = newSubs
-	logs.Warn("user:%s leave %s", user.(*models.User).Phone, message.Topic)
 }
 
 // HandleIn 处理消息进入
-func (dpv *dpvChannelType) HandleIn(message *SocketMessage) {
-	dpv.Messagechan <- *message
+func (dpv *dpvChannelType) HandleIn(msg *SocketMessage) {
+	dpv.Messagechan <- *msg
 }
 
 // HandleOut 处理消息发出
-func (dpv *dpvChannelType) HandleOut(message *SocketMessage) {
-	subTopic := getSubTopic(message.Topic)
+func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
+	subTopic := getSubTopic(msg.Topic)
 	subs := dpv.Subscribers[subTopic]
-	paramIDStr, ok := message.Payload["paramID"].(string)
+	paramIDStr, ok := msg.Payload["paramID"].(string)
 	if !ok {
 		logs.Error("paramID type assert string failed")
 		return
@@ -107,7 +56,7 @@ func (dpv *dpvChannelType) HandleOut(message *SocketMessage) {
 	}
 
 	paramValue := &models.DeviceParamValue{
-		Value:       message.Payload["value"].(string),
+		Value:       msg.Payload["value"].(string),
 		DeviceParam: &models.DeviceParam{ID: int(paramID)},
 	}
 
@@ -130,37 +79,23 @@ func (dpv *dpvChannelType) HandleOut(message *SocketMessage) {
 			"id":      sub.ID,
 			"payload": result,
 		})
+
 		if err != nil {
 			logs.Error(err)
 			continue
 		}
+
 		websocket.Message.Send(sub.Socket, string(message))
 	}
 }
 
-func (dpv *dpvChannelType) getMessageChan() chan SocketMessage {
-	return dpv.Messagechan
-}
-
-func fetchSessionIDAndUserUUID(conn *websocket.Conn) (interface{}, interface{}, error) {
-	session, err := conn.Request().Cookie(beego.AppConfig.String("SessionName"))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	userLogin := models.UserLogin{SessionID: session.Value}
-	if err := userLogin.GetBy("session_id"); err != nil {
-		return nil, nil, err
-	}
-
-	user, err := userLogin.LoadUser()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return session.Value, user, nil
-}
-
 func init() {
+	dpvChannel := dpvChannelType{
+		channelType{
+			Subscribers: make(map[string]*list.List),
+			Messagechan: make(chan SocketMessage, 10),
+		},
+	}
+
 	go channel("device_param_value:*", &dpvChannel)
 }

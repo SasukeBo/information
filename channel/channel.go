@@ -2,10 +2,13 @@ package channel
 
 import (
 	"container/list"
-	"github.com/SasukeBo/information/models"
-	// "github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"golang.org/x/net/websocket"
 	"strings"
+
+	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 )
 
 // SocketMessage 消息结构体
@@ -24,12 +27,13 @@ type IChannel interface {
 	HandleIn(message *SocketMessage)  // 处理消息进入 channel
 	HandleOut(message *SocketMessage) // 处理消息发出 channel
 	getMessageChan() chan SocketMessage
+	getSubscribers(subTopic string) *list.List
+	setSubscribers(subTopic string, subs *list.List)
 }
 
 // Subscribe 订阅结构体
 type Subscribe struct {
 	ID        string          // apollo 订阅id
-	Topic     string          // 订阅话题
 	UserUUID  string          // 用户 uuid
 	SessionID string          // 当前连接 session_id
 	Socket    *websocket.Conn // 当前连接 socket
@@ -40,6 +44,18 @@ type Subscribe struct {
 type channelType struct {
 	Subscribers map[string]*list.List
 	Messagechan chan SocketMessage
+}
+
+func (ct *channelType) getMessageChan() chan SocketMessage {
+	return ct.Messagechan
+}
+
+func (ct *channelType) getSubscribers(subTopic string) *list.List {
+	return ct.Subscribers[subTopic]
+}
+
+func (ct *channelType) setSubscribers(subTopic string, subs *list.List) {
+	ct.Subscribers[subTopic] = subs
 }
 
 // channel router
@@ -95,4 +111,83 @@ func unsubscribe(subs *list.List, sessionID string, user *models.User) *list.Lis
 	}
 
 	return subs
+}
+
+func fetchSessionIDAndUserUUID(conn *websocket.Conn) (interface{}, interface{}, error) {
+	session, err := conn.Request().Cookie(beego.AppConfig.String("SessionName"))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	userLogin := models.UserLogin{SessionID: session.Value}
+	if err := userLogin.GetBy("session_id"); err != nil {
+		return nil, nil, err
+	}
+
+	user, err := userLogin.LoadUser()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return session.Value, user, nil
+}
+
+// handle join
+func join(ic IChannel, msg *SocketMessage) error {
+	conn := msg.Socket
+	if conn == nil {
+		return errors.LogicError{
+			Type:    "Channel",
+			Message: "Can't create subscribe without socket object!",
+		}
+	}
+
+	subTopic := getSubTopic(msg.Topic)
+	subs := ic.getSubscribers(subTopic)
+	if subs == nil {
+		subs = list.New()
+	}
+
+	sessionID, user, err := fetchSessionIDAndUserUUID(conn)
+	if err != nil {
+		return err
+	}
+
+	sub := Subscribe{
+		UserUUID:  user.(*models.User).UUID,
+		SessionID: sessionID.(string),
+		Socket:    conn,
+		Payload:   msg.Payload,
+		ID:        msg.Ref,
+	}
+
+	subs.PushBack(sub)
+	ic.setSubscribers(subTopic, subs)
+	logs.Warn("user:%s join %s", user.(*models.User).Phone, msg.Topic)
+
+	return nil
+}
+
+// handle leave
+func leave(ic IChannel, msg *SocketMessage) error {
+	conn := msg.Socket
+	if conn == nil {
+		return errors.LogicError{
+			Type:    "Channel",
+			Message: "Can't unsubscribe without socket object!",
+		}
+	}
+
+	subTopic := getSubTopic(msg.Topic)
+	sessionID, user, err := fetchSessionIDAndUserUUID(conn)
+	if err != nil {
+		return err
+	}
+
+	subs := ic.getSubscribers(subTopic)
+	newSubs := unsubscribe(subs, sessionID.(string), user.(*models.User))
+	ic.setSubscribers(subTopic, newSubs)
+	logs.Warn("user:%s leave %s", user.(*models.User).Phone, msg.Topic)
+
+	return nil
 }
