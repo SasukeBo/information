@@ -8,6 +8,13 @@ import (
 	fields "github.com/SasukeBo/information/schema/fields/public"
 )
 
+var Subscription = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Subscription",
+	Fields: graphql.Fields{
+		"deviceParamValueAdd": fields.DeviceParamValueAddField,
+	},
+})
+
 // MutateRoot is mutation root
 var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
@@ -93,8 +100,9 @@ var PublicSchema graphql.Schema
 func init() {
 	var err error
 	PublicSchema, err = graphql.NewSchema(graphql.SchemaConfig{
-		Query:    QueryRoot,
-		Mutation: MutateRoot,
+		Query:        QueryRoot,
+		Mutation:     MutateRoot,
+		Subscription: Subscription,
 	})
 	if err != nil {
 		log.Fatal("failed to create public schema, err: ", err)

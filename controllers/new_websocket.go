@@ -3,45 +3,27 @@ package controllers
 import (
 	"encoding/json"
 
-	"github.com/SasukeBo/information/models"
-	"github.com/astaxie/beego"
+	// "github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"golang.org/x/net/websocket"
+
+	"github.com/SasukeBo/information/channel"
+	// "github.com/SasukeBo/information/models"
 )
 
 type apolloWSMessage struct {
-	Type    string                 `json:"type"`
+	Event   string                 `json:"type"`
 	Payload map[string]interface{} `json:"payload"`
 	ID      string                 `json:"id"`
 }
 
-type topicMap map[string]struct {
-	OprationName string
-	ID           int
-}
-
 // NewConnect handle websocket connection
 func NewConnect(conn *websocket.Conn) {
-	sessionID, err := conn.Request().Cookie(beego.AppConfig.String("SessionName"))
-	if err != nil {
-		logs.Error(err)
-		return
-	}
-
-	userLogin := models.UserLogin{SessionID: sessionID.Value}
-	if err := userLogin.GetBy("session_id"); err != nil {
-		logs.Error(err)
-		return
-	}
-
-	user, err := userLogin.LoadUser()
-	if err != nil {
-		logs.Error(err)
-		return
-	}
-	logs.Info("ws for user uuid: ", user.UUID)
-
+	// TODO: leave defer
+	defer logs.Warn("conn closed without leave topic")
 	var msg string
+	refTopic := make(map[string]map[string]interface{})
+
 	if err := websocket.Message.Receive(conn, &msg); err != nil {
 		logs.Error(err)
 		return
@@ -53,7 +35,7 @@ func NewConnect(conn *websocket.Conn) {
 		return
 	}
 
-	if initMsg.Type != "connection_init" {
+	if initMsg.Event != "connection_init" {
 		logs.Error("not connection_init")
 		return
 	}
@@ -71,7 +53,6 @@ func NewConnect(conn *websocket.Conn) {
 		return
 	}
 
-	// TODO: 完成 websocket
 	for {
 		var msg string
 		var data apolloWSMessage
@@ -85,11 +66,34 @@ func NewConnect(conn *websocket.Conn) {
 			continue
 		}
 
-		switch data.Type {
-		case "start":
-			logs.Warn(data.Payload)
-		case "stop":
-			logs.Warn(data)
+		// 由于 spollo ws stop event 不携带 topic 信息，
+		// 需要存储当前 conn id 对应的话题信息，否则无法定位 subscribe 并取消订阅。
+		if data.Event == "stop" {
+			data.Payload = refTopic[data.ID]
+		} else {
+			refTopic[data.ID] = data.Payload
 		}
+
+		variables, ok := data.Payload["variables"].(map[string]interface{})
+		if !ok {
+			logs.Error("payload variables type assert map[string]interface{} failed!")
+			continue
+		}
+
+		topic, ok := variables["topic"].(string)
+		if !ok {
+			logs.Error("variables topic type assert string failed!")
+			continue
+		}
+
+		socketMessage := channel.SocketMessage{
+			Topic:   topic,
+			Event:   data.Event,
+			Payload: data.Payload,
+			Ref:     data.ID,
+			Socket:  conn,
+		}
+
+		channel.PubSub(&socketMessage)
 	}
 }

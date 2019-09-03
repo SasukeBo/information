@@ -25,7 +25,7 @@ var DeviceParamValueListField = &graphql.Field{
 var DeviceParamValueAddField = &graphql.Field{
 	Type: types.DeviceParamValue,
 	Args: graphql.FieldConfigArgument{
-		"deviceParamID": fields.GenArg(graphql.Int, "设备参数ID", false),
+		"id": fields.GenArg(graphql.Int, "参数值ID", false),
 	},
 	Resolve: device.ParamValueAdd,
 }

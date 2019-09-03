@@ -45,7 +45,11 @@ func ParamValueList(params graphql.ResolveParams) (interface{}, error) {
 
 // ParamValueAdd _
 func ParamValueAdd(params graphql.ResolveParams) (interface{}, error) {
-	// paramID := params.Args["deviceParamID"]
+	id := params.Args["id"].(int)
+	value := models.DeviceParamValue{ID: id}
+	if err := value.GetBy("id"); err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	return value, nil
 }

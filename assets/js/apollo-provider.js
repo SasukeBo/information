@@ -15,7 +15,7 @@ const httpLink = new HttpLink({
   uri: '/graphql'
 })
 
-// 创建订阅的websocket连接
+// 创建订阅的 websocket 连接
 const wsLink = new WebSocketLink({
   uri: 'ws://localhost/websocket',
   options: { reconnect: true }

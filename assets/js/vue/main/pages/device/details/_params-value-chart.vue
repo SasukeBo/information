@@ -26,10 +26,11 @@ export default {
         document: valuesSub,
         variables() {
           return {
-            id: this.param.id
+            topic: `device_param_value:${this.param.id}`
           };
         },
         updateQuery: (preData, { subscriptionData }) => {
+          console.log(preData);
           console.log(subscriptionData);
         }
       }
