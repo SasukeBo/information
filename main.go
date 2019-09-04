@@ -7,6 +7,5 @@ import (
 )
 
 func main() {
-	go RunTCP()
 	beego.Run()
 }

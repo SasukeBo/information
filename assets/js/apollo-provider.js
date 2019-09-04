@@ -2,8 +2,11 @@ import Vue from 'vue'
 import fetch from 'unfetch'
 import { ApolloClient } from 'apollo-client'
 import { HttpLink } from 'apollo-link-http'
-// import { setContext } from 'apollo-link-context'
 import { InMemoryCache } from 'apollo-cache-inmemory'
+import { split } from 'apollo-link'
+import { WebSocketLink } from 'apollo-link-ws'
+import { getMainDefinition } from 'apollo-utilities'
+
 import VueApollo from 'vue-apollo'
 
 /*          users            */
@@ -12,16 +15,25 @@ const httpLink = new HttpLink({
   uri: '/graphql'
 })
 
-// const authLink = setContext(({ variables }, { headers }) => {
-  // var api = variables.graphql ;
+// 创建订阅的 websocket 连接
+const wsLink = new WebSocketLink({
+  uri: `ws://${document.location.host}/websocket`,
+  options: { reconnect: true }
+})
 
-  // if (api) return { headers: { ...headers, api } };
-  // else return { headers };
-// })
+const link = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query)
+    return definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+  },
+  wsLink,
+  httpLink
+)
 
 // 创建 apollo 客户端
 const defaultClient = new ApolloClient({
-  link: httpLink,
+  link,
   cache: new InMemoryCache(),
   connectToDevTools: true
 })

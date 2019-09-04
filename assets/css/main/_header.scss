@@ -182,12 +182,11 @@
       line-height: 2.5rem;
       margin-top: 0.5rem;
       border-bottom-left-radius: 4px;
-      color: $--color-theme__danger;
+      color: $--color-theme__warning;
       border-top: 1px solid $--color-font__light;
 
       &:hover {
         background: $--color-theme__dark;
-        color: $--color-theme__warning;
       }
     }
 

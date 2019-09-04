@@ -8,11 +8,6 @@
         </div>
 
         <div class="data-item">
-          <span>ID</span>
-          <span>{{ device.uuid }}</span>
-        </div>
-
-        <div class="data-item">
           <span>名称</span>
           <span>{{ device.name }}</span>
         </div>
@@ -114,7 +109,9 @@
         </div>
       </div>
 
-      <params-value-chart :device="device"></params-value-chart>
+      <div class="param-chart">
+        <params-value-chart v-for="param in params" :key="param.id" :param="param"></params-value-chart>
+      </div>
     </div>
   </div>
 </template>
@@ -122,6 +119,7 @@
 import { timeFormatter } from 'js/utils';
 import ParamsValueChart from './_params-value-chart.vue';
 import deviceQuery from './gql/query.device-get.gql';
+import paramsQuery from './gql/query.params.gql';
 
 export default {
   name: 'device-details',
@@ -132,12 +130,19 @@ export default {
       variables() {
         return { uuid: this.uuid };
       }
+    },
+    params: {
+      query: paramsQuery,
+      variables() {
+        return { deviceUUID: this.uuid };
+      }
     }
   },
   components: { ParamsValueChart },
   data() {
     return {
-      device: {}
+      device: {},
+      params: []
     };
   },
   methods: {

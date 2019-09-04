@@ -2,97 +2,192 @@ package channel
 
 import (
 	"container/list"
-	"encoding/json"
-	"fmt"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"golang.org/x/net/websocket"
+	"strings"
 
+	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/models/errors"
-	// "github.com/astaxie/beego/logs"
 )
 
-// SubscribeList 订阅队列类型
-type SubscribeList map[string]*list.List
-
-// SocketMsg Socket message struct
-type SocketMsg struct {
-	Channel string                 `json:"channel"` // socket channel
-	Event   string                 `json:"event"`   // 消息类型
-	Topic   string                 `json:"topic"`   // socket topic
-	Payload map[string]interface{} `json:"payload"` // 消息负载
+// SocketMessage 消息结构体
+type SocketMessage struct {
+	Topic   string // 消息话题
+	Event   string // 消息事件
+	Payload map[string]interface{}
+	Socket  *websocket.Conn
+	Ref     string // apollo 订阅id
 }
 
-// ParseMsg 解析 socket 消息
-func (socketMsg *SocketMsg) ParseMsg(websocketMessage string) error {
-	if err := json.Unmarshal([]byte(websocketMessage), socketMsg); err != nil {
-		return errors.LogicError{
-			Type:    "Controller",
-			Message: "parse websocket message error",
-			OriErr:  err,
+// IChannel 接口
+type IChannel interface {
+	Join(message *SocketMessage)      // 加入话题
+	Leave(message *SocketMessage)     // 离开话题
+	HandleIn(message *SocketMessage)  // 处理消息进入 channel
+	HandleOut(message *SocketMessage) // 处理消息发出 channel
+	getMessageChan() chan SocketMessage
+	getSubscribers(subTopic string) *list.List
+	setSubscribers(subTopic string, subs *list.List)
+}
+
+// Subscribe 订阅结构体
+type Subscribe struct {
+	ID        string          // apollo 订阅id
+	UserUUID  string          // 用户 uuid
+	SessionID string          // 当前连接 session_id
+	Socket    *websocket.Conn // 当前连接 socket
+	Payload   map[string]interface{}
+}
+
+// channelType struct type
+type channelType struct {
+	Subscribers map[string]*list.List
+	Messagechan chan SocketMessage
+}
+
+func (ct *channelType) getMessageChan() chan SocketMessage {
+	return ct.Messagechan
+}
+
+func (ct *channelType) getSubscribers(subTopic string) *list.List {
+	return ct.Subscribers[subTopic]
+}
+
+func (ct *channelType) setSubscribers(subTopic string, subs *list.List) {
+	ct.Subscribers[subTopic] = subs
+}
+
+// channel router
+var channelRouter = make(map[string]IChannel)
+
+// register channel route
+func channel(topic string, c IChannel) {
+	channelRouter[topic] = c
+	messageChan := c.getMessageChan()
+
+	for {
+		select {
+		case socketMessage := <-messageChan:
+			switch socketMessage.Event {
+			case "start":
+				c.Join(&socketMessage)
+			case "stop":
+				c.Leave(&socketMessage)
+			case "data":
+				c.HandleOut(&socketMessage)
+			}
 		}
 	}
+}
+
+// PubSub handleSocketMessage
+func PubSub(sm *SocketMessage) {
+	topics := strings.Split(sm.Topic, ":")
+	topic := strings.Join([]string{topics[0], "*"}, ":")
+	c := channelRouter[topic]
+	if c == nil {
+		return
+	}
+
+	c.HandleIn(sm)
+}
+
+func getSubTopic(topic string) string {
+	topics := strings.Split(topic, ":")
+	if len(topics) > 1 {
+		return topics[1]
+	}
+
+	return "any"
+}
+
+func unsubscribe(subs *list.List, sessionID string, user *models.User) *list.List {
+	for el := subs.Front(); el != nil; el = el.Next() {
+		sub := el.Value.(Subscribe)
+		if sub.UserUUID == user.UUID && sub.SessionID == sessionID {
+			subs.Remove(el)
+		}
+	}
+
+	return subs
+}
+
+func fetchSessionIDAndUserUUID(conn *websocket.Conn) (interface{}, interface{}, error) {
+	session, err := conn.Request().Cookie(beego.AppConfig.String("SessionName"))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	userLogin := models.UserLogin{SessionID: session.Value}
+	if err := userLogin.GetBy("session_id"); err != nil {
+		return nil, nil, err
+	}
+
+	user, err := userLogin.LoadUser()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return session.Value, user, nil
+}
+
+// handle join
+func join(ic IChannel, msg *SocketMessage) error {
+	conn := msg.Socket
+	if conn == nil {
+		return errors.LogicError{
+			Type:    "Channel",
+			Message: "Can't create subscribe without socket object!",
+		}
+	}
+
+	subTopic := getSubTopic(msg.Topic)
+	subs := ic.getSubscribers(subTopic)
+	if subs == nil {
+		subs = list.New()
+	}
+
+	sessionID, user, err := fetchSessionIDAndUserUUID(conn)
+	if err != nil {
+		return err
+	}
+
+	sub := Subscribe{
+		UserUUID:  user.(*models.User).UUID,
+		SessionID: sessionID.(string),
+		Socket:    conn,
+		Payload:   msg.Payload,
+		ID:        msg.Ref,
+	}
+
+	subs.PushBack(sub)
+	ic.setSubscribers(subTopic, subs)
+	logs.Warn("user:%s join %s", user.(*models.User).Phone, msg.Topic)
 
 	return nil
 }
 
-// Marshal socket 消息 to json
-func (socketMsg *SocketMsg) Marshal() string {
-	socketMsgB, err := json.Marshal(socketMsg)
+// handle leave
+func leave(ic IChannel, msg *SocketMessage) error {
+	conn := msg.Socket
+	if conn == nil {
+		return errors.LogicError{
+			Type:    "Channel",
+			Message: "Can't unsubscribe without socket object!",
+		}
+	}
+
+	subTopic := getSubTopic(msg.Topic)
+	sessionID, user, err := fetchSessionIDAndUserUUID(conn)
 	if err != nil {
-		return fmt.Sprintf(`{"channel": "system", "topic": "error", "payload": {"error": %s, "type": "json.Marshal Error"}}`, err.Error())
+		return err
 	}
 
-	return string(socketMsgB)
-}
+	subs := ic.getSubscribers(subTopic)
+	newSubs := unsubscribe(subs, sessionID.(string), user.(*models.User))
+	ic.setSubscribers(subTopic, newSubs)
+	logs.Warn("user:%s leave %s", user.(*models.User).Phone, msg.Topic)
 
-// Subscribe 订阅结构体，表示一次订阅
-type Subscribe struct {
-	UserUUID string          // 订阅者 uuid
-	Topic    string          // 当前订阅的话题
-	Socket   *websocket.Conn // 当前订阅者建立的 websocket 连接
-}
-
-// Channel 消息管道接口
-type Channel interface {
-	JoinTopic(conn *websocket.Conn, sm *SocketMsg, uuid string) // 订阅话题
-	LeaveTopic(sm *SocketMsg, uuid string)                      // 取消订阅话题
-	HandleReceive(sm *SocketMsg, uuid string)                   // 处理接收的消息
-	Broadcast(sm SocketMsg)                                     // 广播消息
-	hasTopic(sm *SocketMsg) bool                                // 话题是否存在
-	GetSubscribes() SubscribeList
-	SetSubscribes(sl SubscribeList)
-}
-
-func subscribe(ch Channel, newsub Subscribe) {
-	topic := newsub.Topic
-	subscribes := ch.GetSubscribes()
-	for sub := subscribes[topic].Front(); sub != nil; sub = sub.Next() {
-		if sub.Value.(Subscribe).UserUUID == newsub.UserUUID { // 有则替换
-			sub.Value = newsub
-			return
-		}
-	}
-	subscribes[topic].PushBack(newsub) // 无则新增
-	ch.SetSubscribes(subscribes)
-}
-
-func unsubscribe(ch Channel, unsub Subscribe) {
-	topic := unsub.Topic
-	subscribes := ch.GetSubscribes()
-	for sub := subscribes[topic].Front(); sub != nil; sub = sub.Next() {
-		if sub.Value.(Subscribe).UserUUID == unsub.UserUUID {
-			subscribes[topic].Remove(sub)
-		}
-	}
-	ch.SetSubscribes(subscribes)
-}
-
-func pushMessage(ch Channel, sm *SocketMsg) {
-	subs := ch.GetSubscribes()[sm.Topic]
-	for item := subs.Front(); item != nil; item = item.Next() {
-		if sub, ok := item.Value.(Subscribe); ok {
-			websocket.Message.Send(sub.Socket, sm.Marshal())
-		}
-	}
-
-	// logs.Warn("push message to topic: ", sm.Topic)
+	return nil
 }
