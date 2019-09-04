@@ -35,9 +35,6 @@ router.beforeEach((to, from, next) => {
       fetchPolicy: 'network-only'
     }).then(({ data: { currentUser } }) => { // 获取成功
       app.$store.dispatch('user/setUserData', currentUser)
-      // app.$socket.connect({ event: 'data', topic: 'auth', payload: { user_uuid: currentUser.uuid } });
-      app.$store.dispatch('socket/setDeviceChannel', app.$socket.channel('device'));
-      app.$store.dispatch('socket/setSystemChannel', app.$socket.channel('system'));
 
       if (isAuthPage(from)) {
         // 登录状态下如果是 auth 相关页面则导向 首页
