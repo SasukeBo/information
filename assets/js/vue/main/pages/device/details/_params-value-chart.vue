@@ -18,11 +18,11 @@ export default {
       query: valuesQuery,
       variables() {
         var time = new Date()
-        time.setSeconds(time.getSeconds() + 100)
+        time.setSeconds(time.getSeconds() - 100)
         return {
           paramID: this.param.id,
           limit: 100,
-          before: time.toISOString()
+          after: time.toISOString()
         };
       },
       subscribeToMore: {
