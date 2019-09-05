@@ -52,6 +52,16 @@ var DeviceGetField = &graphql.Field{
 	Resolve:     device.Get,
 }
 
+// DeviceTokenGetField get a device by token
+var DeviceTokenGetField = &graphql.Field{
+	Type: types.Device,
+	Args: graphql.FieldConfigArgument{
+		"token": fields.GenArg(graphql.String, "设备token", false),
+	},
+	Description: "使用token获取device",
+	Resolve:     device.GetByToken,
+}
+
 // DeviceListField get a device list with options
 var DeviceListField = &graphql.Field{
 	Type: graphql.NewList(types.Device),

@@ -148,6 +148,7 @@ func init() {
 				"id":            &graphql.Field{Type: graphql.Int},
 				"uuid":          &graphql.Field{Type: graphql.String, Description: "设备UUID"},
 				"user":          &graphql.Field{Type: User, Description: "注册人用户", Resolve: user.RelatedLoad},
+				"params":        &graphql.Field{Type: graphql.NewList(DeviceParam), Description: "设备参数", Resolve: device.ParamRelatedLoad},
 				"deviceCharges": &graphql.Field{Type: graphql.NewList(DeviceCharge), Description: "设备负责人", Resolve: device.ChargeRelatedLoad},
 				"description":   &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
 				"createdAt":     &graphql.Field{Type: graphql.DateTime},

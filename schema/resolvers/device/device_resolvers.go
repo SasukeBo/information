@@ -27,6 +27,22 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 	return device, nil
 }
 
+// GetByToken 获取设备
+func GetByToken(params graphql.ResolveParams) (interface{}, error) {
+	token := params.Args["token"].(string)
+
+	device := models.Device{Token: token}
+	if err := device.GetBy("token"); err != nil {
+		return nil, err
+	}
+
+	if err := device.ValidateAccess(params); err != nil {
+		return nil, err
+	}
+
+	return device, nil
+}
+
 // List 获取负责或创建的设备
 func List(params graphql.ResolveParams) (interface{}, error) {
 	var devices []*models.Device

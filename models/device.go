@@ -105,6 +105,22 @@ func (d *Device) LoadDeviceCharge() ([]*DeviceCharge, error) {
 	return d.DeviceCharges, nil
 }
 
+// LoadDeviceParams _
+func (d *Device) LoadDeviceParams() ([]*DeviceParam, error) {
+	qs := Repo.QueryTable("device_param").Filter("device_id", d.ID)
+
+	var dps []*DeviceParam
+	if _, err := qs.All(&dps); err != nil {
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Message: "device load device_params error",
+			OriErr:  err,
+		}
+	}
+
+	return dps, nil
+}
+
 // ValidateAccess validate access to device
 func (d *Device) ValidateAccess(params graphql.ResolveParams, args ...string) error {
 	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(User)

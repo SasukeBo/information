@@ -71,6 +71,7 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 
 		/*    device    */
 		"deviceGet":            fields.DeviceGetField,
+		"deviceTokenGet":       fields.DeviceTokenGetField,
 		"deviceList":           fields.DeviceListField,
 		"deviceChargeGet":      fields.DeviceChargeGetField,
 		"deviceChargeList":     fields.DeviceChargeListField,

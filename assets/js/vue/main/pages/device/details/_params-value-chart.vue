@@ -17,9 +17,12 @@ export default {
     values: {
       query: valuesQuery,
       variables() {
+        var time = new Date()
+        time.setSeconds(time.getSeconds() + 100)
         return {
           paramID: this.param.id,
-          limit: 100
+          limit: 100,
+          before: time.toISOString()
         };
       },
       subscribeToMore: {
@@ -122,7 +125,7 @@ export default {
       });
     },
     initWS() {
-      var ws = new WebSocket('ws://localhost/websocket');
+      var ws = new WebSocket(`ws://${document.location.host}/websocket`);
       ws.onopen = function() {
         var data = { type: 'connection_init' };
         ws.send(JSON.stringify(data));

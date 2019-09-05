@@ -43,6 +43,10 @@ func (dpv *dpvChannelType) HandleIn(msg *SocketMessage) {
 func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
 	subTopic := getSubTopic(msg.Topic)
 	subs := dpv.Subscribers[subTopic]
+	if subs == nil {
+		return
+	}
+
 	paramIDStr, ok := msg.Payload["paramID"].(string)
 	if !ok {
 		logs.Error("paramID type assert string failed")

@@ -165,6 +165,10 @@ func ParamRelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 		return v.LoadDeviceParam()
 	case *models.DeviceParamValue:
 		return v.LoadDeviceParam()
+	case models.Device:
+		return v.LoadDeviceParams()
+	case *models.Device:
+		return v.LoadDeviceParams()
 	default:
 		return nil, errors.LogicError{
 			Type:    "Resolver",
