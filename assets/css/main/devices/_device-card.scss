@@ -27,14 +27,15 @@
     width: 3.5rem;
     font-size: 0.75rem;
     color: $--color-font__light;
+    margin: auto;
+  }
+
+  .data-item .label-center {
+    padding-bottom: 0.5rem;
   }
 
   .data-item .label {
     display: inline-block;
-  }
-
-  .data-item .label-center {
-    margin: auto;
   }
 
   .data-item.device-status {
@@ -46,13 +47,16 @@
       font-size: 2rem;
     }
 
-    .device-prod {
-      // animation: rotating 1.5s linear infinite;
+    &.device-prod {
       color: $--color-theme__success;
     }
 
-    .status {
-      color: $--color-font__gray;
+    &.device-offline {
+      color: $--color-theme__gray;
+    }
+
+    &.device-stop {
+      color: $--color-theme__warning;
     }
   }
 
@@ -65,7 +69,7 @@
     padding-top: 0.5rem;
 
     &:before {
-      content: ' ';
+      content: " ";
       display: inline-block;
       height: 1rem;
     }

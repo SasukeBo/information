@@ -9,24 +9,24 @@
       <transition name="expand">
         <div v-show="isExpand" class="expand-panel">
           <div class="global-card status-btns">
-            <div class="status-btn">
-              <div class="status-btn__icon">
-                <i class="iconfont icon-production animation"></i>
+            <div class="status-btn status_prod" @click="filterStatus('prod')">
+              <div class="status-btn__icon" :class="[status === 'prod' ? 'is-selected' : '']">
+                <i class="iconfont icon-production"></i>
               </div>
 
               <div class="status-btn__label">在生产</div>
             </div>
 
-            <div class="status-btn">
-              <div class="status-btn__icon">
+            <div class="status-btn status_stop" @click="filterStatus('stop')">
+              <div class="status-btn__icon" :class="[status === 'stop' ? 'is-selected' : '']">
                 <i class="iconfont icon-production"></i>
               </div>
 
-              <div class="status-btn__label">已停机</div>
+              <div class="status-btn__label">停机中</div>
             </div>
 
-            <div class="status-btn">
-              <div class="status-btn__icon">
+            <div class="status-btn status_offline" @click="filterStatus('offline')">
+              <div class="status-btn__icon" :class="[status === 'offline' ? 'is-selected' : '']">
                 <i class="iconfont icon-off-line"></i>
               </div>
 
@@ -54,7 +54,12 @@
       <div class="right-title">设备列表</div>
 
       <div class="device-card-list">
-        <device-card v-for="device in devices" :device="device" :key="device.uuid"></device-card>
+        <device-card
+          v-for="device in devices.filter(d => !status || d.status === status)"
+          :device="device"
+          v-bind:status.sync="device.status"
+          :key="device.uuid"
+        ></device-card>
       </div>
     </div>
   </div>
@@ -82,8 +87,15 @@ export default {
       search: '',
       checkboxGroup: ['register', 'charger'],
       isExpand: false,
-      devices: []
+      devices: [],
+      status: ''
     };
+  },
+  methods: {
+    filterStatus(status) {
+      if (this.status === status) this.status = '';
+      else this.status = status;
+    }
   }
 };
 </script>

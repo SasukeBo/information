@@ -58,23 +58,18 @@
           <span>创建日期</span>
           <span>{{ timeFormatter(device.createdAt) }}</span>
         </div>
-
-        <div class="data-item">
-          <span>最近修改</span>
-          <span>{{ timeFormatter(device.updatedAt) }}</span>
-        </div>
       </div>
     </div>
 
     <div class="device-details__right">
       <div class="global-card device-status-card">
-        <div class="status">
+        <div class="status" :class="['status_' + statusTag]">
           <div class="status-icon">
             <i class="el-icon-s-tools"></i>
             <i class="el-icon-setting"></i>
           </div>
 
-          <div class="status-text">生产中</div>
+          <div class="status-text">{{ status }}</div>
         </div>
 
         <div class="summary">
@@ -120,6 +115,7 @@ import { timeFormatter } from 'js/utils';
 import ValueChart from './value-chart.vue';
 import deviceQuery from './gql/query.device-get.gql';
 import paramsQuery from './gql/query.params.gql';
+import deviceStatusSub from 'js/vue/main/pages/devices/gql/sub.device-status.gql';
 
 export default {
   name: 'device-details',
@@ -136,14 +132,43 @@ export default {
       variables() {
         return { deviceUUID: this.uuid };
       }
+    },
+    $subscribe: {
+      status: {
+        query: deviceStatusSub,
+        variables() {
+          return {
+            t: `dsl:${this.device.id}`
+          };
+        },
+        result({ data }) {
+          this.statusTag = data.status;
+        }
+      }
     }
   },
   components: { ValueChart },
   data() {
     return {
       device: {},
-      params: []
+      params: [],
+      statusTag: '',
+      statusMap: {
+        prod: '生产中',
+        offline: '离线',
+        stop: '停机'
+      }
     };
+  },
+  watch: {
+    device(newVal) {
+      this.statusTag = newVal.status;
+    }
+  },
+  computed: {
+    status() {
+      return this.statusMap[this.statusTag];
+    }
   },
   methods: {
     timeFormatter(timeStr) {

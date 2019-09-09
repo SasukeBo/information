@@ -8,7 +8,6 @@ import (
 
 // StatusLogList 设备参数创建
 func StatusLogList(params graphql.ResolveParams) (interface{}, error) {
-
 	device := models.Device{UUID: params.Args["deviceUUID"].(string)}
 	if err := device.GetBy("uuid"); err != nil {
 		return nil, err
@@ -39,4 +38,14 @@ func StatusLogList(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	return statusLogs, nil
+}
+
+// StatusRefresh _
+func StatusRefresh(params graphql.ResolveParams) (interface{}, error) {
+	device := models.Device{ID: params.Args["deviceID"].(int)}
+	if err := device.GetBy("id"); err != nil {
+		return nil, err
+	}
+
+	return device.Status, nil
 }

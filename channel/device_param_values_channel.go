@@ -42,12 +42,6 @@ func (dpv *dpvChannelType) HandleIn(msg *SocketMessage) {
 
 // HandleOut 处理消息发出
 func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
-	subTopic := getSubTopic(msg.Topic)
-	subs := dpv.Subscribers[subTopic]
-	if subs == nil {
-		return
-	}
-
 	value, ok := msg.Variables["v"].(string)
 	if !ok {
 		logs.Error("variables value type assert string failed!")
@@ -86,6 +80,12 @@ func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
 
 	if err := paramValue.Insert(); err != nil {
 		logs.Error(err)
+		return
+	}
+
+	subTopic := getSubTopic(msg.Topic)
+	subs := dpv.Subscribers[subTopic]
+	if subs == nil {
 		return
 	}
 

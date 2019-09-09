@@ -64,8 +64,6 @@
 
     &:hover,
     &.is-selected {
-      background: $--color-border__1;
-
       .iconfont {
         color: $--color-font__white;
       }
@@ -82,16 +80,47 @@
     font-size: 1.5rem;
   }
 
-  .icon-production {
-    color: $--color-theme__danger;
+  .status_prod {
+    .iconfont {
+      color: $--color-theme__success;
+    }
+
+    .status-btn__icon {
+      &:hover,
+      &.is-selected {
+        background: $--color-theme__success;
+      }
+    }
   }
 
-  .icon-production.animation {
-    color: $--color-theme__success;
+  .status_stop {
+    .iconfont {
+      color: $--color-theme__warning;
+    }
+
+    .status-btn__icon {
+      &:hover,
+      &.is-selected {
+        background: $--color-theme__warning;
+      }
+    }
   }
 
-  .icon-off-line {
-    color: $--color-font__light;
+  .status_offline {
+    .iconfont {
+      color: $--color-font__light;
+    }
+
+    .status-btn__icon {
+      &:hover,
+      &.is-selected {
+        background: $--color-font__light;
+
+        .iconfont {
+          color: $--color-theme__gray;
+        }
+      }
+    }
   }
 }
 

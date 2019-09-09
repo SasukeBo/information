@@ -18,5 +18,5 @@ func init() {
 	beego.Router("/admin_graphql", &controllers.AdminGQLController{})
 	beego.InsertFilter("/admin_graphql", beego.BeforeExec, controllers.HandleAdminGraphql)
 
-	beego.Handler("/websocket", websocket.Handler(controllers.NewConnect))
+	beego.Handler("/websocket", websocket.Handler(controllers.Connect))
 }

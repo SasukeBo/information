@@ -17,8 +17,8 @@ type apolloWSMessage struct {
 	ID      string                 `json:"id"`
 }
 
-// NewConnect handle websocket connection
-func NewConnect(conn *websocket.Conn) {
+// Connect handle websocket connection
+func Connect(conn *websocket.Conn) {
 	// TODO: leave defer
 	defer logs.Warn("conn closed without leave topic")
 	var msg string

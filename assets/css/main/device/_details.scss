@@ -98,7 +98,6 @@
         padding-top: 0.5rem;
       }
     }
-
     .status-icon {
       width: 100px;
       height: 100px;
@@ -106,17 +105,34 @@
       position: relative;
 
       i.el-icon-s-tools {
-        color: $--color-theme__warning;
         font-size: 3rem;
         position: absolute;
         bottom: 0;
         right: 0;
-        animation: rotating 1.5s linear infinite;
       }
 
       i.el-icon-setting {
         font-size: 4.5rem;
+      }
+    }
+
+    .status_stop,
+    .status_prod {
+      i.el-icon-s-tools {
+        color: $--color-theme__warning;
+      }
+
+      i.el-icon-setting {
         color: $--color-theme__success;
+      }
+    }
+
+    .status_prod {
+      i.el-icon-s-tools {
+        animation: rotating 1.5s linear infinite;
+      }
+
+      i.el-icon-setting {
         animation: rotating reverse 1.5s linear infinite;
       }
     }

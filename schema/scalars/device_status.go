@@ -10,9 +10,8 @@ import (
 // DeviceStatusMap 主要用于做graphql自定义的DeviceStatus类型转换
 var DeviceStatusMap = VMap{
 	"prod":    models.DeviceStatus.Prod,
-	"stop":    models.DeviceStatus.Stop,
 	"offline": models.DeviceStatus.OffLine,
-	"online":  models.DeviceStatus.OnLine,
+	"stop":    models.DeviceStatus.Stop,
 }
 
 // DeviceStatus is a scalars graphql type

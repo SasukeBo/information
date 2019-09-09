@@ -1,0 +1,3 @@
+subscription ($deviceID: Int!) {
+  status: deviceStatusRefresh(deviceID: $deviceID)
+}

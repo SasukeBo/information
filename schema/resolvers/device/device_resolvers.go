@@ -104,7 +104,7 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 		cond = cond.And("status", status)
 	}
 
-	qs = qs.SetCond(cond).Distinct()
+	qs = qs.SetCond(cond).Distinct().OrderBy("-created_at")
 	// 限定用户查询设备列表值域为 负责的设备 + 注册的设备 -- end
 
 	if _, err := qs.All(&devices); err != nil {

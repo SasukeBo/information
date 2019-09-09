@@ -7,11 +7,10 @@ import (
 
 // DeviceStatus 设备状态
 var DeviceStatus = struct {
-	Prod    int // 运行
-	Stop    int // 停机
 	OffLine int // 离线
-	OnLine  int // 在线
-}{0, 1, 2, 3}
+	Prod    int // 运行
+	Stop    int // 在线但是未运行，就是停机
+}{0, 1, 2}
 
 // DeviceStatusLog 设备运行状态变更模型
 type DeviceStatusLog struct {
@@ -29,6 +28,16 @@ func (dsl *DeviceStatusLog) Insert() error {
 			Message: "device_status_log insert error",
 			OriErr:  err,
 		}
+	}
+
+	device, err := dsl.LoadDevice()
+	if err != nil {
+		return err
+	}
+
+	device.Status = dsl.Status
+	if err := device.Update("status"); err != nil {
+		return err
 	}
 
 	return nil

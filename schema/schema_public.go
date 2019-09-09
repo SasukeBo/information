@@ -8,10 +8,12 @@ import (
 	fields "github.com/SasukeBo/information/schema/fields/public"
 )
 
+// Subscription _
 var Subscription = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Subscription",
 	Fields: graphql.Fields{
 		"deviceParamValueAdd": fields.DeviceParamValueAddField,
+		"deviceStatusRefresh": fields.DeviceStatusRefreshField,
 	},
 })
 

@@ -12,10 +12,10 @@ export default {
       query: valuesQuery,
       variables() {
         var time = new Date();
-        time.setSeconds(time.getSeconds() - 60);
+        time.setSeconds(time.getSeconds() - 600);
         return {
           paramID: this.param.id,
-          limit: 100,
+          limit: 1000,
           after: time.toISOString()
         };
       },
@@ -36,16 +36,21 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      values: []
+    }
+  },
   watch: {
     values(newVal) {
       var newSeriesDate = this.formatValues(newVal);
-      var seriesData = this.seriesData;
-
+      var seriesData = []
+      if (this.seriesData) seriesData = this.seriesData;
       for (var i = newSeriesDate.length; i > 0; i--) {
-        if (seriesData.length > 100) seriesData.shift();
+        if (seriesData.length > 1000) seriesData.shift();
         seriesData.push(newSeriesDate[i - 1]);
       }
-      this.$emit('update:data', seriesData);
+      // this.$emit('update:seriesData', seriesData);
     }
   },
   methods: {
