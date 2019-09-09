@@ -47,7 +47,13 @@ func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
 		return
 	}
 
-	paramIDStr, ok := msg.Payload["paramID"].(string)
+	value, ok := msg.Variables["v"].(string)
+	if !ok {
+		logs.Error("variables value type assert string failed!")
+		return
+	}
+
+	paramIDStr, ok := msg.Payload["id"].(string)
 	if !ok {
 		logs.Error("paramID type assert string failed")
 		return
@@ -60,7 +66,7 @@ func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
 	}
 
 	paramValue := &models.DeviceParamValue{
-		Value:       msg.Payload["value"].(string),
+		Value:       value,
 		DeviceParam: &models.DeviceParam{ID: int(paramID)},
 	}
 
@@ -101,5 +107,5 @@ func init() {
 		},
 	}
 
-	go channel("device_param_value:*", &dpvChannel)
+	go channel("dpv:*", &dpvChannel)
 }

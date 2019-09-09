@@ -13,11 +13,12 @@ import (
 
 // SocketMessage 消息结构体
 type SocketMessage struct {
-	Topic   string // 消息话题
-	Event   string // 消息事件
-	Payload map[string]interface{}
-	Socket  *websocket.Conn
-	Ref     string // apollo 订阅id
+	Topic     string // 消息话题
+	Event     string // 消息事件
+	Payload   map[string]interface{}
+	Socket    *websocket.Conn
+	Ref       string // apollo 订阅id
+	Variables map[string]interface{}
 }
 
 // IChannel 接口
@@ -89,6 +90,8 @@ func PubSub(sm *SocketMessage) {
 	if c == nil {
 		return
 	}
+
+	sm.Payload["id"] = topics[1]
 
 	c.HandleIn(sm)
 }

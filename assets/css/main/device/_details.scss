@@ -47,9 +47,16 @@
   margin: 0.5rem;
 
   .params-realtime-chart {
-    padding: 1rem;
+    position: relative;
     flex: auto;
     min-width: 300px;
+
+    .el-button.is-circle {
+      position: absolute;
+      left: 100px;
+      top: 70px;
+      z-index: 2019;
+    }
   }
 
   .device-status-card {

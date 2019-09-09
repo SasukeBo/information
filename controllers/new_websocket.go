@@ -80,18 +80,19 @@ func NewConnect(conn *websocket.Conn) {
 			continue
 		}
 
-		topic, ok := variables["topic"].(string)
+		topic, ok := variables["t"].(string)
 		if !ok {
 			logs.Error("variables topic type assert string failed!")
 			continue
 		}
 
 		socketMessage := channel.SocketMessage{
-			Topic:   topic,
-			Event:   data.Event,
-			Payload: data.Payload,
-			Ref:     data.ID,
-			Socket:  conn,
+			Topic:     topic,
+			Event:     data.Event,
+			Payload:   data.Payload,
+			Ref:       data.ID,
+			Socket:    conn,
+			Variables: variables,
 		}
 
 		channel.PubSub(&socketMessage)
