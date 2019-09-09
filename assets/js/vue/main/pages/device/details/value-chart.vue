@@ -37,9 +37,9 @@ export default {
       return {
         name: p.name,
         type: 'line',
-        symbol: 'emptyCircle',
-        symbolSize: 4,
-        showSymbol: true,
+        // symbol: 'emptyCircle',
+        // symbolSize: 4,
+        showSymbol: false,
         data: [],
         hoverAnimation: false
       };
@@ -50,16 +50,6 @@ export default {
         name: p.name,
         icon: 'roundRect'
       };
-    });
-
-    var selected = {};
-
-    this.params.forEach((p, index) => {
-      if (index < 3) {
-        selected[p.name] = true;
-      } else {
-        selected[p.name] = false;
-      }
     });
 
     this.option = {
@@ -75,14 +65,13 @@ export default {
       legend: {
         top: 'center',
         zlevel: 1,
-        left: '85%',
+        left: '90%',
         orient: 'vertical',
         inactiveColor: '#909399',
         textStyle: {
           color: '#dcdfe6'
         },
         data: this.legendData,
-        selected
       },
       grid: {
         left: '10%',

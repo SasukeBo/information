@@ -10,6 +10,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"golang.org/x/net/websocket"
 	"strconv"
+	"time"
 
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/schema"
@@ -53,6 +54,18 @@ func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
 		return
 	}
 
+	timeStr, ok := msg.Variables["time"].(string)
+	if !ok {
+		logs.Error("variables time type assert string failed!")
+		return
+	}
+
+	timeValue, err := time.Parse(time.RFC3339, timeStr)
+	if err != nil {
+		logs.Error(err)
+		return
+	}
+
 	paramIDStr, ok := msg.Payload["id"].(string)
 	if !ok {
 		logs.Error("paramID type assert string failed")
@@ -68,6 +81,7 @@ func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
 	paramValue := &models.DeviceParamValue{
 		Value:       value,
 		DeviceParam: &models.DeviceParam{ID: int(paramID)},
+		CreatedAt:   timeValue,
 	}
 
 	if err := paramValue.Insert(); err != nil {

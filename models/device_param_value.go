@@ -11,7 +11,7 @@ type DeviceParamValue struct {
 	Value       string       // 参数值
 	ID          int          `orm:"auto;pk;column(id)"`
 	DeviceParam *DeviceParam `orm:"rel(fk);on_delete()"`
-	CreatedAt   time.Time    `orm:"auto_now_add;type(datetime)"`
+	CreatedAt   time.Time    `orm:"type(datetime)"`
 }
 
 // GetBy _
