@@ -3,6 +3,7 @@ package channel
 import (
 	"container/list"
 	"encoding/json"
+	"time"
 	// "github.com/astaxie/beego"
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/schema"
@@ -44,7 +45,7 @@ func (dsl *dslChannelType) HandleOut(msg *SocketMessage) {
 	if value == "online" {
 		value = "stop"
 	}
-	status := scalars.DeviceStatusMap[value].(int)
+	newStatus := scalars.DeviceStatusMap[value].(int)
 
 	remoteIP, ok := msg.Variables["remoteIP"].(string)
 	if !ok {
@@ -53,15 +54,34 @@ func (dsl *dslChannelType) HandleOut(msg *SocketMessage) {
 	}
 
 	subTopic := getSubTopic(msg.Topic)
-	deviceID, err := strconv.ParseInt(subTopic, 10, 0)
+	deviceID64, err := strconv.ParseInt(subTopic, 10, 0)
 	if err != nil {
 		logs.Error(err)
 		return
 	}
+	deviceID := int(deviceID64)
 
-	statusLog := &models.DeviceStatusLog{
-		Status: status,
-		Device: &models.Device{ID: int(deviceID), RemoteIP: remoteIP},
+	device := models.Device{ID: deviceID}
+	if err := device.GetBy("id"); err != nil {
+		logs.Error(err)
+		return
+	}
+	oldStatus := device.Status
+
+	now := time.Now()
+	duration := now.Sub(device.StatusChangeAt)
+	device.Status = newStatus
+	device.RemoteIP = remoteIP
+	device.StatusChangeAt = now
+	if err := device.Update("status", "remote_ip", "status_change_at"); err != nil {
+		logs.Error(err)
+		return
+	}
+
+	statusLog := models.DeviceStatusLog{
+		Device:   &device,
+		Duration: int64(duration),
+		Status:   oldStatus,
 	}
 
 	if err := statusLog.Insert(); err != nil {

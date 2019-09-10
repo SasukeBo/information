@@ -231,32 +231,6 @@ func Delete(params graphql.ResolveParams) (interface{}, error) {
 	return "ok", nil
 }
 
-// Bind 绑定设备Mac地址，需要权限验证
-func Bind(params graphql.ResolveParams) (interface{}, error) {
-	mac := params.Args["mac"].(string)
-	if err := utils.ValidateStringEmpty(mac, "mac"); err != nil {
-		return nil, err
-	}
-
-	device := models.Device{Token: params.Args["token"].(string)}
-	if err := device.GetBy("token"); err != nil {
-		return nil, err
-	}
-
-	if err := device.ValidateAccess(params, "device_u"); err != nil {
-		return nil, err
-	}
-
-	device.Status = models.BaseStatus.Publish
-	device.Mac = mac
-
-	if err := device.Update("mac", "status"); err != nil {
-		return nil, err
-	}
-
-	return device, nil
-}
-
 // RelatedLoad _
 func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	switch v := params.Source.(type) {

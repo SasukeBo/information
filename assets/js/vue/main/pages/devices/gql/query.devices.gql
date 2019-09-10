@@ -12,7 +12,6 @@ query (
     uuid
     name
     type
-    mac
     token
     user {
       uuid

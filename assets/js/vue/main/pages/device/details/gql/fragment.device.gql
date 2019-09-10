@@ -1,7 +1,6 @@
 fragment device on Device {
   id
   uuid
-  mac
   type
   name
   description

@@ -14,32 +14,21 @@ var DeviceStatus = struct {
 
 // DeviceStatusLog 设备运行状态变更模型
 type DeviceStatusLog struct {
-	Status   int       // 设备运行状态
-	ID       int       `orm:"auto;pk;column(id)"`
-	Device   *Device   `orm:"rel(fk);on_delete()"`
-	ChangeAt time.Time `orm:"auto_now_add;type(datetime)"`
+	ID        int `orm:"auto;pk;column(id)"`
+	Status    int // 设备运行状态
+	Duration  int64
+	Device    *Device   `orm:"rel(fk);on_delete()"`
+	CreatedAt time.Time `orm:"auto_now;type(datetime)"`
 }
 
 // Insert _
 func (dsl *DeviceStatusLog) Insert() error {
-	remoteIP := dsl.Device.RemoteIP
 	if _, err := Repo.Insert(dsl); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
 			Message: "device_status_log insert error",
 			OriErr:  err,
 		}
-	}
-
-	device, err := dsl.LoadDevice()
-	if err != nil {
-		return err
-	}
-
-	device.Status = dsl.Status
-	device.RemoteIP = remoteIP
-	if err := device.Update("status", "remote_ip"); err != nil {
-		return err
 	}
 
 	return nil

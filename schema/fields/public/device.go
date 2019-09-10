@@ -75,14 +75,3 @@ var DeviceListField = &graphql.Field{
 	Description: "查询device列表",
 	Resolve:     device.List,
 }
-
-// DeviceBindField bind a device
-var DeviceBindField = &graphql.Field{
-	Type: types.Device,
-	Args: graphql.FieldConfigArgument{
-		"token": fields.GenArg(graphql.String, "设备token，用于数据加密", false),
-		"mac":   fields.GenArg(graphql.String, "设备Mac地址", false),
-	},
-	Description: "绑定物理设备Mac地址",
-	Resolve:     device.Bind,
-}

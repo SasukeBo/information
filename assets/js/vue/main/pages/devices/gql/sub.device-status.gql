@@ -1,10 +1,9 @@
 subscription ($deviceID: Int!) {
-  device: deviceStatusRefresh(deviceID: $deviceID) {
+  deviceUpdate: deviceStatusRefresh(deviceID: $deviceID) {
     id
     uuid
     name
     type
-    mac
     token
     user {
       uuid

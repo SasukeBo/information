@@ -45,7 +45,7 @@ export default {
   props: ['item'],
   apollo: {
     $subscribe: {
-      device: {
+      deviceUpdate: {
         query: deviceStatusSub,
         variables() {
           return {
@@ -53,7 +53,7 @@ export default {
           };
         },
         result({ data }) {
-          this.device = data.device;
+          this.device = data.deviceUpdate;
           this.$emit('update:device', this.device);
         }
       }

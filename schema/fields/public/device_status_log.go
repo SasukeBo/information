@@ -29,3 +29,13 @@ var DeviceStatusRefreshField = &graphql.Field{
 	},
 	Resolve: device.StatusRefresh,
 }
+
+// DeviceStatusDurationField _
+var DeviceStatusDurationField = &graphql.Field{
+	Type: graphql.String,
+	Args: graphql.FieldConfigArgument{
+		"deviceID": fields.GenArg(graphql.Int, "设备ID", false),
+		"status":   fields.GenArg(scalars.DeviceStatus, "运行状态", false),
+	},
+	Resolve: device.StatusDuration,
+}

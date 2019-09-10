@@ -13,11 +13,6 @@
         </div>
 
         <div class="data-item">
-          <span>Mac地址</span>
-          <span>{{ device.mac }}</span>
-        </div>
-
-        <div class="data-item">
           <span>设备类型</span>
           <span>{{ device.type }}</span>
         </div>
@@ -81,7 +76,7 @@
 
             <div class="summary-item">
               <span>累计运行时长</span>
-              <span>365天9小时23分</span>
+              <span>{{ duration }}</span>
             </div>
 
             <div class="summary-item">
@@ -116,6 +111,7 @@ import ValueChart from './value-chart.vue';
 import deviceQuery from './gql/query.device-get.gql';
 import paramsQuery from './gql/query.params.gql';
 import deviceStatusSub from 'js/vue/main/pages/devices/gql/sub.device-status.gql';
+import durationQuery from './gql/query.duration.gql';
 
 export default {
   name: 'device-details',
@@ -133,8 +129,17 @@ export default {
         return { deviceUUID: this.uuid };
       }
     },
+    duration: {
+      query: durationQuery,
+      variables() {
+        return {
+          deviceID: this.device.id,
+          status: 'prod'
+        };
+      }
+    },
     $subscribe: {
-      device: {
+      deviceUpdate: {
         query: deviceStatusSub,
         variables() {
           return {
@@ -142,8 +147,8 @@ export default {
           };
         },
         result({ data }) {
-          this.device.status = data.device.status;
-          this.device.remoteIP = data.device.remoteIP;
+          this.device.status = data.deviceUpdate.status;
+          this.device.remoteIP = data.deviceUpdate.remoteIP;
         }
       }
     }
@@ -151,6 +156,7 @@ export default {
   components: { ValueChart },
   data() {
     return {
+      duration: '0天0时0分',
       device: {},
       params: [],
       statusTag: '',

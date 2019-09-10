@@ -2,6 +2,8 @@ package device
 
 import (
 	"github.com/graphql-go/graphql"
+	"strings"
+	"time"
 
 	"github.com/SasukeBo/information/models"
 )
@@ -48,4 +50,39 @@ func StatusRefresh(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	return device, nil
+}
+
+// StatusDuration _
+func StatusDuration(params graphql.ResolveParams) (interface{}, error) {
+	deviceID := params.Args["deviceID"].(int)
+	device := models.Device{ID: deviceID}
+	if err := device.GetBy("id"); err != nil {
+		return nil, err
+	}
+
+	status := params.Args["status"].(int)
+
+	qs := models.Repo.QueryTable("device_status_log").Filter("device_id", device.ID).Filter("status", status)
+
+	var statusLogs []*models.DeviceStatusLog
+	if _, err := qs.All(&statusLogs); err != nil {
+		return nil, err
+	}
+
+	var durations time.Duration
+	for _, sl := range statusLogs {
+		durations += time.Duration(sl.Duration)
+	}
+
+	if device.Status == status {
+		currentDuration := time.Now().Sub(device.StatusChangeAt)
+		durations += currentDuration
+	}
+
+	durationStrTemp := durations.Truncate(time.Second).String()
+
+	result := strings.Replace(durationStrTemp, "h", "小时", 1)
+	result = strings.Replace(result, "m", "分", 1)
+	result = strings.Replace(result, "s", "秒", 1)
+	return result, nil
 }

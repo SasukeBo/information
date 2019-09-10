@@ -41,7 +41,6 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		"deviceCreate": fields.DeviceCreateField,
 		"deviceUpdate": fields.DeviceUpdateField,
 		"deviceDelete": fields.DeviceDeleteField,
-		"deviceBind":   fields.DeviceBindField,
 
 		/*    deviceCharge    */
 		"deviceChargeCreate": fields.DeviceChargeCreateField,
@@ -81,6 +80,7 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		"deviceParamList":      fields.DeviceParamListField,
 		"deviceParamValueList": fields.DeviceParamValueListField,
 		"deviceStatusLogList":  fields.DeviceStatusLogListField,
+		"deviceStatusDuration": fields.DeviceStatusDurationField,
 		/*
 			FIXME: 暂时不需要的接口
 			"deviceChargePrivGet":  fields.DeviceChargePrivGetField,
