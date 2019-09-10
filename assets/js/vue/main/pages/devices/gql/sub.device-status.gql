@@ -1,3 +1,21 @@
 subscription ($deviceID: Int!) {
-  status: deviceStatusRefresh(deviceID: $deviceID)
+  device: deviceStatusRefresh(deviceID: $deviceID) {
+    id
+    uuid
+    name
+    type
+    mac
+    token
+    user {
+      uuid
+      userExtend {
+        name
+      }
+    }
+    status
+    remoteIP
+    description
+    createdAt
+    updatedAt
+  }
 }

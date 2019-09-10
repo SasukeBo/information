@@ -9,6 +9,7 @@ fragment device on Device {
   token
   createdAt
   updatedAt
+  remoteIP
   register: user {
     phone
     userExtend { name email }

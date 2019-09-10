@@ -153,6 +153,7 @@ func init() {
 				"description":   &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
 				"createdAt":     &graphql.Field{Type: graphql.DateTime},
 				"updatedAt":     &graphql.Field{Type: graphql.DateTime},
+				"remoteIP":      &graphql.Field{Type: graphql.String},
 			}
 		}),
 	})

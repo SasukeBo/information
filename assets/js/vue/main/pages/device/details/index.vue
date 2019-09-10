@@ -76,7 +76,7 @@
           <div class="summary-list">
             <div class="summary-item">
               <span>IP地址</span>
-              <span>127.0.0.1</span>
+              <span>{{ device.remoteIP }}</span>
             </div>
 
             <div class="summary-item">
@@ -134,7 +134,7 @@ export default {
       }
     },
     $subscribe: {
-      status: {
+      device: {
         query: deviceStatusSub,
         variables() {
           return {
@@ -142,7 +142,8 @@ export default {
           };
         },
         result({ data }) {
-          this.statusTag = data.status;
+          this.device.status = data.device.status;
+          this.device.remoteIP = data.device.remoteIP;
         }
       }
     }

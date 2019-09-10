@@ -40,10 +40,17 @@ func (dsl *dslChannelType) HandleOut(msg *SocketMessage) {
 		logs.Error("variables value type assert string failed!")
 		return
 	}
+
 	if value == "online" {
 		value = "stop"
 	}
 	status := scalars.DeviceStatusMap[value].(int)
+
+	remoteIP, ok := msg.Variables["remoteIP"].(string)
+	if !ok {
+		logs.Error("variables remoteIP type assert string failed!")
+		remoteIP = "unknown"
+	}
 
 	subTopic := getSubTopic(msg.Topic)
 	deviceID, err := strconv.ParseInt(subTopic, 10, 0)
@@ -54,7 +61,7 @@ func (dsl *dslChannelType) HandleOut(msg *SocketMessage) {
 
 	statusLog := &models.DeviceStatusLog{
 		Status: status,
-		Device: &models.Device{ID: int(deviceID)},
+		Device: &models.Device{ID: int(deviceID), RemoteIP: remoteIP},
 	}
 
 	if err := statusLog.Insert(); err != nil {

@@ -47,5 +47,5 @@ func StatusRefresh(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	return device.Status, nil
+	return device, nil
 }

@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
+	"strings"
+	// "net"
 
 	// "github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
@@ -19,6 +21,8 @@ type apolloWSMessage struct {
 
 // Connect handle websocket connection
 func Connect(conn *websocket.Conn) {
+	remote := getRemoteIP(conn.Request().Header.Get("X-Real-IP"))
+
 	// TODO: leave defer
 	defer logs.Warn("conn closed without leave topic")
 	var msg string
@@ -86,6 +90,8 @@ func Connect(conn *websocket.Conn) {
 			continue
 		}
 
+		variables["remoteIP"] = remote
+
 		socketMessage := channel.SocketMessage{
 			Topic:     topic,
 			Event:     data.Event,
@@ -97,4 +103,9 @@ func Connect(conn *websocket.Conn) {
 
 		channel.PubSub(&socketMessage)
 	}
+}
+
+func getRemoteIP(remoteAddr string) string {
+	addr := strings.Split(remoteAddr, ":")
+	return addr[0]
 }

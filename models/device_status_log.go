@@ -22,6 +22,7 @@ type DeviceStatusLog struct {
 
 // Insert _
 func (dsl *DeviceStatusLog) Insert() error {
+	remoteIP := dsl.Device.RemoteIP
 	if _, err := Repo.Insert(dsl); err != nil {
 		return errors.LogicError{
 			Type:    "Model",
@@ -36,7 +37,8 @@ func (dsl *DeviceStatusLog) Insert() error {
 	}
 
 	device.Status = dsl.Status
-	if err := device.Update("status"); err != nil {
+	device.RemoteIP = remoteIP
+	if err := device.Update("status", "remote_ip"); err != nil {
 		return err
 	}
 

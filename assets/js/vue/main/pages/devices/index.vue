@@ -56,8 +56,8 @@
       <div class="device-card-list">
         <device-card
           v-for="device in devices.filter(d => !status || d.status === status)"
-          :device="device"
-          v-bind:status.sync="device.status"
+          :item="device"
+          v-bind:device.sync="device"
           :key="device.uuid"
         ></device-card>
       </div>

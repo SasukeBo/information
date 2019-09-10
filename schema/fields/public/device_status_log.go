@@ -23,7 +23,7 @@ var DeviceStatusLogListField = &graphql.Field{
 
 // DeviceStatusRefreshField _
 var DeviceStatusRefreshField = &graphql.Field{
-	Type: scalars.DeviceStatus,
+	Type: types.Device,
 	Args: graphql.FieldConfigArgument{
 		"deviceID": fields.GenArg(graphql.Int, "设备ID", false),
 	},

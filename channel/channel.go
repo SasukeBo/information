@@ -3,7 +3,7 @@ package channel
 import (
 	"container/list"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
+	// "github.com/astaxie/beego/logs"
 	"golang.org/x/net/websocket"
 	"strings"
 
@@ -166,7 +166,7 @@ func join(ic IChannel, msg *SocketMessage) error {
 
 	subs.PushBack(sub)
 	ic.setSubscribers(subTopic, subs)
-	logs.Warn("user:%s join %s", user.(*models.User).Phone, msg.Topic)
+	// logs.Warn("user:%s join %s", user.(*models.User).Phone, msg.Topic)
 
 	return nil
 }
@@ -190,7 +190,7 @@ func leave(ic IChannel, msg *SocketMessage) error {
 	subs := ic.getSubscribers(subTopic)
 	newSubs := unsubscribe(subs, sessionID.(string), user.(*models.User))
 	ic.setSubscribers(subTopic, newSubs)
-	logs.Warn("user:%s leave %s", user.(*models.User).Phone, msg.Topic)
+	// logs.Warn("user:%s leave %s", user.(*models.User).Phone, msg.Topic)
 
 	return nil
 }

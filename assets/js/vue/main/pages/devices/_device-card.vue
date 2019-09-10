@@ -6,7 +6,7 @@
     <div class="global-card">
       <div class="data-item device-name">{{ device.name }}</div>
 
-      <div class="data-item device-status" :class="['device-' + statusTag]">
+      <div class="data-item device-status" :class="['device-' + device.status]">
         <div class="label-center">设备状态</div>
         <i class="iconfont icon-production"></i>
         <div>{{ status }}</div>
@@ -42,10 +42,10 @@ import deviceStatusSub from './gql/sub.device-status.gql';
 
 export default {
   name: 'device-card',
-  props: ['device'],
+  props: ['item'],
   apollo: {
     $subscribe: {
-      status: {
+      device: {
         query: deviceStatusSub,
         variables() {
           return {
@@ -53,25 +53,25 @@ export default {
           };
         },
         result({ data }) {
-          this.statusTag = data.status;
-          this.$emit('update:status', this.statusTag);
+          this.device = data.device;
+          this.$emit('update:device', this.device);
         }
       }
     }
   },
   data() {
     return {
+      device: this.item,
       statusMap: {
         prod: '生产中',
         stop: '停机',
         offline: '离线'
-      },
-      statusTag: this.device.status
+      }
     };
   },
   computed: {
     status() {
-      return this.statusMap[this.statusTag];
+      return this.statusMap[this.device.status];
     }
   },
   methods: {
