@@ -76,26 +76,36 @@ export default {
 .status-log__table {
   flex: 1;
   min-width: 500px;
-  padding: 1rem;
+  padding: 0 1rem;
   height: 500px;
 
   .el-table {
-    background: lighten($--color-theme__bg, 5%);
+    background: $--color-theme__bg;
+
+    &:before {
+      display: none;
+    }
+
+    th.is-leaf,
+    td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 1px 0 2px $--color-theme__white;
+    }
   }
 
   .custom-cell {
     color: $--color-font__gray;
     font-size: 0.875rem;
     padding: 0.5rem 0;
-    background: lighten($--color-theme__bg, 5%);
-    border-color: lighten($--color-theme__bg, 5%);
+    background: $--color-theme__bg;
+    border-color: $--color-theme__bg;
   }
 
   .custom-header-cell {
     font-weight: bold;
     color: $--color-font__silver;
-    background: lighten($--color-theme__bg, 5%);
-    border-color: lighten($--color-theme__bg, 5%);
+    background: $--color-theme__bg;
+    border-color: $--color-theme__bg;
   }
 
   .el-table__column-filter-trigger {

@@ -1,20 +1,30 @@
 .device-details {
-  display: flex;
-  flex-flow: wrap;
-  padding: 0 0.5rem 1rem 0.5rem;
+  padding: 1rem;
+
+  .device-details__left {
+    flex: 5;
+    min-width: 500px;
+    margin-bottom: 1rem;
+  }
+
+  .device-details__right {
+    flex: 3;
+    min-width: 500px;
+    margin-bottom: 1rem;
+  }
 }
 
-.device-details__left {
-  flex: 1;
-  margin: 0.5rem;
-  min-width: 300px;
+.device-details .flex-content {
+  display: flex;
+  flex-flow: wrap-reverse;
+}
 
+.device-details {
   .card-title {
-    padding: 0 0.8rem;
+    padding: 0.4rem 0.8rem;
     font-size: 1rem;
-    padding-bottom: 0.4rem;
-    border-bottom: 1px solid $--color-theme__black;
     margin-bottom: 0.6rem;
+    background: $--color-theme__bg;
 
     i {
       font-size: 1.5rem;
@@ -42,105 +52,94 @@
   }
 }
 
-.device-details__right {
-  flex: 3;
-  margin: 0.5rem;
-
-  .params-realtime-chart {
-    position: relative;
-    flex: auto;
-    min-width: 300px;
-
-    .el-button.is-circle {
-      position: absolute;
-      left: 100px;
-      top: 70px;
-      z-index: 2019;
-    }
-  }
-
-  .device-status-card {
-    display: flex;
-    padding: 1rem;
-
-    .summary {
-      flex: auto;
-      display: flex;
-      flex-flow: wrap;
-    }
-
-    .summary-list {
-      flex: 1;
-    }
-
-    .summary-item {
-      padding: 0.5rem 0;
-
-      span {
-        font-size: 0.86rem;
-        color: $--color-font__gray;
-      }
-
-      span:first-child {
-        display: inline-block;
-        color: $--color-font__light;
-        width: 100px;
-      }
-    }
-
-    .status {
-      text-align: center;
-      padding-right: 2rem;
-      color: $--color-font__gray;
-      font-size: 0.85rem;
-
-      .status-text {
-        padding-top: 0.5rem;
-      }
-    }
-    .status-icon {
-      width: 100px;
-      height: 100px;
-      line-height: 100px;
-      position: relative;
-
-      i.el-icon-s-tools {
-        font-size: 3rem;
-        position: absolute;
-        bottom: 0;
-        right: 0;
-      }
-
-      i.el-icon-setting {
-        font-size: 4.5rem;
-      }
-    }
-
-    .status_stop,
-    .status_prod {
-      i.el-icon-s-tools {
-        color: $--color-theme__warning;
-      }
-
-      i.el-icon-setting {
-        color: $--color-theme__success;
-      }
-    }
-
-    .status_prod {
-      i.el-icon-s-tools {
-        animation: rotating 1.5s linear infinite;
-      }
-
-      i.el-icon-setting {
-        animation: rotating reverse 1.5s linear infinite;
-      }
-    }
-  }
+.device-details .params-realtime-chart {
+  position: relative;
+  flex: auto;
+  min-width: 300px;
 }
 
-@media only screen and(max-width: 1000px) {
-  .device-details .param-chart{
-    min-width: 660px;
+.device-details .base-card,
+.device-details .register-card,
+.device-details .device-status-card {
+  margin: 1rem;
+}
+
+.device-details .device-status-card {
+  display: flex;
+  padding: 1rem;
+  background: $--color-theme__bg;
+
+  .summary {
+    flex: auto;
+    display: flex;
+    flex-flow: wrap;
+  }
+
+  .summary-list {
+    flex: 1;
+  }
+
+  .summary-item {
+    padding: 0.5rem 0;
+
+    span {
+      font-size: 0.86rem;
+      color: $--color-font__gray;
+    }
+
+    span:first-child {
+      display: inline-block;
+      color: $--color-font__light;
+      width: 60px;
+    }
+  }
+
+  .status {
+    text-align: center;
+    padding-right: 2rem;
+    color: $--color-font__gray;
+    font-size: 0.85rem;
+
+    .status-text {
+      padding-top: 0.5rem;
+    }
+  }
+  .status-icon {
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    position: relative;
+
+    i.el-icon-s-tools {
+      font-size: 3rem;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+
+    i.el-icon-setting {
+      font-size: 4.5rem;
+    }
+  }
+
+  .status_stop,
+  .status_prod {
+    i.el-icon-s-tools {
+      color: $--color-theme__warning;
+    }
+
+    i.el-icon-setting {
+      color: $--color-theme__success;
+    }
+  }
+
+  .status_prod {
+    i.el-icon-s-tools {
+      animation: rotating 1.5s linear infinite;
+    }
+
+    i.el-icon-setting {
+      animation: rotating reverse 1.5s linear infinite;
+    }
   }
 }

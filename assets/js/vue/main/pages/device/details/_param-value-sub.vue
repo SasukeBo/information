@@ -15,7 +15,7 @@ export default {
         time.setSeconds(time.getSeconds() - 600);
         return {
           paramID: this.param.id,
-          limit: 1000,
+          limit: this.limit,
           after: time.toISOString()
         };
       },
@@ -38,7 +38,8 @@ export default {
   },
   data() {
     return {
-      values: []
+      values: [],
+      limit: 100
     }
   },
   watch: {
@@ -47,7 +48,7 @@ export default {
       var seriesData = []
       if (this.seriesData) seriesData = this.seriesData;
       for (var i = newSeriesDate.length; i > 0; i--) {
-        if (seriesData.length > 1000) seriesData.shift();
+        if (seriesData.length > this.limit) seriesData.shift();
         seriesData.push(newSeriesDate[i - 1]);
       }
       // this.$emit('update:seriesData', seriesData);

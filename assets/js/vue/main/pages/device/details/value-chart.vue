@@ -1,5 +1,5 @@
 <template>
-  <div class="global-card params-realtime-chart">
+  <div class="params-realtime-chart">
     <div ref="realtimeChart" style="width: 100%; height: 500px"></div>
     <div v-if="series.length">
       <value-sub
@@ -63,10 +63,10 @@ export default {
         left: 'center'
       },
       legend: {
-        top: '5%',
+        width: '60%',
+        bottom: '10%',
         zlevel: 1,
-        left: '85%',
-        orient: 'vertical',
+        left: 'center',
         inactiveColor: '#909399',
         textStyle: {
           color: '#dcdfe6'
@@ -75,7 +75,8 @@ export default {
       },
       grid: {
         left: '10%',
-        right: '15%'
+        right: '10%',
+        bottom: '30%'
       },
       tooltip: {
         trigger: 'axis',
