@@ -17,6 +17,7 @@ var DeviceStatusLogListField = &graphql.Field{
 		"status":     fields.GenArg(scalars.DeviceStatus, "运行状态"),
 		"beforeTime": fields.GenArg(graphql.DateTime, "开始时间"),
 		"afterTime":  fields.GenArg(graphql.DateTime, "结束时间"),
+		"limit":      fields.GenArg(graphql.Int, "最大返回条数"),
 	},
 	Resolve: device.StatusLogList,
 }

@@ -63,9 +63,9 @@ export default {
         left: 'center'
       },
       legend: {
-        top: 'center',
+        top: '5%',
         zlevel: 1,
-        left: '90%',
+        left: '85%',
         orient: 'vertical',
         inactiveColor: '#909399',
         textStyle: {

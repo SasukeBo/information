@@ -121,21 +121,13 @@ export default {
       query: deviceQuery,
       variables() {
         return { uuid: this.uuid };
-      }
+      },
+      fetchPolicy: 'network-only'
     },
     params: {
       query: paramsQuery,
       variables() {
         return { deviceUUID: this.uuid };
-      }
-    },
-    duration: {
-      query: durationQuery,
-      variables() {
-        return {
-          deviceID: this.device.id,
-          status: 'prod'
-        };
       }
     },
     $subscribe: {
@@ -156,7 +148,7 @@ export default {
   components: { ValueChart },
   data() {
     return {
-      duration: '0天0时0分',
+      duration: '0时0分0秒',
       device: {},
       params: [],
       statusTag: '',
@@ -170,6 +162,21 @@ export default {
   watch: {
     device(newVal) {
       this.statusTag = newVal.status;
+      this.$apollo
+        .query({
+          query: durationQuery,
+          variables: {
+            deviceID: newVal.id,
+            status: 'prod'
+          },
+          fetchPolicy: 'network-only'
+        })
+        .then(({ data }) => {
+          this.duration = data.duration;
+        })
+        .catch(e => {
+          console.log(e);
+        });
     }
   },
   computed: {

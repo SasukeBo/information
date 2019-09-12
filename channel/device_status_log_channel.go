@@ -69,7 +69,7 @@ func (dsl *dslChannelType) HandleOut(msg *SocketMessage) {
 	oldStatus := device.Status
 
 	now := time.Now()
-	duration := now.Sub(device.StatusChangeAt)
+	duration := now.Sub(device.StatusChangeAt).Truncate(time.Second)
 	device.Status = newStatus
 	device.RemoteIP = remoteIP
 	device.StatusChangeAt = now
@@ -80,7 +80,7 @@ func (dsl *dslChannelType) HandleOut(msg *SocketMessage) {
 
 	statusLog := models.DeviceStatusLog{
 		Device:   &device,
-		Duration: int64(duration),
+		Duration: int(duration / 1e9),
 		Status:   oldStatus,
 	}
 

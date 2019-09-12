@@ -128,10 +128,11 @@ func init() {
 		Name: "DeviceStatusLog",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
 			return graphql.Fields{
-				"id":       &graphql.Field{Type: graphql.Int},
-				"status":   &graphql.Field{Type: scalars.DeviceStatus, Description: "设备运行状态"},
-				"device":   &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
-				"changeAt": &graphql.Field{Type: graphql.DateTime, Description: "变更时间"},
+				"id":        &graphql.Field{Type: graphql.Int},
+				"status":    &graphql.Field{Type: scalars.DeviceStatus, Description: "设备运行状态"},
+				"device":    &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
+				"duration":  &graphql.Field{Type: graphql.Int, Description: "持续时间（s）"},
+				"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "变更时间"},
 			}
 		}),
 	})

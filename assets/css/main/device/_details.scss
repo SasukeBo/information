@@ -138,3 +138,9 @@
     }
   }
 }
+
+@media only screen and(max-width: 1000px) {
+  .device-details .param-chart{
+    min-width: 660px;
+  }
+}

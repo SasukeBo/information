@@ -58,7 +58,7 @@ function defaultRoutes() {
               path: 'status-log',
               name: 'device-status-log',
               props: true,
-              component: load('main/pages/device/_status-log')
+              component: load('main/pages/device/status-log')
             },
             {
               path: 'config',

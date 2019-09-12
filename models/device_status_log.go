@@ -16,7 +16,7 @@ var DeviceStatus = struct {
 type DeviceStatusLog struct {
 	ID        int `orm:"auto;pk;column(id)"`
 	Status    int // 设备运行状态
-	Duration  int64
+	Duration  int
 	Device    *Device   `orm:"rel(fk);on_delete()"`
 	CreatedAt time.Time `orm:"auto_now;type(datetime)"`
 }

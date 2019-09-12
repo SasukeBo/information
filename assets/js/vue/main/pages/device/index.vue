@@ -24,6 +24,22 @@
         </div>
 
         <div
+          :class="{'device-menu__item': true, 'is-selected': $route.name === 'device-status-log'}"
+          @click="$router.push({name: 'device-status-log'})"
+        >
+          <i class="el-icon-s-management"></i>
+          <span>状态变更</span>
+        </div>
+
+        <div
+          :class="{'device-menu__item': true, 'is-selected': $route.name === 'device-params-values'}"
+          @click="$router.push({name: 'device-params-values'})"
+        >
+          <i class="el-icon-s-data"></i>
+          <span>值记录</span>
+        </div>
+
+        <div
           :class="{'device-menu__item': true, 'is-selected': $route.name === 'device-charges'}"
           @click="$router.push({name: 'device-charges'})"
         >
@@ -40,22 +56,6 @@
         </div>
 
         <div
-          :class="{'device-menu__item': true, 'is-selected': $route.name === 'device-params-values'}"
-          @click="$router.push({name: 'device-params-values'})"
-        >
-          <i class="el-icon-s-data"></i>
-          <span>值记录</span>
-        </div>
-
-        <div
-          :class="{'device-menu__item': true, 'is-selected': $route.name === 'device-status-log'}"
-          @click="$router.push({name: 'device-status-log'})"
-        >
-          <i class="el-icon-s-management"></i>
-          <span>状态变更</span>
-        </div>
-
-        <div
           :class="{'device-menu__item': true, 'is-selected': $route.name === 'device-config'}"
           @click="$router.push({name: 'device-config'})"
         >
@@ -65,7 +65,7 @@
       </div>
     </div>
 
-    <router-view :device="device"></router-view>
+    <router-view></router-view>
   </div>
 </template>
 <script>
