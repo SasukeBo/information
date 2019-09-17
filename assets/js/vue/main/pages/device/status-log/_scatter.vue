@@ -125,7 +125,7 @@ export default {
     this.chart.on('updateAxisPointer', event => {
       var xAxisInfo = event.axesInfo[0];
       if (xAxisInfo) {
-        var index = xAxisInfo.value + 2;
+        var index = xAxisInfo.value + 1;
         this.chart.setOption({
           series: {
             id: 'pie',

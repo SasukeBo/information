@@ -49,7 +49,7 @@ export default {
         query: deviceStatusSub,
         variables() {
           return {
-            t: `dsl:${this.device.id}`
+            t: `dsl:${this.device.token}`
           };
         },
         result({ data }) {

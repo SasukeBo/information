@@ -39,6 +39,7 @@ export default {
         type: 'line',
         // symbol: 'emptyCircle',
         // symbolSize: 4,
+        smooth: true,
         showSymbol: false,
         data: [],
         hoverAnimation: false

@@ -11,7 +11,7 @@ import (
 	"github.com/astaxie/beego/logs"
 	"github.com/graphql-go/graphql"
 	"golang.org/x/net/websocket"
-	"strconv"
+	// "strconv"
 )
 
 // device status log channel
@@ -19,24 +19,22 @@ type dslChannelType struct {
 	channelType
 }
 
-func (dsl *dslChannelType) Join(msg *SocketMessage) {
-	if err := join(dsl, msg); err != nil {
-		logs.Error(err)
-	}
+func (dsl *dslChannelType) Join(sm *SocketMessage) {
+	join(dsl, sm)
 }
 
-func (dsl *dslChannelType) Leave(msg *SocketMessage) {
-	if err := leave(dsl, msg); err != nil {
-		logs.Error(err)
-	}
+func (dsl *dslChannelType) Leave(sm *SocketMessage) {
+	leave(dsl, sm)
 }
 
-func (dsl *dslChannelType) HandleIn(msg *SocketMessage) {
-	dsl.Messagechan <- *msg
+func (dsl *dslChannelType) HandleIn(sm *SocketMessage) {
+	dsl.Messagechan <- *sm
 }
 
-func (dsl *dslChannelType) HandleOut(msg *SocketMessage) {
-	value, ok := msg.Variables["v"].(string)
+func (dsl *dslChannelType) HandleOut(sm *SocketMessage) {
+	variables := sm.GetVariables()
+
+	value, ok := variables["v"].(string)
 	if !ok {
 		logs.Error("variables value type assert string failed!")
 		return
@@ -47,25 +45,24 @@ func (dsl *dslChannelType) HandleOut(msg *SocketMessage) {
 	}
 	newStatus := scalars.DeviceStatusMap[value].(int)
 
-	remoteIP, ok := msg.Variables["remoteIP"].(string)
+	remoteIP, ok := (*sm)["remoteIP"].(string)
 	if !ok {
 		logs.Error("variables remoteIP type assert string failed!")
 		remoteIP = "unknown"
 	}
 
-	subTopic := getSubTopic(msg.Topic)
-	deviceID64, err := strconv.ParseInt(subTopic, 10, 0)
-	if err != nil {
-		logs.Error(err)
+	subTopic := sm.GetSubTopic()
+	if subTopic == "" {
+		logs.Error("missing subTopic")
 		return
 	}
-	deviceID := int(deviceID64)
 
-	device := models.Device{ID: deviceID}
-	if err := device.GetBy("id"); err != nil {
+	device := models.Device{Token: subTopic}
+	if err := device.GetBy("token"); err != nil {
 		logs.Error(err)
 		return
 	}
+
 	oldStatus := device.Status
 
 	now := time.Now()
@@ -96,16 +93,20 @@ func (dsl *dslChannelType) HandleOut(msg *SocketMessage) {
 
 	for el := subs.Front(); el != nil; el = el.Next() {
 		sub := el.Value.(Subscribe)
-		query := sub.Payload["query"].(string)
+		query := sub.Payload.GetQuery()
+		if query == "" {
+			continue
+		}
+
 		result := graphql.Do(graphql.Params{
 			Schema:         schema.PublicSchema,
 			RequestString:  query,
-			VariableValues: map[string]interface{}{"deviceID": int(deviceID)},
+			VariableValues: map[string]interface{}{"deviceID": device.ID},
 		})
 
 		message, err := json.Marshal(map[string]interface{}{
 			"type":    "data",
-			"id":      sub.ID,
+			"id":      sub.Payload.GetRefID(),
 			"payload": result,
 		})
 

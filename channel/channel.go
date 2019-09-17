@@ -3,22 +3,109 @@ package channel
 import (
 	"container/list"
 	"github.com/astaxie/beego"
-	// "github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego/logs"
 	"golang.org/x/net/websocket"
 	"strings"
-
-	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/models/errors"
+	// "github.com/SasukeBo/information/models"
+	// "github.com/SasukeBo/information/models/errors"
 )
 
-// SocketMessage 消息结构体
-type SocketMessage struct {
-	Topic     string // 消息话题
-	Event     string // 消息事件
-	Payload   map[string]interface{}
-	Socket    *websocket.Conn
-	Ref       string // apollo 订阅id
-	Variables map[string]interface{}
+// SocketMessage socket message map
+type SocketMessage map[string]interface{}
+
+// GetSessionID _
+func (sm *SocketMessage) GetSessionID() string {
+	socket := sm.GetSocket()
+	if socket == nil {
+		return ""
+	}
+
+	session, err := socket.Request().Cookie(beego.AppConfig.String("SessionName"))
+	if err != nil {
+		return ""
+	}
+
+	return session.Value
+}
+
+// GetTopic _
+func (sm *SocketMessage) GetTopic() string {
+	topics := sm.getTopics()
+	if len(topics) > 0 {
+		return topics[0]
+	}
+
+	return ""
+}
+
+// GetSubTopic _
+func (sm *SocketMessage) GetSubTopic() string {
+	topics := sm.getTopics()
+	if len(topics) > 1 {
+		return topics[1]
+	}
+
+	return ""
+}
+
+func (sm *SocketMessage) getTopics() []string {
+	topic, ok := (*sm)["topic"].(string)
+	if ok {
+		topics := strings.Split(topic, ":")
+		return topics
+	}
+
+	return []string{}
+}
+
+// GetType _
+func (sm *SocketMessage) GetType() string {
+	messageType, ok := (*sm)["type"].(string)
+	if ok {
+		return messageType
+	}
+
+	return ""
+}
+
+// GetSocket _
+func (sm *SocketMessage) GetSocket() *websocket.Conn {
+	socket, ok := (*sm)["socket"].(*websocket.Conn)
+	if ok {
+		return socket
+	}
+
+	return nil
+}
+
+// GetRefID _
+func (sm *SocketMessage) GetRefID() string {
+	refID, ok := (*sm)["refID"].(string)
+	if ok {
+		return refID
+	}
+
+	return ""
+}
+
+// GetQuery _
+func (sm *SocketMessage) GetQuery() string {
+	query, ok := (*sm)["query"].(string)
+	if ok {
+		return query
+	}
+
+	return ""
+}
+
+// GetVariables _
+func (sm *SocketMessage) GetVariables() map[string]interface{} {
+	variables, ok := (*sm)["variables"].(map[string]interface{})
+	if ok {
+		return variables
+	}
+
+	return map[string]interface{}{}
 }
 
 // IChannel 接口
@@ -34,11 +121,11 @@ type IChannel interface {
 
 // Subscribe 订阅结构体
 type Subscribe struct {
-	ID        string          // apollo 订阅id
-	UserUUID  string          // 用户 uuid
+	// ID        string          // apollo 订阅id
+	// UserUUID  string          // 用户 uuid
 	SessionID string          // 当前连接 session_id
 	Socket    *websocket.Conn // 当前连接 socket
-	Payload   map[string]interface{}
+	Payload   *SocketMessage
 }
 
 // channelType struct type
@@ -69,14 +156,14 @@ func channel(topic string, c IChannel) {
 
 	for {
 		select {
-		case socketMessage := <-messageChan:
-			switch socketMessage.Event {
+		case sm := <-messageChan:
+			switch sm.GetType() {
 			case "start":
-				c.Join(&socketMessage)
+				c.Join(&sm)
 			case "stop":
-				c.Leave(&socketMessage)
+				c.Leave(&sm)
 			case "data":
-				c.HandleOut(&socketMessage)
+				c.HandleOut(&sm)
 			}
 		}
 	}
@@ -84,14 +171,11 @@ func channel(topic string, c IChannel) {
 
 // PubSub handleSocketMessage
 func PubSub(sm *SocketMessage) {
-	topics := strings.Split(sm.Topic, ":")
-	topic := strings.Join([]string{topics[0], "*"}, ":")
-	c := channelRouter[topic]
+	route := strings.Join([]string{sm.GetTopic(), "*"}, ":")
+	c := channelRouter[route]
 	if c == nil {
 		return
 	}
-
-	sm.Payload["id"] = topics[1]
 
 	c.HandleIn(sm)
 }
@@ -105,10 +189,10 @@ func getSubTopic(topic string) string {
 	return "any"
 }
 
-func unsubscribe(subs *list.List, sessionID string, user *models.User) *list.List {
+func unsubscribe(subs *list.List, sessionID string) *list.List {
 	for el := subs.Front(); el != nil; el = el.Next() {
 		sub := el.Value.(Subscribe)
-		if sub.UserUUID == user.UUID && sub.SessionID == sessionID {
+		if sub.SessionID == sessionID {
 			subs.Remove(el)
 		}
 	}
@@ -116,81 +200,58 @@ func unsubscribe(subs *list.List, sessionID string, user *models.User) *list.Lis
 	return subs
 }
 
-func fetchSessionIDAndUserUUID(conn *websocket.Conn) (interface{}, interface{}, error) {
-	session, err := conn.Request().Cookie(beego.AppConfig.String("SessionName"))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	userLogin := models.UserLogin{SessionID: session.Value}
-	if err := userLogin.GetBy("session_id"); err != nil {
-		return nil, nil, err
-	}
-
-	user, err := userLogin.LoadUser()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return session.Value, user, nil
-}
-
 // handle join
-func join(ic IChannel, msg *SocketMessage) error {
-	conn := msg.Socket
-	if conn == nil {
-		return errors.LogicError{
-			Type:    "Channel",
-			Message: "Can't create subscribe without socket object!",
-		}
+func join(ic IChannel, sm *SocketMessage) {
+	socket := sm.GetSocket()
+	if socket == nil {
+		logs.Error("missing socket")
 	}
 
-	subTopic := getSubTopic(msg.Topic)
+	subTopic := sm.GetSubTopic()
+	if subTopic == "" {
+		logs.Error("missing subTopic")
+		return
+	}
+
 	subs := ic.getSubscribers(subTopic)
 	if subs == nil {
 		subs = list.New()
 	}
 
-	sessionID, user, err := fetchSessionIDAndUserUUID(conn)
-	if err != nil {
-		return err
+	sessionID := sm.GetSessionID()
+	if sessionID == "" {
+		logs.Error("missing sessionID")
+		return
 	}
 
 	sub := Subscribe{
-		UserUUID:  user.(*models.User).UUID,
-		SessionID: sessionID.(string),
-		Socket:    conn,
-		Payload:   msg.Payload,
-		ID:        msg.Ref,
+		SessionID: sessionID,
+		Socket:    socket,
+		Payload:   sm,
 	}
 
 	subs.PushBack(sub)
 	ic.setSubscribers(subTopic, subs)
 	// logs.Warn("user:%s join %s", user.(*models.User).Phone, msg.Topic)
-
-	return nil
 }
 
 // handle leave
-func leave(ic IChannel, msg *SocketMessage) error {
-	conn := msg.Socket
-	if conn == nil {
-		return errors.LogicError{
-			Type:    "Channel",
-			Message: "Can't unsubscribe without socket object!",
-		}
+func leave(ic IChannel, sm *SocketMessage) {
+	socket := sm.GetSocket()
+	if socket == nil {
+		logs.Error("missing socket")
+		return
 	}
 
-	subTopic := getSubTopic(msg.Topic)
-	sessionID, user, err := fetchSessionIDAndUserUUID(conn)
-	if err != nil {
-		return err
+	subTopic := sm.GetSubTopic()
+	sessionID := sm.GetSessionID()
+	if sessionID == "" {
+		logs.Error("missing sessionID")
+		return
 	}
 
 	subs := ic.getSubscribers(subTopic)
-	newSubs := unsubscribe(subs, sessionID.(string), user.(*models.User))
+	newSubs := unsubscribe(subs, sessionID)
 	ic.setSubscribers(subTopic, newSubs)
 	// logs.Warn("user:%s leave %s", user.(*models.User).Phone, msg.Topic)
-
-	return nil
 }
