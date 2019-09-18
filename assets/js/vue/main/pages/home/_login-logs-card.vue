@@ -26,7 +26,7 @@
         <div>
           <div class="data-item">
             <i class="iconfont icon-ip"></i>
-            <div class="table-cell">{{ lastLogin.remoteIP }}</div>
+            <div class="table-cell">{{ lastLogin ? lastLogin.remoteIP : '-' }}</div>
           </div>
 
           <div class="data-item">
@@ -46,7 +46,7 @@
 <script>
 import thisLoginQuery from './gql/query.thisLogin.gql';
 import lastLoginQuery from './gql/query.lastLogin.gql';
-import { parseUserAgent } from 'js/utils';
+import { parseUserAgent, parseGQLError } from 'js/utils';
 
 export default {
   name: 'login-logs-card',
@@ -58,11 +58,17 @@ export default {
   },
   apollo: {
     thisLogin: { query: thisLoginQuery },
-    lastLogin: { query: lastLoginQuery }
+    lastLogin: {
+      query: lastLoginQuery,
+      error(e) {
+        var err = parseGQLError(e);
+        console.warn(err.message, ', ', err.originMessage);
+      }
+    }
   },
   computed: {
     lastLoginTime() {
-      if (this.lastLogin.createdAt) {
+      if (this.lastLogin && this.lastLogin.createdAt) {
         var time = new Date(this.lastLogin.createdAt);
         return `${time.getUTCFullYear()}年${time.getMonth() +
           1}月${time.getDate()}日${time.toLocaleTimeString()}`;
@@ -78,11 +84,11 @@ export default {
       return '';
     },
     lastLoginDevice() {
-      if (this.lastLogin.userAgent) {
+      if (this.lastLogin && this.lastLogin.userAgent) {
         return parseUserAgent(this.lastLogin.userAgent);
       }
 
-      return '';
+      return '-';
     }
   }
 };

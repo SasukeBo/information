@@ -54,8 +54,8 @@ func Last(params graphql.ResolveParams) (interface{}, error) {
 	cond := models.NewCond().And("user_id", user.ID).AndNot("session_id", sessionID)
 	qs = qs.SetCond(cond)
 
-	var userLogins []*models.UserLogin
-	if _, err := qs.All(&userLogins); err != nil {
+	var lastLogin models.UserLogin
+	if err := qs.One(&lastLogin); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
 			Message: "get last user_login error",
@@ -63,7 +63,7 @@ func Last(params graphql.ResolveParams) (interface{}, error) {
 		}
 	}
 
-	return userLogins[0], nil
+	return lastLogin, nil
 }
 
 // This _

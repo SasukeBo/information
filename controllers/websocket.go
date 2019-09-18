@@ -52,7 +52,7 @@ func Connect(conn *websocket.Conn) {
 	for {
 		var receive string
 		var message Message
-		var socketMsg channel.SocketMessage
+		socketMsg := make(channel.SocketMessage)
 		if err := websocket.Message.Receive(conn, &receive); err != nil {
 			logs.Error(err)
 			return
@@ -63,7 +63,9 @@ func Connect(conn *websocket.Conn) {
 			continue
 		}
 
-		socketMsg = channel.SocketMessage(message.Payload)
+		if message.Payload != nil {
+			socketMsg = channel.SocketMessage(message.Payload)
+		}
 
 		variables := socketMsg.GetVariables()
 		topic, ok := variables["t"].(string)

@@ -85,7 +85,7 @@ export default {
   data() {
     return {
       search: '',
-      checkboxGroup: ['register', 'charger'],
+      checkboxGroup: ['register'],
       isExpand: false,
       devices: [],
       status: ''

@@ -22,6 +22,7 @@ import {
   CheckboxButton,
   Select,
   Option,
+  Loading
 } from 'element-ui'
 
 Vue.use(Form);
@@ -37,6 +38,7 @@ Vue.use(CheckboxGroup);
 Vue.use(CheckboxButton);
 Vue.use(Select);
 Vue.use(Option);
+Vue.use(Loading.directive);
 Vue.prototype.$message = Message;
 
 const info = document.querySelector('#vue-entry');

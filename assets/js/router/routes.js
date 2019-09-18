@@ -31,10 +31,10 @@ function defaultRoutes() {
           redirect: { name: 'device-details' },
           children: [
             {
-              path: 'details',
-              name: 'device-details',
+              path: 'realtime',
+              name: 'device-realtime',
               props: true,
-              component: load('main/pages/device/details')
+              component: load('main/pages/device/realtime')
             },
             {
               path: 'charges',
@@ -49,10 +49,10 @@ function defaultRoutes() {
               component: load('main/pages/device/params')
             },
             {
-              path: 'params-values',
-              name: 'device-params-values',
+              path: 'details',
+              name: 'device-details',
               props: true,
-              component: load('main/pages/device/_params-values')
+              component: load('main/pages/device/details')
             },
             {
               path: 'status-log',

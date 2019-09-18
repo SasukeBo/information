@@ -1,7 +1,10 @@
 package device
 
 import (
+	// "fmt"
+
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/models/errors"
 	"github.com/graphql-go/graphql"
 )
 
@@ -52,4 +55,20 @@ func ParamValueAdd(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	return value, nil
+}
+
+// ValueRelatedLoad _
+func ValueRelatedLoad(params graphql.ResolveParams) (interface{}, error) {
+
+	switch v := params.Source.(type) {
+	case models.DeviceParam:
+		return v.LoadDeviceParamValues(params)
+	case *models.DeviceParam:
+		return v.LoadDeviceParamValues(params)
+	default:
+		return nil, errors.LogicError{
+			Type:    "Resolver",
+			Message: "load related source type unmatched error.",
+		}
+	}
 }

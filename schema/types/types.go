@@ -3,6 +3,7 @@ package types
 import (
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/schema/fields"
 	"github.com/SasukeBo/information/schema/resolvers/device"
 	"github.com/SasukeBo/information/schema/resolvers/privilege"
 	"github.com/SasukeBo/information/schema/resolvers/role"
@@ -101,12 +102,21 @@ func init() {
 		Name: "DeviceParam",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
 			return graphql.Fields{
-				"id":        &graphql.Field{Type: graphql.Int},
-				"name":      &graphql.Field{Type: graphql.String, Description: "参数名称"},
-				"sign":      &graphql.Field{Type: graphql.String, Description: "参数签名"},
-				"type":      &graphql.Field{Type: scalars.DeviceParamValueType, Description: "参数值类型"},
-				"author":    &graphql.Field{Type: User, Description: "创建人", Resolve: user.RelatedLoad},
-				"device":    &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
+				"id":     &graphql.Field{Type: graphql.Int},
+				"name":   &graphql.Field{Type: graphql.String, Description: "参数名称"},
+				"sign":   &graphql.Field{Type: graphql.String, Description: "参数签名"},
+				"type":   &graphql.Field{Type: scalars.DeviceParamValueType, Description: "参数值类型"},
+				"author": &graphql.Field{Type: User, Description: "创建人", Resolve: user.RelatedLoad},
+				"device": &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
+				"values": &graphql.Field{
+					Type:        graphql.NewList(DeviceParamValue),
+					Description: "参数值记录",
+					Args: graphql.FieldConfigArgument{
+						"beforeTime": fields.GenArg(graphql.DateTime, "开始时间"),
+						"afterTime":  fields.GenArg(graphql.DateTime, "结束时间"),
+					},
+					Resolve: device.ValueRelatedLoad,
+				},
 				"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
 			}
 		}),

@@ -3,7 +3,7 @@
     <el-row style="padding: 0 0.5rem">
       <el-col style="min-width: 17.5rem">
         <div class="greeting-title">
-          <span style="font-size: 0.875rem">{{ profile.name }}您好，</span>
+          <span style="font-size: 0.875rem">{{ profile.name ? profile.name : phone }} 您好，</span>
           <span>今天是</span>
         </div>
         <div class="greeting-message">{{ date }}，欢迎回到普创智控自动化设备云平台。</div>
@@ -43,7 +43,8 @@ export default {
         1}月${now.getDate()}日${getWeekDay(now)}`;
     },
     ...mapState({
-      profile: state => state.user.userExtend
+      profile: state => state.user.userExtend,
+      phone: state => state.user.phone
     })
   }
 };

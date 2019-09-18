@@ -19,8 +19,16 @@
           :class="{'device-menu__item': true, 'is-selected': $route.name === 'device-details'}"
           @click="$router.push({name: 'device-details'})"
         >
+          <i class="el-icon-s-data"></i>
+          <span>{{ tabNameMap['device-details'] }}</span>
+        </div>
+
+        <div
+          :class="{'device-menu__item': true, 'is-selected': $route.name === 'device-realtime'}"
+          @click="$router.push({name: 'device-realtime'})"
+        >
           <i class="el-icon-s-marketing"></i>
-          <span>详情</span>
+          <span>{{ tabNameMap['device-realtime'] }}</span>
         </div>
 
         <div
@@ -28,15 +36,7 @@
           @click="$router.push({name: 'device-status-log'})"
         >
           <i class="el-icon-s-management"></i>
-          <span>状态变更</span>
-        </div>
-
-        <div
-          :class="{'device-menu__item': true, 'is-selected': $route.name === 'device-params-values'}"
-          @click="$router.push({name: 'device-params-values'})"
-        >
-          <i class="el-icon-s-data"></i>
-          <span>值记录</span>
+          <span>{{ tabNameMap['device-status-log'] }}</span>
         </div>
 
         <div
@@ -44,7 +44,7 @@
           @click="$router.push({name: 'device-charges'})"
         >
           <i class="el-icon-s-custom"></i>
-          <span>负责人</span>
+          <span>{{ tabNameMap['device-charges'] }}</span>
         </div>
 
         <div
@@ -52,7 +52,7 @@
           @click="$router.push({name: 'device-params'})"
         >
           <i class="el-icon-s-operation"></i>
-          <span>参数</span>
+          <span>{{ tabNameMap['device-params'] }}</span>
         </div>
 
         <div
@@ -60,7 +60,7 @@
           @click="$router.push({name: 'device-config'})"
         >
           <i class="el-icon-s-tools"></i>
-          <span>设置</span>
+          <span>{{ tabNameMap['device-config'] }}</span>
         </div>
       </div>
     </div>
@@ -69,7 +69,7 @@
   </div>
 </template>
 <script>
-import deviceQuery from './gql/query.device.gql'
+import deviceQuery from './gql/query.device.gql';
 
 export default {
   name: 'device-show',
@@ -78,7 +78,7 @@ export default {
     device: {
       query: deviceQuery,
       variables() {
-        return { uuid: this.uuid }
+        return { uuid: this.uuid };
       }
     }
   },
@@ -86,12 +86,12 @@ export default {
     return {
       device: {},
       tabNameMap: {
-        'device-details': '详情',
+        'device-details': '设备详情',
         'device-charges': '负责人',
         'device-params': '参数',
-        'device-params-values': '值记录',
+        'device-realtime': '实时监控',
         'device-status-log': '状态变更',
-        'device-config': '设置'
+        'device-config': '管理设备'
       }
     };
   },

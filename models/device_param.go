@@ -126,6 +126,30 @@ func (dp *DeviceParam) LoadDevice() (*Device, error) {
 	return dp.Device, nil
 }
 
+// LoadDeviceParamValues _
+func (dp *DeviceParam) LoadDeviceParamValues(params graphql.ResolveParams) ([]*DeviceParamValue, error) {
+	qs := Repo.QueryTable("device_param_value").Filter("device_param_id", dp.ID)
+
+	if beforeTime := params.Args["beforeTime"]; beforeTime != nil {
+		qs = qs.Filter("created_at__lt", beforeTime)
+	}
+
+	if afterTime := params.Args["afterTime"]; afterTime != nil {
+		qs = qs.Filter("created_at__gt", afterTime)
+	}
+
+	var dpvs []*DeviceParamValue
+	if _, err := qs.All(&dpvs); err != nil {
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Message: "device_param load device_param_value error",
+			OriErr:  err,
+		}
+	}
+
+	return dpvs, nil
+}
+
 // ValidateAccess _
 func (dp *DeviceParam) ValidateAccess(params graphql.ResolveParams, sign ...string) error {
 	var device *Device

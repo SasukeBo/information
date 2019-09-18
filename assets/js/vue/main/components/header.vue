@@ -23,7 +23,7 @@
         <div class="topbar-body global-card">
           <div class="topbar-body__header">
             <img src="~images/avatar.jpg" class="avatar" />
-            <span style="font-size: 1.5rem">{{ userExtend.name }}</span>
+            <span style="font-size: 1.5rem">{{ userExtend.name ? userExtend.name : phone }}</span>
             <el-tag :type="role.isAdmin ? 'warning' : 'success'" size="mini">{{ role.roleName }}</el-tag>
           </div>
 
