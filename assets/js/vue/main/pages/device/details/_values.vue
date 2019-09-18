@@ -1,8 +1,12 @@
 <template>
-  <div class="param-values global-card">
+  <div
+    class="param-values global-card"
+    v-loading="$apollo.queries.params.loading"
+    element-loading-background="unset"
+  >
     <div class="header">
       <el-date-picker
-        v-model="value2"
+        v-model="timeDuration"
         size="mini"
         type="daterange"
         align="left"
@@ -36,6 +40,7 @@
       <el-carousel
         ref="values"
         height="500px"
+        :initial-index="currentIndex"
         :autoplay="false"
         indicator-position="none"
         arrow="never"
@@ -48,7 +53,7 @@
           <span>折线图</span>
         </el-carousel-item>
         <el-carousel-item key="table">
-          <span>表格</span>
+          <values-table v-if="params && params.length" :params="params"></values-table>
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -56,17 +61,46 @@
 </template>
 <script>
 import { DatePicker, Carousel, CarouselItem } from 'element-ui';
+import paramWithValues from './gql/query.param-values.gql';
+import ValuesTable from './_values-table';
 
 export default {
+  /**
+   * 走马灯item数据请求分开
+   * 结合实际性能
+   */
   name: 'param-values',
   props: ['uuid'],
   components: {
+    ValuesTable,
     ElDatePicker: DatePicker,
     ElCarousel: Carousel,
     ElCarouselItem: CarouselItem
   },
+  apollo: {
+    params: {
+      query: paramWithValues,
+      variables() {
+        return {
+          deviceUUID: this.uuid,
+          beforeTime: this.beforeTime,
+          afterTime: this.afterTime
+        };
+      }
+    }
+  },
   data() {
     return {
+      params: [],
+      currentIndex: 2,
+      timeDuration: [
+        (() => {
+          var time = new Date();
+          time.setUTCHours(0, 0, 0, 0);
+          return time;
+        })(),
+        new Date()
+      ],
       pickerOptions: {
         shortcuts: [
           {
@@ -97,10 +131,18 @@ export default {
             }
           }
         ]
-      },
-      value2: [],
-      currentIndex: 0
+      }
     };
+  },
+  computed: {
+    afterTime() {
+      if (this.timeDuration.length > 0)
+        return this.timeDuration[0].toISOString();
+    },
+    beforeTime() {
+      if (this.timeDuration.length > 1)
+        return this.timeDuration[1].toISOString();
+    }
   },
   methods: {
     changeIndex(index) {

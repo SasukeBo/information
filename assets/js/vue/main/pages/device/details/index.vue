@@ -6,7 +6,7 @@
     </div>
 
     <div class="details__right">
-      <param-values :uuid="uuid"></param-values>
+      <param-values :uuid="uuid" v-if="uuid"></param-values>
     </div>
   </div>
 </template>
