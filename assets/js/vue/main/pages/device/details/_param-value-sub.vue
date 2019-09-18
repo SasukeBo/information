@@ -23,7 +23,7 @@ export default {
         document: valuesSub,
         variables() {
           return {
-            t: `dpv:${this.param.id}`
+            t: `dpv:${this.param.sign}`
           };
         },
         updateQuery: (preData, { subscriptionData }) => {

@@ -9,7 +9,7 @@ import (
 	"github.com/astaxie/beego/logs"
 	"github.com/graphql-go/graphql"
 	"golang.org/x/net/websocket"
-	"strconv"
+	// "strconv"
 	"time"
 
 	"github.com/SasukeBo/information/models"
@@ -23,32 +23,34 @@ type dpvChannelType struct {
 
 // Join a topic
 func (dpv *dpvChannelType) Join(msg *SocketMessage) {
-	if err := join(dpv, msg); err != nil {
-		logs.Error(err)
-	}
+	join(dpv, msg)
 }
 
 // Leave 取消订阅
-func (dpv *dpvChannelType) Leave(msg *SocketMessage) {
-	if err := leave(dpv, msg); err != nil {
-		logs.Error(err)
-	}
+func (dpv *dpvChannelType) Leave(sm *SocketMessage) {
+	leave(dpv, sm)
 }
 
 // HandleIn 处理消息进入
-func (dpv *dpvChannelType) HandleIn(msg *SocketMessage) {
-	dpv.Messagechan <- *msg
+func (dpv *dpvChannelType) HandleIn(sm *SocketMessage) {
+	dpv.Messagechan <- *sm
 }
 
 // HandleOut 处理消息发出
-func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
-	value, ok := msg.Variables["v"].(string)
+func (dpv *dpvChannelType) HandleOut(sm *SocketMessage) {
+	variables := sm.GetVariables()
+	subTopic := sm.GetSubTopic()
+	if subTopic == "" {
+		logs.Error("missing subTopic")
+	}
+
+	value, ok := variables["v"].(string)
 	if !ok {
 		logs.Error("variables value type assert string failed!")
 		return
 	}
 
-	timeStr, ok := msg.Variables["time"].(string)
+	timeStr, ok := variables["time"].(string)
 	if !ok {
 		logs.Error("variables time type assert string failed!")
 		return
@@ -60,21 +62,15 @@ func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
 		return
 	}
 
-	paramIDStr, ok := msg.Payload["id"].(string)
-	if !ok {
-		logs.Error("paramID type assert string failed")
-		return
-	}
-
-	paramID, err := strconv.ParseInt(paramIDStr, 10, 0)
-	if err != nil {
+	param := &models.DeviceParam{Sign: subTopic}
+	if err := param.GetBy("sign"); err != nil {
 		logs.Error(err)
 		return
 	}
 
 	paramValue := &models.DeviceParamValue{
 		Value:       value,
-		DeviceParam: &models.DeviceParam{ID: int(paramID)},
+		DeviceParam: param,
 		CreatedAt:   timeValue,
 	}
 
@@ -83,7 +79,6 @@ func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
 		return
 	}
 
-	subTopic := getSubTopic(msg.Topic)
 	subs := dpv.Subscribers[subTopic]
 	if subs == nil {
 		return
@@ -91,7 +86,11 @@ func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
 
 	for el := subs.Front(); el != nil; el = el.Next() {
 		sub := el.Value.(Subscribe)
-		query := sub.Payload["query"].(string)
+		query := sub.Payload.GetQuery()
+		if query == "" {
+			continue
+		}
+
 		result := graphql.Do(graphql.Params{
 			Schema:         schema.PublicSchema,
 			RequestString:  query,
@@ -100,7 +99,7 @@ func (dpv *dpvChannelType) HandleOut(msg *SocketMessage) {
 
 		message, err := json.Marshal(map[string]interface{}{
 			"type":    "data",
-			"id":      sub.ID,
+			"id":      sub.Payload.GetRefID(),
 			"payload": result,
 		})
 

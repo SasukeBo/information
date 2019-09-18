@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/graphql-go/graphql"
 	"time"
 
@@ -31,6 +32,20 @@ func (dp *DeviceParam) TableUnique() [][]string {
 	return [][]string{
 		[]string{"device_id", "sign"},
 	}
+}
+
+// GetBy get device_param by col
+func (dp *DeviceParam) GetBy(col string) error {
+	if err := Repo.Read(dp, col); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   col,
+			Message: fmt.Sprintf("get device_param by %s error", col),
+			OriErr:  err,
+		}
+	}
+
+	return nil
 }
 
 // Get get device_param by id
