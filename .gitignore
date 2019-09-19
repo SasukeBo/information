@@ -2,6 +2,7 @@
 nohup.out
 .DS_Store
 conf/*.secret.conf
+conf/env.conf
 static
 
 assets/node_modules
