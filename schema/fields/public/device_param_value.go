@@ -21,6 +21,18 @@ var DeviceParamValueListField = &graphql.Field{
 	Resolve: device.ParamValueList,
 }
 
+// DeviceParamValueCountField return value count at an interval
+var DeviceParamValueCountField = &graphql.Field{
+	Type: graphql.Int,
+	Args: graphql.FieldConfigArgument{
+		"deviceUUID": fields.GenArg(graphql.String, "设备UUID", false),
+		"beforeTime": fields.GenArg(graphql.DateTime, "开始时间"),
+		"afterTime":  fields.GenArg(graphql.DateTime, "结束时间"),
+	},
+	Resolve:     device.ParamValueCount,
+	Description: "查询时间段内设备参数值的最大记录数",
+}
+
 // DeviceParamValueAddField _
 var DeviceParamValueAddField = &graphql.Field{
 	Type: types.DeviceParamValue,

@@ -128,7 +128,15 @@ func (dp *DeviceParam) LoadDevice() (*Device, error) {
 
 // LoadDeviceParamValues _
 func (dp *DeviceParam) LoadDeviceParamValues(params graphql.ResolveParams) ([]*DeviceParamValue, error) {
-	qs := Repo.QueryTable("device_param_value").Filter("device_param_id", dp.ID).Limit(10000)
+	qs := Repo.QueryTable("device_param_value").Filter("device_param_id", dp.ID)
+
+	if limit := params.Args["limit"]; limit != nil {
+		qs = qs.Limit(limit)
+	}
+
+	if offset := params.Args["offset"]; offset != nil {
+		qs = qs.Offset(offset)
+	}
 
 	if beforeTime := params.Args["beforeTime"]; beforeTime != nil {
 		qs = qs.Filter("created_at__lt", beforeTime)

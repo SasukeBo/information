@@ -68,39 +68,4 @@ export default {
   }
 }
 
-.device-details .param-values {
-  .header {
-    padding: 0 1rem;
-
-    .el-range-separator {
-      flex: auto;
-    }
-
-    .indicators {
-      float: right;
-      padding: 6px;
-      cursor: default;
-
-      .indicator {
-        width: 10px;
-        height: 10px;
-        display: inline-block;
-        cursor: pointer;
-        border-radius: 50%;
-        margin: 0 0.2rem;
-        background: $--color-theme__light;
-        transition: all 0.3s ease;
-      }
-
-      .indicator.is-active,
-      .indicator:hover {
-        background: $--color-theme__white;
-      }
-    }
-  }
-
-  .body {
-    padding: 1rem;
-  }
-}
 </style>

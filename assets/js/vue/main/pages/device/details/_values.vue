@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="param-values global-card"
-    v-loading="$apollo.queries.params.loading"
-    element-loading-background="unset"
-  >
+  <div class="param-values global-card">
     <div class="header">
       <el-date-picker
         v-model="timeDuration"
@@ -53,7 +49,7 @@
           <span>折线图</span>
         </el-carousel-item>
         <el-carousel-item key="table">
-          <values-table v-if="params && params.length" :params="params"></values-table>
+          <values-table v-if="uuid" :uuid="uuid" :afterTime="afterTime" :beforeTime="beforeTime"></values-table>
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -61,7 +57,6 @@
 </template>
 <script>
 import { DatePicker, Carousel, CarouselItem } from 'element-ui';
-import paramWithValues from './gql/query.param-values.gql';
 import ValuesTable from './_values-table';
 
 export default {
@@ -77,21 +72,8 @@ export default {
     ElCarousel: Carousel,
     ElCarouselItem: CarouselItem
   },
-  apollo: {
-    params: {
-      query: paramWithValues,
-      variables() {
-        return {
-          deviceUUID: this.uuid,
-          beforeTime: this.beforeTime,
-          afterTime: this.afterTime
-        };
-      }
-    }
-  },
   data() {
     return {
-      params: [],
       currentIndex: 2,
       timeDuration: [
         (() => {
@@ -151,3 +133,43 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+@import 'css/vars.scss';
+
+.device-details .param-values {
+  .header {
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+
+    .el-range-separator {
+      flex: auto;
+    }
+
+    .indicators {
+      float: right;
+      padding: 6px;
+      cursor: default;
+
+      .indicator {
+        width: 10px;
+        height: 10px;
+        display: inline-block;
+        cursor: pointer;
+        border-radius: 50%;
+        margin: 0 0.2rem;
+        background: $--color-theme__light;
+        transition: all 0.3s ease;
+      }
+
+      .indicator.is-active,
+      .indicator:hover {
+        background: $--color-theme__white;
+      }
+    }
+  }
+
+  .body {
+    padding: 0 1rem;
+  }
+}
+</style>

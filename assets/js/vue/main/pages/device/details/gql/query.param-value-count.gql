@@ -1,0 +1,11 @@
+query deviceParamValueCount(
+  $deviceUUID: String!
+  $beforeTime: DateTime
+  $afterTime: DateTime
+) {
+  count: deviceParamValueCount(
+    deviceUUID: $deviceUUID
+    afterTime: $afterTime
+    beforeTime: $beforeTime
+  )
+}

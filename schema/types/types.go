@@ -112,6 +112,8 @@ func init() {
 					Type:        graphql.NewList(DeviceParamValue),
 					Description: "参数值记录",
 					Args: graphql.FieldConfigArgument{
+						"limit":      fields.GenArg(graphql.Int, "最大数量"),
+						"offset":     fields.GenArg(graphql.Int, "偏移量"),
 						"beforeTime": fields.GenArg(graphql.DateTime, "开始时间"),
 						"afterTime":  fields.GenArg(graphql.DateTime, "结束时间"),
 					},

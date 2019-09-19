@@ -57,9 +57,60 @@ func ParamValueAdd(params graphql.ResolveParams) (interface{}, error) {
 	return value, nil
 }
 
+// ParamValueCount _
+func ParamValueCount(params graphql.ResolveParams) (interface{}, error) {
+	deviceUUID := params.Args["deviceUUID"].(string)
+	device := models.Device{UUID: deviceUUID}
+	if err := device.GetBy("uuid"); err != nil {
+		return nil, err
+	}
+
+	deviceParams, err := device.LoadDeviceParams()
+	if err != nil {
+		return nil, err
+	}
+	if len(deviceParams) == 0 {
+		return nil, nil
+	}
+
+	durationCond := models.NewCond()
+	if beforeTime := params.Args["beforeTime"]; beforeTime != nil {
+		durationCond = durationCond.And("created_at__lt", beforeTime)
+	}
+
+	if afterTime := params.Args["afterTime"]; afterTime != nil {
+		durationCond = durationCond.And("created_at__gt", afterTime)
+	}
+
+	cnts := make([]int64, 0)
+	for _, deviceParam := range deviceParams {
+		cond := models.NewCond().And("device_param_id", deviceParam.ID)
+		if !durationCond.IsEmpty() {
+			cond = cond.AndCond(durationCond)
+		}
+		qs := models.Repo.QueryTable("device_param_value").SetCond(cond)
+		cnt, err := qs.Count()
+
+		if err != nil {
+			cnts = append(cnts, 0)
+		} else {
+			cnts = append(cnts, cnt)
+		}
+	}
+
+	maxCnt := int64(0)
+
+	for _, cnt := range cnts {
+		if cnt > maxCnt {
+			maxCnt = cnt
+		}
+	}
+
+	return maxCnt, nil
+}
+
 // ValueRelatedLoad _
 func ValueRelatedLoad(params graphql.ResolveParams) (interface{}, error) {
-
 	switch v := params.Source.(type) {
 	case models.DeviceParam:
 		return v.LoadDeviceParamValues(params)

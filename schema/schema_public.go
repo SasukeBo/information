@@ -71,16 +71,17 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		"getSmsCode": fields.GetSmsCodeField,
 
 		/*    device    */
-		"deviceGet":            fields.DeviceGetField,
-		"deviceTokenGet":       fields.DeviceTokenGetField,
-		"deviceList":           fields.DeviceListField,
-		"deviceChargeGet":      fields.DeviceChargeGetField,
-		"deviceChargeList":     fields.DeviceChargeListField,
-		"deviceParamGet":       fields.DeviceParamGetField,
-		"deviceParamList":      fields.DeviceParamListField,
-		"deviceParamValueList": fields.DeviceParamValueListField,
-		"deviceStatusLogList":  fields.DeviceStatusLogListField,
-		"deviceStatusDuration": fields.DeviceStatusDurationField,
+		"deviceGet":             fields.DeviceGetField,
+		"deviceTokenGet":        fields.DeviceTokenGetField,
+		"deviceList":            fields.DeviceListField,
+		"deviceChargeGet":       fields.DeviceChargeGetField,
+		"deviceChargeList":      fields.DeviceChargeListField,
+		"deviceParamGet":        fields.DeviceParamGetField,
+		"deviceParamList":       fields.DeviceParamListField,
+		"deviceParamValueList":  fields.DeviceParamValueListField,
+		"deviceParamValueCount": fields.DeviceParamValueCountField,
+		"deviceStatusLogList":   fields.DeviceStatusLogListField,
+		"deviceStatusDuration":  fields.DeviceStatusDurationField,
 		/*
 			FIXME: 暂时不需要的接口
 			"deviceChargePrivGet":  fields.DeviceChargePrivGetField,
