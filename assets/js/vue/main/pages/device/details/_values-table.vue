@@ -133,9 +133,9 @@ export default {
   }
 
   .table__inner .table__header {
-    position: fixed;
+    table-layout: fixed;
     font-size: 1.2rem;
-    width: 100%;
+    width: fit-content;
     display: flex;
     background: $--color-theme__bg;
     padding: 0.5rem 0;
@@ -149,11 +149,10 @@ export default {
   }
 
   .table__inner .table__body {
-    margin-top: 43px;
-
     .table-row {
       padding: 0.2rem 0;
       display: flex;
+      width: fit-content;
 
       &.odd-row {
         background: $--color-theme__light;
