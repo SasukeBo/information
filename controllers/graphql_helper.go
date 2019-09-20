@@ -171,7 +171,10 @@ func fetchParams(ctx *context.Context) queryParams {
 		params.RootFieldName = matches[6]
 	}
 
-	logs.Info(params.Query)
+	env := beego.AppConfig.String
+	if env("runmode") == "dev" {
+		logs.Info(params.Query)
+	}
 
 	return params
 }
