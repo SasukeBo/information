@@ -69,6 +69,7 @@ export default {
         zlevel: 1,
         left: 'center',
         inactiveColor: '#909399',
+        selectedMode: 'single',
         textStyle: {
           color: '#dcdfe6'
         },

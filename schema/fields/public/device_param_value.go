@@ -41,3 +41,15 @@ var DeviceParamValueAddField = &graphql.Field{
 	},
 	Resolve: device.ParamValueAdd,
 }
+
+// DeviceParamValueHistogramField _
+var DeviceParamValueHistogramField = &graphql.Field{
+	Type: types.DeviceParamValueHistogram,
+	Args: graphql.FieldConfigArgument{
+		"paramID":    fields.GenArg(graphql.Int, "参数ID", false),
+		"beforeTime": fields.GenArg(graphql.DateTime, "开始时间"),
+		"afterTime":  fields.GenArg(graphql.DateTime, "结束时间"),
+	},
+	Resolve:     device.ParamValueHistogram,
+	Description: "获取时间段内参数值直方图数据",
+}

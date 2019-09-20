@@ -1,0 +1,14 @@
+query deviceParamValueHistogram(
+  $paramID: Int!
+  $beforeTime: DateTime
+  $afterTime: DateTime
+){
+  histogram: deviceParamValueHistogram(
+    paramID: $paramID
+    afterTime: $afterTime
+    beforeTime: $beforeTime
+  ) {
+    category
+   	serie
+  }
+}

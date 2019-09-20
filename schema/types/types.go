@@ -28,6 +28,9 @@ var DeviceParam graphql.Type
 // DeviceParamValue 设备参数值类型
 var DeviceParamValue graphql.Type
 
+// DeviceParamValueHistogram 设备参数值直方图数据类型
+var DeviceParamValueHistogram graphql.Type
+
 // DeviceStatusLog 设备状态变更记录类型
 var DeviceStatusLog graphql.Type
 
@@ -132,6 +135,16 @@ func init() {
 				"value":       &graphql.Field{Type: graphql.String, Description: "参数值字符串"},
 				"deviceParam": &graphql.Field{Type: DeviceParam, Description: "设备参数", Resolve: device.ParamRelatedLoad},
 				"createdAt":   &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
+			}
+		}),
+	})
+
+	DeviceParamValueHistogram = graphql.NewObject(graphql.ObjectConfig{
+		Name: "DeviceParamValueHistogram",
+		Fields: graphql.FieldsThunk(func() graphql.Fields {
+			return graphql.Fields{
+				"category": &graphql.Field{Type: graphql.NewList(graphql.String), Description: "直方图x轴category"},
+				"serie":    &graphql.Field{Type: graphql.NewList(graphql.Int), Description: "直方图serie data"},
 			}
 		}),
 	})

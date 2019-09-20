@@ -1,7 +1,7 @@
 package device
 
 import (
-	// "fmt"
+	"fmt"
 
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/models/errors"
@@ -107,6 +107,45 @@ func ParamValueCount(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	return maxCnt, nil
+}
+
+// ParamValueHistogram _
+func ParamValueHistogram(params graphql.ResolveParams) (interface{}, error) {
+	var valueMin float32
+	var valueMax float32
+	var err error
+	category := make([]string, 0)
+	serie := make([]int, 0)
+	paramID := params.Args["paramID"].(int)
+
+	err = models.Repo.Raw("select min(value) as value_min from device_param_value where device_param_id = ?", paramID).QueryRow(&valueMin)
+	if err != nil {
+		return nil, err
+	}
+
+	err = models.Repo.Raw("select max(value) as value_max from device_param_value where device_param_id = ?", paramID).QueryRow(&valueMax)
+	if err != nil {
+		return nil, err
+	}
+
+	duration := (valueMax - valueMin) / 20
+	queryCount := models.Repo.Raw("select count(*) from device_param_value where cast(value as float) > ? and cast(value as float) < ?")
+	for i := 0; i < 20; i++ {
+		var count int
+		upLimit := valueMin + duration*float32(i+1)
+		lowerLimit := valueMin + duration*float32(i)
+
+		queryCount.SetArgs(lowerLimit, upLimit).QueryRow(&count)
+		category = append(category, fmt.Sprintf("%.2f-%.2f", lowerLimit, upLimit))
+		serie = append(serie, count)
+	}
+
+	result := struct {
+		Category []string
+		Serie    []int
+	}{category, serie}
+
+	return result, nil
 }
 
 // ValueRelatedLoad _

@@ -24,11 +24,6 @@
           @mouseenter="$refs.values.activeIndex = 1"
           :class="[currentIndex === 1 ? 'is-active' : '']"
         ></span>
-        <span
-          class="indicator"
-          @mouseenter="$refs.values.activeIndex = 2"
-          :class="[currentIndex === 2 ? 'is-active' : '']"
-        ></span>
       </div>
     </div>
 
@@ -42,9 +37,6 @@
         arrow="never"
         @change="changeIndex"
       >
-        <el-carousel-item key="histogram">
-          <span>直方图</span>
-        </el-carousel-item>
         <el-carousel-item key="line">
           <span>折线图</span>
         </el-carousel-item>
@@ -74,7 +66,7 @@ export default {
   },
   data() {
     return {
-      currentIndex: 2,
+      currentIndex: 1,
       timeDuration: [
         (() => {
           var time = new Date();

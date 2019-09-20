@@ -7,18 +7,25 @@
 
     <div class="details__right">
       <param-values :uuid="uuid" v-if="uuid"></param-values>
+      <values-histogram :uuid="uuid" v-if="uuid"></values-histogram>
     </div>
   </div>
 </template>
 <script>
-import deviceBasic from './_device-basic';
-import deviceRegister from './_device-register';
-import paramValues from './_values';
+import DeviceBasic from './_device-basic';
+import DeviceRegister from './_device-register';
+import ParamValues from './_values';
+import ValuesHistogram from './_values-histogram';
 
 export default {
   name: 'device-details',
   props: ['uuid'],
-  components: { deviceBasic, deviceRegister, paramValues }
+  components: {
+    ValuesHistogram,
+    DeviceBasic,
+    DeviceRegister,
+    ParamValues
+  }
 };
 </script>
 <style lang="scss">
@@ -67,5 +74,4 @@ export default {
     }
   }
 }
-
 </style>
