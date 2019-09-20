@@ -128,7 +128,7 @@ func (dp *DeviceParam) LoadDevice() (*Device, error) {
 
 // LoadDeviceParamValues _
 func (dp *DeviceParam) LoadDeviceParamValues(params graphql.ResolveParams) ([]*DeviceParamValue, error) {
-	qs := Repo.QueryTable("device_param_value").Filter("device_param_id", dp.ID)
+	qs := Repo.QueryTable("device_param_value").Filter("device_param_id", dp.ID).OrderBy("-created_at")
 
 	if limit := params.Args["limit"]; limit != nil {
 		qs = qs.Limit(limit)

@@ -40,7 +40,7 @@ export default {
         // symbol: 'emptyCircle',
         // symbolSize: 4,
         smooth: true,
-        showSymbol: false,
+        showSymbol: true,
         data: [],
         hoverAnimation: false
       };
@@ -72,7 +72,7 @@ export default {
         textStyle: {
           color: '#dcdfe6'
         },
-        data: this.legendData,
+        data: this.legendData
       },
       grid: {
         left: '10%',

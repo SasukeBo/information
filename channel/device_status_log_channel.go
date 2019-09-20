@@ -75,9 +75,14 @@ func (dsl *dslChannelType) HandleOut(sm *SocketMessage) {
 		return
 	}
 
+	validDuration := int(duration / 1e9)
+	if validDuration <= 0 {
+		return
+	}
+
 	statusLog := models.DeviceStatusLog{
 		Device:   &device,
-		Duration: int(duration / 1e9),
+		Duration: validDuration,
 		Status:   oldStatus,
 	}
 

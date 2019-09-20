@@ -39,7 +39,7 @@ export default {
   data() {
     return {
       values: [],
-      limit: 100
+      limit: 50
     }
   },
   watch: {
