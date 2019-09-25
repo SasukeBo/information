@@ -55,21 +55,6 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 		qs = qs.Filter("status", status)
 	}
 
-	if userName := params.Args["userName"]; userName != nil {
-		userExtend := models.UserExtend{Name: userName.(string)}
-		if err := userExtend.GetBy("name"); err != nil {
-			return nil, err
-		}
-
-		var user *models.User
-		var err error
-		if user, err = userExtend.LoadUser(); err == nil {
-			return nil, err
-		}
-
-		qs = qs.Filter("user_id", user.ID)
-	}
-
 	if userUUID := params.Args["userUUID"]; userUUID != nil {
 		user := models.User{UUID: userUUID.(string)}
 		if err := user.GetBy("uuid"); err != nil {
@@ -77,31 +62,6 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 		}
 
 		qs = qs.Filter("user_id", user.ID)
-	}
-
-	if chargerName := params.Args["chargerName"]; chargerName != nil {
-		r := models.Repo.Raw(`
-		SELECT device_id FROM device_charge
-		WHERE user_id = (
-			SELECT u.id FROM public.user AS u INNER JOIN user_extend AS ue
-			ON u.user_extend_id = ue.id WHERE ue.name = ?
-		);`, chargerName)
-
-		if qs = listIDInQS(qs, r); qs == nil {
-			return []interface{}{}, nil
-		}
-	}
-
-	if chargerUUID := params.Args["chargerUUID"]; chargerUUID != nil {
-		r := models.Repo.Raw(`
-		SELECT device_id FROM device_charge
-		WHERE user_id = (
-			SELECT u.id FROM public.user as u WHERE u.uuid = ?
-		);`, chargerUUID)
-
-		if qs = listIDInQS(qs, r); qs == nil {
-			return []interface{}{}, nil
-		}
 	}
 
 	var devices []*models.Device

@@ -11,14 +11,13 @@ import (
 // ParamCreate 设备参数创建
 func ParamCreate(params graphql.ResolveParams) (interface{}, error) {
 	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
-
 	device := models.Device{UUID: params.Args["deviceUUID"].(string)}
 	if err := device.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 	// 创建参数的权限验证
-	if accessErr := device.ValidateAccess(params, "device_param_c"); accessErr != nil {
-		return nil, accessErr
+	if err := device.ValidateAccess(&user); err != nil {
+		return nil, err
 	}
 
 	name := params.Args["name"].(string)
@@ -33,7 +32,7 @@ func ParamCreate(params graphql.ResolveParams) (interface{}, error) {
 
 	pType := params.Args["type"].(int)
 
-	deviceParam := models.DeviceParam{Name: name, Sign: sign, Type: pType, Author: &user, Device: &device}
+	deviceParam := models.DeviceParam{Name: name, Sign: sign, Type: pType, Device: &device}
 	if err := deviceParam.Insert(); err != nil {
 		return nil, err
 	}
@@ -43,14 +42,19 @@ func ParamCreate(params graphql.ResolveParams) (interface{}, error) {
 
 // ParamUpdate 设备参数修改
 func ParamUpdate(params graphql.ResolveParams) (interface{}, error) {
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	deviceParam := models.DeviceParam{ID: params.Args["id"].(int)}
 	if err := deviceParam.Get(); err != nil {
 		return nil, err
 	}
 
-	// 修改设备参数的权限
-	if accessErr := deviceParam.ValidateAccess(params, "device_param_u"); accessErr != nil {
-		return nil, accessErr
+	device, err := deviceParam.LoadDevice()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := device.ValidateAccess(&user); err != nil {
+		return nil, err
 	}
 
 	if name := params.Args["name"]; name != nil {
@@ -80,16 +84,21 @@ func ParamUpdate(params graphql.ResolveParams) (interface{}, error) {
 
 // ParamDelete 设备参数删除
 func ParamDelete(params graphql.ResolveParams) (interface{}, error) {
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	id := params.Args["id"].(int)
-
 	deviceParam := models.DeviceParam{ID: id}
+
 	if err := deviceParam.Get(); err != nil {
 		return nil, err
 	}
 
-	// 删除权限验证
-	if accessErr := deviceParam.ValidateAccess(params, "device_param_u"); accessErr != nil {
-		return nil, accessErr
+	device, err := deviceParam.LoadDevice()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := device.ValidateAccess(&user); err != nil {
+		return nil, err
 	}
 
 	if err := deviceParam.Delete(); err != nil {
@@ -108,10 +117,6 @@ func ParamGet(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	if accessErr := deviceParam.ValidateAccess(params); accessErr != nil {
-		return nil, accessErr
-	}
-
 	return deviceParam, nil
 }
 
@@ -120,11 +125,6 @@ func ParamList(params graphql.ResolveParams) (interface{}, error) {
 	device := models.Device{UUID: params.Args["deviceUUID"].(string)}
 	if err := device.GetBy("uuid"); err != nil {
 		return nil, err
-	}
-
-	// 验证访问权限
-	if accessErr := device.ValidateAccess(params); accessErr != nil {
-		return nil, accessErr
 	}
 
 	qs := models.Repo.QueryTable("device_param").Filter("device_id", device.ID).OrderBy("-created_at")
@@ -139,10 +139,6 @@ func ParamList(params graphql.ResolveParams) (interface{}, error) {
 
 	if pType := params.Args["type"]; pType != nil {
 		qs = qs.Filter("type", pType)
-	}
-
-	if userUUID := params.Args["userUUID"]; userUUID != nil {
-		qs = qs.Filter("author__uuid", userUUID)
 	}
 
 	var deviceParams []*models.DeviceParam

@@ -1,27 +1,29 @@
 query (
   $status: DeviceStatus
-  $ownership: [String]
-  $namePattern: String
+  $pattern: String
+  $isRegister: Boolean
+  $limit: Int
+  $offset: Int
 ) {
-  devices: deviceList(
+  deviceList(
     status: $status
-    ownership: $ownership
-    namePattern: $namePattern
+    pattern: $pattern
+    isRegister: $isRegister
+    limit: $limit
+    offset: $offset
   ){
-    id
-    uuid
-    name
-    type
-    token
-    user {
+    total
+    devices {
+      id
       uuid
-      userExtend {
-        name
-      }
+      name
+      type
+      token
+      address
+      status
+      description
+      createdAt
+      updatedAt
     }
-    status
-    description
-    createdAt
-    updatedAt
   }
 }

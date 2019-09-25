@@ -11,29 +11,29 @@
 
       <charge-item
         @remove="handleRemove"
-        v-for="charge in charges"
-        :key="charge.id"
-        :charge="charge"
+        v-for="charger in chargers"
+        :key="charger.id"
+        :charger="charger"
       ></charge-item>
-      <div v-if="charges.length === 0" class="empty-tip">暂无负责人</div>
+      <div v-if="chargers.length === 0" class="empty-tip">暂无负责人</div>
     </div>
   </div>
 </template>
 <script>
 import { Tooltip } from 'element-ui';
 import ChargeItem from './_charge-item';
-import chargesQuery from './gql/query.charges.gql';
+import chargersQuery from './gql/query.chargers.gql';
 
 export default {
-  name: 'device-charge',
+  name: 'device-charger',
   props: ['uuid'],
   components: {
     ElTooltip: Tooltip,
     ChargeItem
   },
   apollo: {
-    charges: {
-      query: chargesQuery,
+    chargers: {
+      query: chargersQuery,
       variables() {
         return { uuid: this.uuid };
       }
@@ -41,7 +41,7 @@ export default {
   },
   data() {
     return {
-      charges: [],
+      chargers: [],
       search: ''
     };
   },

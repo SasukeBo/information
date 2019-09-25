@@ -30,10 +30,6 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		"userUpdatePassword": fields.UserUpdatePasswordField,
 		"userUpdatePhone":    fields.UserUpdatePhoneField,
 
-		/* userExtend */
-		"userExtendUpdate":    fields.UserExtendUpdateField,
-		"userExtendBindEmail": fields.UserExtendBindEmailField,
-
 		/*    aliyun    */
 		"sendSmsCode": fields.SendSmsCodeField,
 
@@ -43,18 +39,14 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		"deviceDelete": fields.DeviceDeleteField,
 
 		/*    deviceCharge    */
-		"deviceChargeCreate": fields.DeviceChargeCreateField,
-		"deviceChargeDelete": fields.DeviceChargeDeleteField,
-		"deviceChargeUpdate": fields.DeviceChargeUpdateField,
+		"deviceChargerCreate": fields.DeviceChargerCreateField,
+		"deviceChargerDelete": fields.DeviceChargerDeleteField,
+		"deviceChargerUpdate": fields.DeviceChargerUpdateField,
 
 		/*    deviceParam    */
 		"deviceParamCreate": fields.DeviceParamCreateField,
 		"deviceParamUpdate": fields.DeviceParamUpdateField,
 		"deviceParamDelete": fields.DeviceParamDeleteField,
-
-		/*    deviceChargeAbility    */
-		"deviceChargePrivCreate": fields.DeviceChargePrivCreateField,
-		"deviceChargePrivDelete": fields.DeviceChargePrivDeleteField,
 	},
 })
 
@@ -71,12 +63,13 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		"getSmsCode": fields.GetSmsCodeField,
 
 		/*    device    */
-		"deviceGet":      fields.DeviceGetField,
-		"deviceTokenGet": fields.DeviceTokenGetField,
-		"deviceList":     fields.DeviceListField,
+		"deviceGet":         fields.DeviceGetField,
+		"deviceList":        fields.DeviceListField,
+		"deviceTokenGet":    fields.DeviceTokenGetField,
+		"deviceStatusCount": fields.DeviceStatusCountField,
 
-		"deviceChargeGet":  fields.DeviceChargeGetField,
-		"deviceChargeList": fields.DeviceChargeListField,
+		"deviceChargerGet":  fields.DeviceChargerGetField,
+		"deviceChargerList": fields.DeviceChargerListField,
 
 		"deviceParamGet":  fields.DeviceParamGetField,
 		"deviceParamList": fields.DeviceParamListField,
@@ -87,11 +80,6 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 
 		"deviceStatusLogList":  fields.DeviceStatusLogListField,
 		"deviceStatusDuration": fields.DeviceStatusDurationField,
-		/*
-			FIXME: 暂时不需要的接口
-			"deviceChargePrivGet":  fields.DeviceChargePrivGetField,
-			"deviceChargePrivList": fields.DeviceChargePrivListField,
-		*/
 
 		/* userLogin */
 		"userLoginList": fields.UserLoginListField,

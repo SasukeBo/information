@@ -11,6 +11,7 @@ fragment device on Device {
   remoteIP
   register: user {
     phone
-    userExtend { name email }
+    name
+    email
   }
 }

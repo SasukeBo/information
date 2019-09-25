@@ -1,8 +1,7 @@
 .user-device .page-right .device-card {
   margin: 0 0.5rem 1rem;
-  min-width: 300px;
+  min-width: 400px;
   cursor: pointer;
-  flex: 1;
 
   .global-card {
     transition: background 0.3s ease;
@@ -24,7 +23,7 @@
 
   .data-item .label,
   .data-item .label-center {
-    width: 3.5rem;
+    width: 4.5rem;
     font-size: 0.75rem;
     color: $--color-font__light;
     margin: auto;

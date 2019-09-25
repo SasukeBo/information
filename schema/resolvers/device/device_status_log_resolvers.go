@@ -2,57 +2,53 @@ package device
 
 import (
 	"github.com/graphql-go/graphql"
-	"strings"
-	"time"
+	// "strings"
+	// "time"
 
 	"github.com/SasukeBo/information/models"
 	// "github.com/astaxie/beego/logs"
 )
 
-// StatusLogList 设备参数创建
+// StatusLogList 设备状态列表查询
+// FIXME: 重构设备状态列表数据返回算法
 func StatusLogList(params graphql.ResolveParams) (interface{}, error) {
-	device := models.Device{UUID: params.Args["deviceUUID"].(string)}
-	if err := device.GetBy("uuid"); err != nil {
-		return nil, err
-	}
+	// device := models.Device{UUID: params.Args["deviceUUID"].(string)}
+	// if err := device.GetBy("uuid"); err != nil {
+	// return nil, err
+	// }
 
-	// 验证权限
-	if accessErr := device.ValidateAccess(params); accessErr != nil {
-		return nil, accessErr
-	}
+	// qs := models.Repo.QueryTable("device_status_log").Filter("device_id", device.ID).OrderBy("created_at")
 
-	qs := models.Repo.QueryTable("device_status_log").Filter("device_id", device.ID).OrderBy("created_at")
+	// if status := params.Args["status"]; status != nil {
+	// qs = qs.Filter("status", status)
+	// }
 
-	if status := params.Args["status"]; status != nil {
-		qs = qs.Filter("status", status)
-	}
+	// if beforeTime := params.Args["beforeTime"]; beforeTime != nil {
+	// qs = qs.Filter("created_at__lt", beforeTime)
+	// }
 
-	if beforeTime := params.Args["beforeTime"]; beforeTime != nil {
-		qs = qs.Filter("created_at__lt", beforeTime)
-	}
+	// if afterTime := params.Args["afterTime"]; afterTime != nil {
+	// qs = qs.Filter("created_at__gt", afterTime)
+	// }
 
-	if afterTime := params.Args["afterTime"]; afterTime != nil {
-		qs = qs.Filter("created_at__gt", afterTime)
-	}
+	// if limit := params.Args["limit"]; limit != nil {
+	// qs = qs.Limit(limit)
+	// }
 
-	if limit := params.Args["limit"]; limit != nil {
-		qs = qs.Limit(limit)
-	}
+	// var statusLogs []*models.DeviceStatusLog
+	// if _, err := qs.All(&statusLogs); err != nil {
+	// return nil, err
+	// }
 
-	var statusLogs []*models.DeviceStatusLog
-	if _, err := qs.All(&statusLogs); err != nil {
-		return nil, err
-	}
+	// currentDuration := time.Now().Sub(device.StatusChangeAt).Truncate(time.Second)
+	// currentStatus := &models.DeviceStatusLog{
+	// Status:   device.Status,
+	// Duration: int(currentDuration / 1e9),
+	// }
 
-	currentDuration := time.Now().Sub(device.StatusChangeAt).Truncate(time.Second)
-	currentStatus := &models.DeviceStatusLog{
-		Status:   device.Status,
-		Duration: int(currentDuration / 1e9),
-	}
+	// statusLogs = append(statusLogs, currentStatus)
 
-	statusLogs = append(statusLogs, currentStatus)
-
-	return statusLogs, nil
+	return nil, nil
 }
 
 // StatusRefresh _
@@ -66,36 +62,37 @@ func StatusRefresh(params graphql.ResolveParams) (interface{}, error) {
 }
 
 // StatusDuration _
+// FIXME: 重构
 func StatusDuration(params graphql.ResolveParams) (interface{}, error) {
-	deviceID := params.Args["deviceID"].(int)
-	device := models.Device{ID: deviceID}
-	if err := device.GetBy("id"); err != nil {
-		return nil, err
-	}
+	// deviceID := params.Args["deviceID"].(int)
+	// device := models.Device{ID: deviceID}
+	// if err := device.GetBy("id"); err != nil {
+	// return nil, err
+	// }
 
-	status := params.Args["status"].(int)
+	// status := params.Args["status"].(int)
 
-	qs := models.Repo.QueryTable("device_status_log").Filter("device_id", device.ID).Filter("status", status)
+	// qs := models.Repo.QueryTable("device_status_log").Filter("device_id", device.ID).Filter("status", status)
 
-	var statusLogs []*models.DeviceStatusLog
-	if _, err := qs.All(&statusLogs); err != nil {
-		return nil, err
-	}
+	// var statusLogs []*models.DeviceStatusLog
+	// if _, err := qs.All(&statusLogs); err != nil {
+	// return nil, err
+	// }
 
-	var durations time.Duration
-	for _, sl := range statusLogs {
-		durations += time.Duration(sl.Duration * 1e9)
-	}
+	// var durations time.Duration
+	// for _, sl := range statusLogs {
+	// durations += time.Duration(sl.Duration * 1e9)
+	// }
 
-	if device.Status == status {
-		currentDuration := time.Now().Sub(device.StatusChangeAt)
-		durations += currentDuration
-	}
+	// if device.Status == status {
+	// currentDuration := time.Now().Sub(device.StatusChangeAt)
+	// durations += currentDuration
+	// }
 
-	durationStrTemp := durations.Truncate(time.Second).String()
+	// durationStrTemp := durations.Truncate(time.Second).String()
 
-	result := strings.Replace(durationStrTemp, "h", "小时", 1)
-	result = strings.Replace(result, "m", "分", 1)
-	result = strings.Replace(result, "s", "秒", 1)
-	return result, nil
+	// result := strings.Replace(durationStrTemp, "h", "小时", 1)
+	// result = strings.Replace(result, "m", "分", 1)
+	// result = strings.Replace(result, "s", "秒", 1)
+	return nil, nil
 }

@@ -50,9 +50,6 @@ var AdminMutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		"adminRoleUpdate": fields.RoleUpdateField,
 		"adminRoleDelete": fields.RoleDeleteField,
 
-		/* userExtend */
-		"adminUserExtendUpdate": fields.UserExtendUpdateField,
-
 		/* user */
 		"adminUserDelete": fields.UserDeleteField,
 		"adminUserUpdate": fields.UserUpdateField,

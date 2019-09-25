@@ -17,14 +17,20 @@
       </div>
 
       <div class="item">
+        <span>Token</span>
+        <span>{{ deviceBasic.token }}</span>
+      </div>
+
+      <div class="item">
+        <span>地址</span>
+        <span>{{ deviceBasic.address }}</span>
+      </div>
+
+      <div class="item">
         <span>描述</span>
         <span>{{ deviceBasic.description }}</span>
       </div>
 
-      <div class="item">
-        <span>Token</span>
-        <span>{{ deviceBasic.token }}</span>
-      </div>
     </div>
   </div>
 </template>

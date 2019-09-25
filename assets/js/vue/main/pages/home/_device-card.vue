@@ -4,12 +4,12 @@
 
     <div class="data-item device-groups">
       <div class="device-group">
-        <div class="data-label device-group__title">创建的设备</div>
+        <div class="data-label device-group__title">所有设备</div>
 
         <div style="display: flex">
           <div class="device-item">
             <i class="iconfont icon-shebei"></i>
-            <span> {{ own.total }} 台</span>
+            <span>共 {{ own.total }} 台</span>
           </div>
 
           <div class="device-item">
@@ -25,12 +25,12 @@
       </div>
 
       <div class="device-group">
-        <div class="data-label device-group__title">负责的设备</div>
+        <div class="data-label device-group__title">我创建的</div>
 
         <div style="display: flex">
           <div class="device-item">
             <i class="iconfont icon-shebei"></i>
-            <span> {{ charge.total }} 台</span>
+            <span>共 {{ charge.total }} 台</span>
           </div>
 
           <div class="device-item">

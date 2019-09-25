@@ -84,7 +84,7 @@
 <script>
 import AbilityItem from './_ability-item';
 
-import chargeQuery from './gql/query.charge.gql';
+import chargeQuery from './gql/query.charger.gql';
 import devicePrivsQuery from './gql/query.device-privs.gql';
 import abilityCreate from './gql/mutation.ability-create.gql';
 

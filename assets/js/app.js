@@ -1,4 +1,6 @@
 import 'css/app.scss';
+import NProgress from 'js/utils/nprogress';
+window.NProgress = NProgress;
 import Vue from 'vue';
 import apolloProvider from './apollo-provider';
 

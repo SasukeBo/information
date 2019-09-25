@@ -1,6 +1,7 @@
 package user
 
 import (
+	// "fmt"
 	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 
@@ -14,6 +15,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	phoneStr := params.Args["phone"].(string)
 	msgCodeStr := params.Args["smsCode"].(string)
 	passwordStr := params.Args["password"].(string)
+	name := params.Args["name"].(string)
 
 	rootValue := params.Info.RootValue.(map[string]interface{})
 
@@ -22,7 +24,7 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	sessPhone := rootValue["phone"]
 	sessMsgCode := rootValue["smsCode"]
 
-	user := models.User{UUID: _uuid}
+	user := models.User{UUID: _uuid, Name: name}
 
 	// validate phone
 	if err := utils.ValidatePhone(phoneStr); err != nil {
@@ -45,13 +47,6 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	user.Password = utils.Encrypt(passwordStr)
 
 	// 事务处理
-	models.Repo.Begin()
-	userExtend := models.UserExtend{}
-	if err := userExtend.Insert(); err != nil {
-		return nil, err
-	}
-	user.UserExtend = &userExtend
-
 	role := models.Role{RoleName: "default"}
 	if err := role.GetBy("role_name"); err != nil {
 		return nil, err
@@ -59,12 +54,8 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	user.Role = &role
 
 	if err := user.Insert(); err != nil {
-		models.Repo.Rollback()
-
 		return nil, err
 	}
-	// 事务提交
-	models.Repo.Commit()
 
 	rootValue["smsCode"] = nil
 	rootValue["setSession"] = []string{"smsCode"}
@@ -247,21 +238,9 @@ func UpdatePhone(params graphql.ResolveParams) (interface{}, error) {
 // RelatedLoad load user
 func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	switch v := params.Source.(type) {
-	case models.DeviceCharge:
-		return v.LoadUser()
-	case *models.DeviceCharge:
-		return v.LoadUser()
-	case models.DeviceParam:
-		return v.LoadAuthor()
-	case *models.DeviceParam:
-		return v.LoadAuthor()
 	case models.Device:
 		return v.LoadUser()
 	case *models.Device:
-		return v.LoadUser()
-	case models.UserExtend:
-		return v.LoadUser()
-	case *models.UserExtend:
 		return v.LoadUser()
 	case *models.UserLogin:
 		return v.LoadUser()

@@ -13,6 +13,7 @@ var UserCreateField = &graphql.Field{
 	Type: types.User,
 	Args: graphql.FieldConfigArgument{
 		"phone":    fields.GenArg(graphql.String, "手机号", false),
+		"name":     fields.GenArg(graphql.String, "姓名", false),
 		"password": fields.GenArg(graphql.String, "密码", false),
 		"smsCode":  fields.GenArg(graphql.String, "验证码", false),
 	},

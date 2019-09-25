@@ -40,14 +40,12 @@ func init() {
 	// 注册 model
 	orm.RegisterModel(
 		new(Role),
-		new(UserExtend),
 		new(User),
 		new(RolePriv),
 		new(Privilege),
 		new(UserLogin),
 		new(Device),
-		new(DeviceCharge),
-		new(DeviceChargeAbility),
+		new(DeviceCharger),
 		new(DeviceParam),
 		new(DeviceParamValue),
 		new(DeviceStatusLog),

@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="com-header__center">
-      <el-input placeholder="搜索" prefix-icon="el-icon-search"></el-input>
+      <el-input placeholder="搜索" style="display: none;" prefix-icon="el-icon-search"></el-input>
     </div>
 
     <div class="com-header__right">
@@ -23,7 +23,7 @@
         <div class="topbar-body global-card">
           <div class="topbar-body__header">
             <img src="~images/avatar.jpg" class="avatar" />
-            <span style="font-size: 1.5rem">{{ userExtend.name ? userExtend.name : phone }}</span>
+            <span style="font-size: 1.5rem">{{ name ? name : phone }}</span>
             <el-tag :type="role.isAdmin ? 'warning' : 'success'" size="mini">{{ role.roleName }}</el-tag>
           </div>
 
@@ -33,9 +33,9 @@
             <span class="hover-show">点击修改</span>
           </div>
 
-          <div class="topbar-body__item" v-if="userExtend.email">
+          <div class="topbar-body__item" v-if="email">
             <i class="iconfont icon-185078emailmailstreamline"></i>
-            <span>{{ userExtend.email }}</span>
+            <span>{{ email }}</span>
             <span class="hover-show">点击修改</span>
           </div>
 
@@ -64,7 +64,8 @@ export default {
       avatarURL: state => state.user.avatarURL,
       phone: state => state.user.phone,
       role: state => state.user.role,
-      userExtend: state => state.user.userExtend
+      name: state => state.user.name,
+      email: state => state.user.email
     })
   },
   methods: {

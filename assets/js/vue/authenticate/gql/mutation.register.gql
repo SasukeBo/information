@@ -2,8 +2,10 @@ mutation register (
   $phone: String!
   $password: String!
   $smsCode: String!
+  $name: String!
 ) {
   register(
+    name: $name
     phone: $phone
     password: $password
     smsCode: $smsCode

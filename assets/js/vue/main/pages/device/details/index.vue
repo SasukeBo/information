@@ -25,6 +25,9 @@ export default {
     DeviceBasic,
     DeviceRegister,
     ParamValues
+  },
+  mounted() {
+    NProgress.done();
   }
 };
 </script>

@@ -15,11 +15,6 @@ func ParamValueList(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	// 验证访问权限
-	if err := deviceParam.ValidateAccess(params); err != nil {
-		return nil, err
-	}
-
 	qs := models.Repo.QueryTable("device_param_value").Filter("device_param_id", deviceParam.ID).OrderBy("-created_at")
 
 	if limit := params.Args["limit"]; limit != nil {

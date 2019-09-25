@@ -34,10 +34,6 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 // RelatedLoad _
 func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	switch v := params.Source.(type) {
-	case models.DeviceChargeAbility:
-		return v.LoadPrivilege()
-	case *models.DeviceChargeAbility:
-		return v.LoadPrivilege()
 	case models.RolePriv:
 		return v.LoadPrivilege()
 	case *models.RolePriv:

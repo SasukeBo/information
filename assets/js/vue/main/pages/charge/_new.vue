@@ -44,9 +44,9 @@
 import { Autocomplete, Transfer } from 'element-ui';
 
 import usersQuery from './gql/query.users.gql';
-import chargesQuery from '../device/charge/gql/query.charges.gql';
+import chargesQuery from '../device/charge/gql/query.chargers.gql';
 import devicePrivsQuery from './gql/query.device-privs.gql';
-import chargeCreate from './gql/mutation.charge-create.gql';
+import chargeCreate from './gql/mutation.charger-create.gql';
 
 export default {
   name: 'charge-new',

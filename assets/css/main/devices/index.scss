@@ -149,7 +149,27 @@
 
 .user-device .page-right .device-card-list {
   display: flex;
+  min-height: 300px;
   flex-flow: wrap;
+  margin-bottom: 60px;
+
+  .list__empty {
+    text-align: center;
+    width: 100%;
+    padding-top: 3rem;
+    color: $--color-theme__light;
+  }
+
+  .el-pagination {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 1rem 0;
+    background: lighten($--color-theme__bg, 5%);
+    box-shadow: 0 -2px 2px $--color-theme__bg;
+  }
 }
 
 @media only screen and (min-width: 520px) {

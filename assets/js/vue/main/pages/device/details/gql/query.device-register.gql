@@ -4,10 +4,8 @@ query ($uuid: String!) {
     createdAt
     register: user {
       phone
-      userExtend {
-        name
-        email
-      }
+      name
+      email
     }
   }
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/SasukeBo/information/schema/resolvers/role"
 	"github.com/SasukeBo/information/schema/resolvers/rolepriv"
 	"github.com/SasukeBo/information/schema/resolvers/user"
-	"github.com/SasukeBo/information/schema/resolvers/userextend"
 	"github.com/SasukeBo/information/schema/scalars"
 )
 
@@ -19,8 +18,8 @@ var SendSmsCodeResponse graphql.Type
 // DeviceChargeAbility 设备负责人权限类型
 var DeviceChargeAbility graphql.Type
 
-// DeviceCharge 设备负责人类型
-var DeviceCharge graphql.Type
+// DeviceCharger 设备负责人类型
+var DeviceCharger graphql.Type
 
 // DeviceParam 设备参数类型
 var DeviceParam graphql.Type
@@ -45,9 +44,6 @@ var RolePriv graphql.Type
 
 // Role 角色类型
 var Role graphql.Type
-
-// UserExtend 用户信息拓展类型
-var UserExtend graphql.Type
 
 // UserLogin 用户登录类型
 var UserLogin graphql.Type
@@ -76,27 +72,25 @@ func init() {
 		Name: "DeviceChargeAbility",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
 			return graphql.Fields{
-				"id":           &graphql.Field{Type: graphql.Int},
-				"deviceCharge": &graphql.Field{Type: DeviceCharge, Description: "设备负责人关系", Resolve: device.ChargeRelatedLoad},
-				"privilege":    &graphql.Field{Type: Privilege, Description: "权限", Resolve: privilege.RelatedLoad},
+				"id":            &graphql.Field{Type: graphql.Int},
+				"deviceCharger": &graphql.Field{Type: DeviceCharger, Description: "设备负责人关系", Resolve: device.ChargeRelatedLoad},
+				"privilege":     &graphql.Field{Type: Privilege, Description: "权限", Resolve: privilege.RelatedLoad},
 			}
 		}),
 	})
 
-	DeviceCharge = graphql.NewObject(graphql.ObjectConfig{
-		Name: "DeviceCharge",
+	DeviceCharger = graphql.NewObject(graphql.ObjectConfig{
+		Name: "DeviceCharger",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
 			return graphql.Fields{
-				"id":        &graphql.Field{Type: graphql.Int},
-				"device":    &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
-				"user":      &graphql.Field{Type: User, Description: "负责人", Resolve: user.RelatedLoad},
-				"createdAt": &graphql.Field{Type: graphql.DateTime},
-				"updatedAt": &graphql.Field{Type: graphql.DateTime},
-				"deviceChargeAbilities": &graphql.Field{
-					Type:        graphql.NewList(DeviceChargeAbility),
-					Description: "负责人权限",
-					Resolve:     device.ChargeAbilityRelatedLoad,
-				},
+				"id":         &graphql.Field{Type: graphql.Int},
+				"device":     &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
+				"name":       &graphql.Field{Type: graphql.String, Description: "负责人姓名"},
+				"phone":      &graphql.Field{Type: graphql.String, Description: "负责人手机号"},
+				"department": &graphql.Field{Type: graphql.String, Description: "负责人部门名称"},
+				"jobNumber":  &graphql.Field{Type: graphql.String, Description: "负责人工号"},
+				"createdAt":  &graphql.Field{Type: graphql.DateTime},
+				"updatedAt":  &graphql.Field{Type: graphql.DateTime},
 			}
 		}),
 	})
@@ -109,7 +103,6 @@ func init() {
 				"name":   &graphql.Field{Type: graphql.String, Description: "参数名称"},
 				"sign":   &graphql.Field{Type: graphql.String, Description: "参数签名"},
 				"type":   &graphql.Field{Type: scalars.DeviceParamValueType, Description: "参数值类型"},
-				"author": &graphql.Field{Type: User, Description: "创建人", Resolve: user.RelatedLoad},
 				"device": &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
 				"values": &graphql.Field{
 					Type:        graphql.NewList(DeviceParamValue),
@@ -170,11 +163,13 @@ func init() {
 				"name":           &graphql.Field{Type: graphql.String, Description: "设备名称"},
 				"token":          &graphql.Field{Type: graphql.String, Description: "设备token，用于数据加密"},
 				"status":         &graphql.Field{Type: scalars.DeviceStatus, Description: "基础状态"},
+				"address":        &graphql.Field{Type: graphql.String, Description: "设备地址"},
+				"number":         &graphql.Field{Type: graphql.String, Description: "设备编号"},
 				"id":             &graphql.Field{Type: graphql.Int},
 				"uuid":           &graphql.Field{Type: graphql.String, Description: "设备UUID"},
 				"user":           &graphql.Field{Type: User, Description: "注册人用户", Resolve: user.RelatedLoad},
 				"params":         &graphql.Field{Type: graphql.NewList(DeviceParam), Description: "设备参数", Resolve: device.ParamRelatedLoad},
-				"deviceCharges":  &graphql.Field{Type: graphql.NewList(DeviceCharge), Description: "设备负责人", Resolve: device.ChargeRelatedLoad},
+				"deviceChargers": &graphql.Field{Type: graphql.NewList(DeviceCharger), Description: "设备负责人", Resolve: device.ChargeRelatedLoad},
 				"statusChangeAt": &graphql.Field{Type: graphql.DateTime, Description: "设备状态变更时间"},
 				"description":    &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
 				"createdAt":      &graphql.Field{Type: graphql.DateTime},
@@ -225,31 +220,20 @@ func init() {
 		}),
 	})
 
-	UserExtend = graphql.NewObject(graphql.ObjectConfig{
-		Name: "UserExtend",
-		Fields: graphql.FieldsThunk(func() graphql.Fields {
-			return graphql.Fields{
-				"id":    &graphql.Field{Type: graphql.Int},
-				"user":  &graphql.Field{Type: User, Resolve: user.RelatedLoad},
-				"name":  &graphql.Field{Type: graphql.String},
-				"email": &graphql.Field{Type: graphql.String},
-			}
-		}),
-	})
-
 	User = graphql.NewObject(graphql.ObjectConfig{
 		Name: "User",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
 			return graphql.Fields{
-				"id":         &graphql.Field{Type: graphql.Int},
-				"uuid":       &graphql.Field{Type: graphql.String, Description: "通用唯一标识"},
-				"phone":      &graphql.Field{Type: graphql.String, Description: "手机号"},
-				"avatarURL":  &graphql.Field{Type: graphql.String, Description: "头像链接"},
-				"role":       &graphql.Field{Type: Role, Description: "用户角色", Resolve: role.RelatedLoad},
-				"userExtend": &graphql.Field{Type: UserExtend, Description: "用户拓展信息", Resolve: userextend.RelatedLoad},
-				"status":     &graphql.Field{Type: scalars.BaseStatus, Description: "基础状态"},
-				"createdAt":  &graphql.Field{Type: graphql.DateTime},
-				"updatedAt":  &graphql.Field{Type: graphql.DateTime},
+				"avatarURL": &graphql.Field{Type: graphql.String, Description: "头像链接"},
+				"createdAt": &graphql.Field{Type: graphql.DateTime},
+				"email":     &graphql.Field{Type: graphql.String, Description: "邮箱"},
+				"id":        &graphql.Field{Type: graphql.Int},
+				"name":      &graphql.Field{Type: graphql.String, Description: "姓名"},
+				"phone":     &graphql.Field{Type: graphql.String, Description: "手机号"},
+				"role":      &graphql.Field{Type: Role, Description: "用户角色", Resolve: role.RelatedLoad},
+				"status":    &graphql.Field{Type: scalars.BaseStatus, Description: "基础状态"},
+				"updatedAt": &graphql.Field{Type: graphql.DateTime},
+				"uuid":      &graphql.Field{Type: graphql.String, Description: "通用唯一标识"},
 			}
 		}),
 	})

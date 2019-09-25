@@ -4,26 +4,31 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/graphql-go/graphql"
-
 	"github.com/SasukeBo/information/models/errors"
 )
 
+var accErr = errors.LogicError{
+	Type:    "Resolvers",
+	Message: "only device register can make this operation!",
+}
+
 // Device 设备模型
 type Device struct {
-	Type           string          // 类型
-	Name           string          // 设备名称
-	RemoteIP       string          `orm:"null;column(remote_ip)"`
-	Token          string          `orm:"unique;index"`                     // 设备Token，用于数据加密
-	Status         int             `orm:"default(0)"`                       // 离线状态
-	ID             int             `orm:"auto;pk;column(id)"`               // PKey 主键
-	UUID           string          `orm:"column(uuid);unique;index"`        // 通用唯一标识符
-	User           *User           `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
-	DeviceCharges  []*DeviceCharge `orm:"reverse(many)"`
-	Description    string          `orm:"null"` // 描述
-	CreatedAt      time.Time       `orm:"auto_now_add;type(datetime)"`
-	StatusChangeAt time.Time       `orm:"auto_now;type(datetime)"`
-	UpdatedAt      time.Time       `orm:"auto_now;type(datetime)"`
+	Type           string           // 类型
+	Name           string           // 设备名称
+	Address        string           `orm:"null"` // 设备地址
+	Number         string           `orm:"null"` // 设备编号
+	RemoteIP       string           `orm:"null;column(remote_ip)"`
+	Token          string           `orm:"unique;index"`                     // 设备Token，用于数据加密
+	Status         int              `orm:"default(0)"`                       // 离线状态
+	ID             int              `orm:"auto;pk;column(id)"`               // PKey 主键
+	UUID           string           `orm:"column(uuid);unique;index"`        // 通用唯一标识符
+	User           *User            `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
+	DeviceChargers []*DeviceCharger `orm:"reverse(many)"`
+	Description    string           `orm:"null"` // 描述
+	CreatedAt      time.Time        `orm:"auto_now_add;type(datetime)"`
+	StatusChangeAt time.Time        `orm:"auto_now;type(datetime)"`
+	UpdatedAt      time.Time        `orm:"auto_now;type(datetime)"`
 }
 
 // GetBy get device by col
@@ -94,16 +99,16 @@ func (d *Device) LoadUser() (*User, error) {
 }
 
 // LoadDeviceCharge _
-func (d *Device) LoadDeviceCharge() ([]*DeviceCharge, error) {
-	if _, err := Repo.LoadRelated(d, "DeviceCharges"); err != nil {
+func (d *Device) LoadDeviceCharge() ([]*DeviceCharger, error) {
+	if _, err := Repo.LoadRelated(d, "DeviceChargers"); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
-			Message: "device load device_charges error",
+			Message: "device load device_chargers error",
 			OriErr:  err,
 		}
 	}
 
-	return d.DeviceCharges, nil
+	return d.DeviceChargers, nil
 }
 
 // LoadDeviceParams _
@@ -122,35 +127,11 @@ func (d *Device) LoadDeviceParams() ([]*DeviceParam, error) {
 	return dps, nil
 }
 
-// ValidateAccess validate access to device
-func (d *Device) ValidateAccess(params graphql.ResolveParams, args ...string) error {
-	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(User)
-
-	if d.User.ID == currentUser.ID {
-		return nil
+// ValidateAccess _
+func (d *Device) ValidateAccess(u *User) error {
+	if d.User.ID != u.ID {
+		return accErr
 	}
 
-	var dc DeviceCharge
-	qs := Repo.QueryTable("device_charge").Filter("device_id", d.ID).Filter("user_id", currentUser.ID)
-
-	// 没有指派
-	if err := qs.One(&dc); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "user not charge on this device",
-			OriErr:  err,
-		}
-	}
-
-	if len(args) == 0 {
-		return nil
-	}
-
-	// charge 权限验证
-	if err := dc.Validate(args[0]); err != nil {
-		return err
-	}
-
-	// 权限通过
 	return nil
 }

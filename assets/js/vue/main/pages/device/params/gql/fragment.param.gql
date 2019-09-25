@@ -3,9 +3,5 @@ fragment param on DeviceParam {
   name
   sign
   type
-  author {
-    uuid
-    userExtend {name}
-  }
   createdAt
 }

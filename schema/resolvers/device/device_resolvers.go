@@ -20,10 +20,6 @@ func Get(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	if err := device.ValidateAccess(params); err != nil {
-		return nil, err
-	}
-
 	return device, nil
 }
 
@@ -36,77 +32,44 @@ func GetByToken(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	if err := device.ValidateAccess(params); err != nil {
-		return nil, err
-	}
-
 	return device, nil
 }
 
 // List 获取负责或创建的设备
 func List(params graphql.ResolveParams) (interface{}, error) {
-	var devices []*models.Device
-	qs := models.Repo.QueryTable("device")
 	cond := models.NewCond()
 
-	ownership, ok := params.Args["ownership"].([]interface{})
-	if !ok {
-		return nil, errors.LogicError{
-			Type:    "Resolvers",
-			Field:   "ownership",
-			Message: "invalid value of ownership",
-		}
-	}
-
-	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
-
-	switch length := len(ownership); length {
-	case 2:
-		ids := chargeIDs(&currentUser)
-		subCond := models.NewCond().And("id__in", ids).Or("user_id", currentUser.ID)
-		cond = cond.AndCond(subCond)
-	case 1:
-		ship, ok := ownership[0].(string)
-		if !ok {
-			return nil, errors.LogicError{
-				Type:    "Resolvers",
-				Field:   "ownership",
-				Message: "ownership is not string type value!",
-			}
-		}
-
-		switch ship {
-		case "register":
-			cond = cond.And("user_id", currentUser.ID)
-		case "charger":
-			ids := chargeIDs(&currentUser)
-			cond = cond.And("id__in", ids)
-
-			// 只有当用户本人是负责人时，创建者uuid才是有效筛选条件
-			if userUUID := params.Args["userUUID"]; userUUID != nil {
-				cond = cond.And("user__uuid", userUUID)
-			}
-		}
-
-	case 0:
-		return devices, nil
-	}
-
-	if dType := params.Args["type"]; dType != nil {
-		cond = cond.And("type", dType)
-	}
-
-	if namePattern := params.Args["namePattern"]; namePattern != nil {
-		cond = cond.And("name__icontains", namePattern)
+	if pattern := params.Args["pattern"]; pattern != nil {
+		subCond := models.NewCond()
+		cond = cond.AndCond(subCond.Or("type__icontains", pattern).Or("name__icontains", pattern))
 	}
 
 	if status := params.Args["status"]; status != nil {
 		cond = cond.And("status", status)
 	}
 
-	qs = qs.SetCond(cond).Distinct().OrderBy("-created_at")
-	// 限定用户查询设备列表值域为 负责的设备 + 注册的设备 -- end
+	if isRegister := params.Args["isRegister"]; isRegister != nil {
+		if isRegister.(bool) {
+			user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
+			cond = cond.And("user_id", user.ID)
+		}
+	}
+	qs := models.Repo.QueryTable("device").SetCond(cond).OrderBy("-created_at")
 
+	cnt, err := qs.Count()
+	if err != nil {
+		return nil, err
+	}
+
+	if limit := params.Args["limit"]; limit != nil {
+		qs = qs.Limit(limit)
+	}
+
+	if offset := params.Args["offset"]; offset != nil {
+		qs = qs.Offset(offset)
+	}
+
+	var devices []*models.Device
 	if _, err := qs.All(&devices); err != nil {
 		return nil, errors.LogicError{
 			Type:    "Model",
@@ -115,22 +78,10 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 		}
 	}
 
-	return devices, nil
-}
-
-func chargeIDs(user *models.User) []int {
-	var charges []*models.DeviceCharge
-
-	if _, err := models.Repo.QueryTable("device_charge").Filter("user_id", user.ID).All(&charges); err != nil {
-		return []int{}
-	}
-
-	var ids []int
-	for _, charge := range charges { // 获取用户charge的设备id列表
-		ids = append(ids, charge.Device.ID)
-	}
-
-	return ids
+	return struct {
+		Total   int64
+		Devices []*models.Device
+	}{cnt, devices}, nil
 }
 
 // Create 创建设备
@@ -139,48 +90,56 @@ func Create(params graphql.ResolveParams) (interface{}, error) {
 	if err := utils.ValidateAccess(&params, "device_c", models.PrivType.Default); err != nil {
 		return nil, err
 	}
-
 	rootValue := params.Info.RootValue.(map[string]interface{})
+
+	device := models.Device{}
+	user := rootValue["currentUser"].(models.User)
+	device.User = &user
 
 	dType := params.Args["type"].(string)
 	if err := utils.ValidateStringEmpty(dType, "type"); err != nil {
 		return nil, err
 	}
+	device.Type = dType
 
 	dName := params.Args["name"].(string)
 	if err := utils.ValidateStringEmpty(dName, "name"); err != nil {
 		return nil, err
 	}
-
-	token := utils.GenRandomToken(8)
-	description := params.Args["description"].(string)
-	uuid := uuid.New().String()
-	user := rootValue["currentUser"].(models.User)
-
-	device := models.Device{
-		Type:        dType,
-		Name:        dName,
-		Token:       token,
-		UUID:        uuid,
-		User:        &user,
-		Description: description,
+	device.Name = dName
+	if description := params.Args["description"]; description != nil {
+		device.Description = description.(string)
 	}
 
-	if err := device.Insert(); err != nil {
+	if address := params.Args["address"]; address != nil {
+		device.Address = address.(string)
+	}
+
+	count := params.Args["count"].(int)
+	devices := []models.Device{}
+	for i := 0; i < count; i++ {
+		device.Token = utils.GenRandomToken(8)
+		device.UUID = uuid.New().String()
+		devices = append(devices, device)
+	}
+
+	successNums, err := models.Repo.InsertMulti(count, devices)
+	if err != nil {
 		return nil, err
 	}
 
-	return device, nil
+	return successNums, nil
 }
 
 // Update 更新设备
 func Update(params graphql.ResolveParams) (interface{}, error) {
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	device := models.Device{UUID: params.Args["uuid"].(string)}
 	if err := device.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 
-	if err := device.ValidateAccess(params, "device_u"); err != nil {
+	if err := device.ValidateAccess(&user); err != nil {
 		return nil, err
 	}
 
@@ -215,12 +174,13 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 
 // Delete 更新设备
 func Delete(params graphql.ResolveParams) (interface{}, error) {
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	device := models.Device{UUID: params.Args["uuid"].(string)}
 	if err := device.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 
-	if err := device.ValidateAccess(params, "device_d"); err != nil {
+	if err := device.ValidateAccess(&user); err != nil {
 		return nil, err
 	}
 
@@ -234,9 +194,9 @@ func Delete(params graphql.ResolveParams) (interface{}, error) {
 // RelatedLoad _
 func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 	switch v := params.Source.(type) {
-	case models.DeviceCharge:
+	case models.DeviceCharger:
 		return v.LoadDevice()
-	case *models.DeviceCharge:
+	case *models.DeviceCharger:
 		return v.LoadDevice()
 	case models.DeviceStatusLog:
 		return v.LoadDevice()
@@ -252,4 +212,9 @@ func RelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 			Message: "load related source type unmatched error.",
 		}
 	}
+}
+
+// CountDeviceStatus _
+func CountDeviceStatus(params graphql.ResolveParams) (interface{}, error) {
+	return nil, nil
 }

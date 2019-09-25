@@ -81,9 +81,9 @@ func (dsl *dslChannelType) HandleOut(sm *SocketMessage) {
 	}
 
 	statusLog := models.DeviceStatusLog{
-		Device:   &device,
-		Duration: validDuration,
-		Status:   oldStatus,
+		Device: &device,
+		// Duration: validDuration,
+		Status: oldStatus,
 	}
 
 	if err := statusLog.Insert(); err != nil {
