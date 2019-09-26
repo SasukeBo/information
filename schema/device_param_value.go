@@ -34,7 +34,7 @@ func init() {
 	)
 }
 
-/*							   fields
+/*							 query fields
 ------------------------------------------ */
 
 // DeviceParamValueListField doc false
@@ -73,4 +73,17 @@ var DeviceParamValueHistogramField = &graphql.Field{
 	},
 	Resolve:     resolver.DeviceParamValueHistogram,
 	Description: "获取时间段内参数值直方图数据",
+}
+
+/*						subscription fields
+------------------------------------------ */
+
+// DeviceParamValueSubField _
+var DeviceParamValueSubField = &graphql.Field{
+	Type: DeviceParamValue,
+	Args: graphql.FieldConfigArgument{
+		"id": GenArg(graphql.Int, "值记录ID", false),
+	},
+	Resolve:     resolver.GetDeviceParamValue,
+	Description: "设备参数值订阅",
 }

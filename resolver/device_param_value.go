@@ -8,6 +8,17 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+// GetDeviceParamValue 获取设备参数值记录
+func GetDeviceParamValue(params graphql.ResolveParams) (interface{}, error) {
+	id := params.Args["id"].(int)
+	value := &models.DeviceParamValue{ID: id}
+	if err := value.GetBy("id"); err != nil {
+		return nil, err
+	}
+
+	return value, nil
+}
+
 // ListDeviceParamValue 获取设备参数值列表
 func ListDeviceParamValue(params graphql.ResolveParams) (interface{}, error) {
 	deviceParam := models.DeviceParam{ID: params.Args["deviceParamID"].(int)}

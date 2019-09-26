@@ -9,7 +9,7 @@ import (
 var Subscription = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Subscription",
 	Fields: graphql.Fields{
-		// "deviceParamValueAdd": DeviceParamValueAddField,
+		"deviceParamValueSub": DeviceParamValueSubField,
 		"deviceStatusRefresh": DeviceStatusRefreshField,
 	},
 })

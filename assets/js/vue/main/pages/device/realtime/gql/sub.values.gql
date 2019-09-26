@@ -1,5 +1,5 @@
-subscription paramValueSub( $id: Int!) {
-  values: deviceParamValueAdd(id: $id) {
+subscription paramValueSub($id: Int!) {
+  values: deviceParamValueSub(id: $id) {
     id
     value
     createdAt

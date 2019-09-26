@@ -7,9 +7,7 @@ subscription ($deviceID: Int!) {
     token
     user {
       uuid
-      userExtend {
-        name
-      }
+      name
     }
     status
     remoteIP

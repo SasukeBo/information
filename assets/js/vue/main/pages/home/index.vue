@@ -47,6 +47,9 @@ export default {
       name: state => state.user.name,
       phone: state => state.user.phone
     })
+  },
+  mounted() {
+    NProgress.done();
   }
 };
 </script>
