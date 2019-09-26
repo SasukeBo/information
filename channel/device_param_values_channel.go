@@ -92,7 +92,7 @@ func (dpv *dpvChannelType) HandleOut(sm *SocketMessage) {
 		}
 
 		result := graphql.Do(graphql.Params{
-			Schema:         schema.PublicSchema,
+			Schema:         schema.Root,
 			RequestString:  query,
 			VariableValues: map[string]interface{}{"id": paramValue.ID},
 		})
