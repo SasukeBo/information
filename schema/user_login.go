@@ -11,16 +11,14 @@ import (
 // UserLogin 用户登录类型
 var UserLogin = graphql.NewObject(graphql.ObjectConfig{
 	Name: "UserLogin",
-	Fields: graphql.FieldsThunk(func() graphql.Fields {
-		return graphql.Fields{
-			"id":        &graphql.Field{Type: graphql.Int},
-			"userAgent": &graphql.Field{Type: graphql.String, Description: "UA"},
-			"remoteIP":  &graphql.Field{Type: graphql.String, Description: "头像链接"},
-			"logout":    &graphql.Field{Type: graphql.Boolean, Description: "用户角色"},
-			"createdAt": &graphql.Field{Type: graphql.DateTime},
-			"updatedAt": &graphql.Field{Type: graphql.DateTime},
-		}
-	}),
+	Fields: graphql.Fields{
+		"id":        &graphql.Field{Type: graphql.Int},
+		"userAgent": &graphql.Field{Type: graphql.String, Description: "UA"},
+		"remoteIP":  &graphql.Field{Type: graphql.String, Description: "头像链接"},
+		"logout":    &graphql.Field{Type: graphql.Boolean, Description: "用户角色"},
+		"createdAt": &graphql.Field{Type: graphql.DateTime},
+		"updatedAt": &graphql.Field{Type: graphql.DateTime},
+	},
 })
 
 func init() {

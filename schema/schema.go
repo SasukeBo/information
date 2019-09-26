@@ -5,24 +5,6 @@ import (
 	"log"
 )
 
-// GenArg 简化gql参数定义
-func GenArg(gqlType graphql.Input, des string, opts ...interface{}) *graphql.ArgumentConfig {
-	defaultValue := interface{}(nil)
-	if len(opts) > 0 && !opts[0].(bool) {
-		gqlType = graphql.NewNonNull(gqlType)
-	}
-
-	if len(opts) > 1 {
-		defaultValue = opts[1]
-	}
-
-	return &graphql.ArgumentConfig{
-		Type:         gqlType,
-		Description:  des,
-		DefaultValue: defaultValue,
-	}
-}
-
 // Subscription _
 var Subscription = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Subscription",
@@ -42,8 +24,6 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		"signOut":       SignOutField,
 		"resetPassword": ResetPasswordField,
 		"updateUser":    UserUpdateField,
-		// "userUpdatePassword": UserUpdatePasswordField,
-		// "userUpdatePhone":    UserUpdatePhoneField,
 
 		/*    aliyun    */
 		"sendSmsCode": SendSmsCodeField,
@@ -118,5 +98,23 @@ func init() {
 	})
 	if err != nil {
 		log.Fatal("failed to create public schema, err: ", err)
+	}
+}
+
+// GenArg 简化gql参数定义
+func GenArg(gqlType graphql.Input, des string, opts ...interface{}) *graphql.ArgumentConfig {
+	defaultValue := interface{}(nil)
+	if len(opts) > 0 && !opts[0].(bool) {
+		gqlType = graphql.NewNonNull(gqlType)
+	}
+
+	if len(opts) > 1 {
+		defaultValue = opts[1]
+	}
+
+	return &graphql.ArgumentConfig{
+		Type:         gqlType,
+		Description:  des,
+		DefaultValue: defaultValue,
 	}
 }

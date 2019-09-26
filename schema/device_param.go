@@ -11,14 +11,12 @@ import (
 // DeviceParam 设备参数类型
 var DeviceParam = graphql.NewObject(graphql.ObjectConfig{
 	Name: "DeviceParam",
-	Fields: graphql.FieldsThunk(func() graphql.Fields {
-		return graphql.Fields{
-			"id":        &graphql.Field{Type: graphql.Int},
-			"name":      &graphql.Field{Type: graphql.String, Description: "参数名称"},
-			"sign":      &graphql.Field{Type: graphql.String, Description: "参数签名"},
-			"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
-		}
-	}),
+	Fields: graphql.Fields{
+		"id":        &graphql.Field{Type: graphql.Int},
+		"name":      &graphql.Field{Type: graphql.String, Description: "参数名称"},
+		"sign":      &graphql.Field{Type: graphql.String, Description: "参数签名"},
+		"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
+	},
 })
 
 func init() {

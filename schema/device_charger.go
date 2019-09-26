@@ -11,17 +11,15 @@ import (
 // DeviceCharger 设备负责人类型
 var DeviceCharger = graphql.NewObject(graphql.ObjectConfig{
 	Name: "DeviceCharger",
-	Fields: graphql.FieldsThunk(func() graphql.Fields {
-		return graphql.Fields{
-			"id":         &graphql.Field{Type: graphql.Int},
-			"name":       &graphql.Field{Type: graphql.String, Description: "负责人姓名"},
-			"phone":      &graphql.Field{Type: graphql.String, Description: "负责人手机号"},
-			"department": &graphql.Field{Type: graphql.String, Description: "负责人部门名称"},
-			"jobNumber":  &graphql.Field{Type: graphql.String, Description: "负责人工号"},
-			"createdAt":  &graphql.Field{Type: graphql.DateTime},
-			"updatedAt":  &graphql.Field{Type: graphql.DateTime},
-		}
-	}),
+	Fields: graphql.Fields{
+		"id":         &graphql.Field{Type: graphql.Int},
+		"name":       &graphql.Field{Type: graphql.String, Description: "负责人姓名"},
+		"phone":      &graphql.Field{Type: graphql.String, Description: "负责人手机号"},
+		"department": &graphql.Field{Type: graphql.String, Description: "负责人部门名称"},
+		"jobNumber":  &graphql.Field{Type: graphql.String, Description: "负责人工号"},
+		"createdAt":  &graphql.Field{Type: graphql.DateTime},
+		"updatedAt":  &graphql.Field{Type: graphql.DateTime},
+	},
 })
 
 func init() {

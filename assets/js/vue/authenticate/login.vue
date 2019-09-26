@@ -45,7 +45,7 @@
   </div>
 </template>
 <script>
-import loginByPassword from './gql/mutation.loginByPassword.gql';
+import signIn from './gql/mutation.signIn.gql';
 import { parseGQLError } from 'js/utils';
 
 export default {
@@ -90,7 +90,7 @@ export default {
         if (valid) {
           this.$apollo
             .mutate({
-              mutation: loginByPassword,
+              mutation: signIn,
               variables: this.loginForm
             })
             .then(() => {

@@ -11,14 +11,12 @@ import (
 // DeviceStatusLog 设备状态变更记录类型
 var DeviceStatusLog = graphql.NewObject(graphql.ObjectConfig{
 	Name: "DeviceStatusLog",
-	Fields: graphql.FieldsThunk(func() graphql.Fields {
-		return graphql.Fields{
-			"id":        &graphql.Field{Type: graphql.Int},
-			"status":    &graphql.Field{Type: DeviceStatus, Description: "设备运行状态"},
-			"duration":  &graphql.Field{Type: graphql.Int, Description: "持续时间（s）"},
-			"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "变更时间"},
-		}
-	}),
+	Fields: graphql.Fields{
+		"id":        &graphql.Field{Type: graphql.Int},
+		"status":    &graphql.Field{Type: DeviceStatus, Description: "设备运行状态"},
+		"duration":  &graphql.Field{Type: graphql.Int, Description: "持续时间（s）"},
+		"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "变更时间"},
+	},
 })
 
 func init() {

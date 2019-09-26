@@ -1,9 +1,9 @@
-mutation loginByPassword(
+mutation signIn(
   $phone: String!
   $password: String!
   $remember: Boolean
 ) {
-  loginByPassword(
+  signIn(
     phone: $phone
     password: $password
     remember: $remember

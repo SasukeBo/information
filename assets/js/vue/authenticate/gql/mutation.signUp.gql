@@ -1,10 +1,10 @@
-mutation register (
+mutation signUp (
   $phone: String!
   $password: String!
   $smsCode: String!
   $name: String!
 ) {
-  register(
+  signUp(
     name: $name
     phone: $phone
     password: $password
