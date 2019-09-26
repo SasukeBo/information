@@ -9,33 +9,35 @@ import (
 ------------------------------------------ */
 
 // DeviceParam 设备参数类型
-var DeviceParam *graphql.Object
+var DeviceParam = graphql.NewObject(graphql.ObjectConfig{
+	Name: "DeviceParam",
+	Fields: graphql.FieldsThunk(func() graphql.Fields {
+		return graphql.Fields{
+			"id":        &graphql.Field{Type: graphql.Int},
+			"name":      &graphql.Field{Type: graphql.String, Description: "参数名称"},
+			"sign":      &graphql.Field{Type: graphql.String, Description: "参数签名"},
+			"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
+		}
+	}),
+})
 
 func init() {
-	DeviceParam = graphql.NewObject(graphql.ObjectConfig{
-		Name: "DeviceParam",
-		Fields: graphql.FieldsThunk(func() graphql.Fields {
-			return graphql.Fields{
-				"id":     &graphql.Field{Type: graphql.Int},
-				"name":   &graphql.Field{Type: graphql.String, Description: "参数名称"},
-				"sign":   &graphql.Field{Type: graphql.String, Description: "参数签名"},
-				"type":   &graphql.Field{Type: DeviceParamValueType, Description: "参数值类型"},
-				"device": &graphql.Field{Type: Device, Description: "设备", Resolve: resolver.LoadDevice},
-				"values": &graphql.Field{
-					Type:        graphql.NewList(DeviceParamValue),
-					Description: "参数值记录",
-					Args: graphql.FieldConfigArgument{
-						"limit":      GenArg(graphql.Int, "最大数量"),
-						"offset":     GenArg(graphql.Int, "偏移量"),
-						"beforeTime": GenArg(graphql.DateTime, "开始时间"),
-						"afterTime":  GenArg(graphql.DateTime, "结束时间"),
-					},
-					Resolve: resolver.LoadDeviceParamValue,
-				},
-				"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
-			}
-		}),
-	})
+	DeviceParam.AddFieldConfig("type", &graphql.Field{Type: DeviceParamValueType, Description: "参数值类型"})
+	DeviceParam.AddFieldConfig("device", &graphql.Field{Type: Device, Description: "设备", Resolve: resolver.LoadDevice})
+	DeviceParam.AddFieldConfig(
+		"values",
+		&graphql.Field{
+			Type:        graphql.NewList(DeviceParamValue),
+			Description: "参数值记录",
+			Args: graphql.FieldConfigArgument{
+				"limit":      GenArg(graphql.Int, "最大数量"),
+				"offset":     GenArg(graphql.Int, "偏移量"),
+				"beforeTime": GenArg(graphql.DateTime, "开始时间"),
+				"afterTime":  GenArg(graphql.DateTime, "结束时间"),
+			},
+			Resolve: resolver.LoadDeviceParamValue,
+		},
+	)
 }
 
 /*							   fields

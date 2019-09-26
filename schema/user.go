@@ -9,26 +9,25 @@ import (
 ------------------------------ */
 
 // User 用户类型
-var User *graphql.Object
+var User = graphql.NewObject(graphql.ObjectConfig{
+	Name: "User",
+	Fields: graphql.FieldsThunk(func() graphql.Fields {
+		return graphql.Fields{
+			"avatarURL": &graphql.Field{Type: graphql.String, Description: "头像链接"},
+			"createdAt": &graphql.Field{Type: graphql.DateTime},
+			"email":     &graphql.Field{Type: graphql.String, Description: "邮箱"},
+			"id":        &graphql.Field{Type: graphql.Int},
+			"name":      &graphql.Field{Type: graphql.String, Description: "姓名"},
+			"phone":     &graphql.Field{Type: graphql.String, Description: "手机号"},
+			"status":    &graphql.Field{Type: BaseStatus, Description: "基础状态"},
+			"updatedAt": &graphql.Field{Type: graphql.DateTime},
+			"uuid":      &graphql.Field{Type: graphql.String, Description: "通用唯一标识"},
+		}
+	}),
+})
 
 func init() {
-	User = graphql.NewObject(graphql.ObjectConfig{
-		Name: "User",
-		Fields: graphql.FieldsThunk(func() graphql.Fields {
-			return graphql.Fields{
-				"avatarURL": &graphql.Field{Type: graphql.String, Description: "头像链接"},
-				"createdAt": &graphql.Field{Type: graphql.DateTime},
-				"email":     &graphql.Field{Type: graphql.String, Description: "邮箱"},
-				"id":        &graphql.Field{Type: graphql.Int},
-				"name":      &graphql.Field{Type: graphql.String, Description: "姓名"},
-				"phone":     &graphql.Field{Type: graphql.String, Description: "手机号"},
-				"role":      &graphql.Field{Type: Role, Description: "用户角色", Resolve: resolver.LoadRole},
-				"status":    &graphql.Field{Type: BaseStatus, Description: "基础状态"},
-				"updatedAt": &graphql.Field{Type: graphql.DateTime},
-				"uuid":      &graphql.Field{Type: graphql.String, Description: "通用唯一标识"},
-			}
-		}),
-	})
+	User.AddFieldConfig("role", &graphql.Field{Type: Role, Description: "用户角色", Resolve: resolver.LoadRole})
 }
 
 /* 					 fields

@@ -9,22 +9,20 @@ import (
 ------------------------------------------ */
 
 // DeviceStatusLog 设备状态变更记录类型
-var DeviceStatusLog *graphql.Object
+var DeviceStatusLog = graphql.NewObject(graphql.ObjectConfig{
+	Name: "DeviceStatusLog",
+	Fields: graphql.FieldsThunk(func() graphql.Fields {
+		return graphql.Fields{
+			"id":        &graphql.Field{Type: graphql.Int},
+			"status":    &graphql.Field{Type: DeviceStatus, Description: "设备运行状态"},
+			"duration":  &graphql.Field{Type: graphql.Int, Description: "持续时间（s）"},
+			"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "变更时间"},
+		}
+	}),
+})
 
 func init() {
-	// DeviceStatusLog 设备状态变更记录类型
-	DeviceStatusLog = graphql.NewObject(graphql.ObjectConfig{
-		Name: "DeviceStatusLog",
-		Fields: graphql.FieldsThunk(func() graphql.Fields {
-			return graphql.Fields{
-				"id":        &graphql.Field{Type: graphql.Int},
-				"status":    &graphql.Field{Type: DeviceStatus, Description: "设备运行状态"},
-				"device":    &graphql.Field{Type: Device, Description: "设备", Resolve: resolver.LoadDevice},
-				"duration":  &graphql.Field{Type: graphql.Int, Description: "持续时间（s）"},
-				"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "变更时间"},
-			}
-		}),
-	})
+	DeviceStatusLog.AddFieldConfig("device", &graphql.Field{Type: Device, Description: "设备", Resolve: resolver.LoadDevice})
 }
 
 /*							   fields

@@ -9,22 +9,17 @@ import (
 ------------------------------ */
 
 // Privilege 权限类型
-var Privilege *graphql.Object
-
-func init() {
-	// Privilege 权限类型
-	Privilege = graphql.NewObject(graphql.ObjectConfig{
-		Name: "Privilege",
-		Fields: graphql.FieldsThunk(func() graphql.Fields {
-			return graphql.Fields{
-				"id":       &graphql.Field{Type: graphql.Int},
-				"name":     &graphql.Field{Type: graphql.String, Description: "权限名称"},
-				"sign":     &graphql.Field{Type: graphql.String, Description: "权限签名"},
-				"privType": &graphql.Field{Type: graphql.Int, Description: "权限类型"},
-			}
-		}),
-	})
-}
+var Privilege = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Privilege",
+	Fields: graphql.FieldsThunk(func() graphql.Fields {
+		return graphql.Fields{
+			"id":       &graphql.Field{Type: graphql.Int},
+			"name":     &graphql.Field{Type: graphql.String, Description: "权限名称"},
+			"sign":     &graphql.Field{Type: graphql.String, Description: "权限签名"},
+			"privType": &graphql.Field{Type: graphql.Int, Description: "权限类型"},
+		}
+	}),
+})
 
 /* 					 fields
 ------------------------------ */

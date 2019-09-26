@@ -9,33 +9,32 @@ import (
 ------------------------------ */
 
 // Device 设备类型
-var Device *graphql.Object
+var Device = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Device",
+	Fields: graphql.FieldsThunk(func() graphql.Fields {
+		return graphql.Fields{
+			"type":           &graphql.Field{Type: graphql.String, Description: "设备类型"},
+			"name":           &graphql.Field{Type: graphql.String, Description: "设备名称"},
+			"token":          &graphql.Field{Type: graphql.String, Description: "设备token，用于数据加密"},
+			"status":         &graphql.Field{Type: DeviceStatus, Description: "基础状态"},
+			"address":        &graphql.Field{Type: graphql.String, Description: "设备地址"},
+			"number":         &graphql.Field{Type: graphql.String, Description: "设备编号"},
+			"id":             &graphql.Field{Type: graphql.Int},
+			"uuid":           &graphql.Field{Type: graphql.String, Description: "设备UUID"},
+			"statusChangeAt": &graphql.Field{Type: graphql.DateTime, Description: "设备状态变更时间"},
+			"description":    &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
+			"createdAt":      &graphql.Field{Type: graphql.DateTime},
+			"updatedAt":      &graphql.Field{Type: graphql.DateTime},
+			"remoteIP":       &graphql.Field{Type: graphql.String},
+			// TODO: "statistics": 		&graphql.Field{Type: graphql.String},
+		}
+	}),
+})
 
 func init() {
-	Device = graphql.NewObject(graphql.ObjectConfig{
-		Name: "Device",
-		Fields: graphql.FieldsThunk(func() graphql.Fields {
-			return graphql.Fields{
-				"type":           &graphql.Field{Type: graphql.String, Description: "设备类型"},
-				"name":           &graphql.Field{Type: graphql.String, Description: "设备名称"},
-				"token":          &graphql.Field{Type: graphql.String, Description: "设备token，用于数据加密"},
-				"status":         &graphql.Field{Type: DeviceStatus, Description: "基础状态"},
-				"address":        &graphql.Field{Type: graphql.String, Description: "设备地址"},
-				"number":         &graphql.Field{Type: graphql.String, Description: "设备编号"},
-				"id":             &graphql.Field{Type: graphql.Int},
-				"uuid":           &graphql.Field{Type: graphql.String, Description: "设备UUID"},
-				"user":           &graphql.Field{Type: User, Description: "注册人用户", Resolve: resolver.LoadUser},
-				"params":         &graphql.Field{Type: graphql.NewList(DeviceParam), Description: "设备参数", Resolve: resolver.LoadDeviceParam},
-				"deviceChargers": &graphql.Field{Type: graphql.NewList(DeviceCharger), Description: "设备负责人", Resolve: resolver.LoadDeviceCharger},
-				"statusChangeAt": &graphql.Field{Type: graphql.DateTime, Description: "设备状态变更时间"},
-				"description":    &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
-				"createdAt":      &graphql.Field{Type: graphql.DateTime},
-				"updatedAt":      &graphql.Field{Type: graphql.DateTime},
-				"remoteIP":       &graphql.Field{Type: graphql.String},
-				// TODO: "statistics": 		&graphql.Field{Type: graphql.String},
-			}
-		}),
-	})
+	Device.AddFieldConfig("user", &graphql.Field{Type: User, Description: "注册人用户", Resolve: resolver.LoadUser})
+	Device.AddFieldConfig("params", &graphql.Field{Type: graphql.NewList(DeviceParam), Description: "设备参数", Resolve: resolver.LoadDeviceParam})
+	Device.AddFieldConfig("deviceChargers", &graphql.Field{Type: graphql.NewList(DeviceCharger), Description: "设备负责人", Resolve: resolver.LoadDeviceCharger})
 }
 
 // DeviceStatusCount graphql object contian counts of each device status

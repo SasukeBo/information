@@ -9,33 +9,33 @@ import (
 ------------------------------------------ */
 
 // DeviceParamValue 设备参数值类型
-var DeviceParamValue *graphql.Object
+var DeviceParamValue = graphql.NewObject(graphql.ObjectConfig{
+	Name: "DeviceParamValue",
+	Fields: graphql.FieldsThunk(func() graphql.Fields {
+		return graphql.Fields{
+			"id":        &graphql.Field{Type: graphql.Int},
+			"value":     &graphql.Field{Type: graphql.String, Description: "参数值字符串"},
+			"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
+		}
+	}),
+})
 
 // DeviceParamValueHistogram 设备参数值类型
-var DeviceParamValueHistogram *graphql.Object
+var DeviceParamValueHistogram = graphql.NewObject(graphql.ObjectConfig{
+	Name: "DeviceParamValueHistogram",
+	Fields: graphql.FieldsThunk(func() graphql.Fields {
+		return graphql.Fields{
+			"category": &graphql.Field{Type: graphql.NewList(graphql.String), Description: "直方图x轴category"},
+			"serie":    &graphql.Field{Type: graphql.NewList(graphql.Int), Description: "直方图serie data"},
+		}
+	}),
+})
 
 func init() {
-	DeviceParamValue = graphql.NewObject(graphql.ObjectConfig{
-		Name: "DeviceParamValue",
-		Fields: graphql.FieldsThunk(func() graphql.Fields {
-			return graphql.Fields{
-				"id":          &graphql.Field{Type: graphql.Int},
-				"value":       &graphql.Field{Type: graphql.String, Description: "参数值字符串"},
-				"deviceParam": &graphql.Field{Type: DeviceParam, Description: "设备参数", Resolve: resolver.LoadDeviceParam},
-				"createdAt":   &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
-			}
-		}),
-	})
-
-	DeviceParamValueHistogram = graphql.NewObject(graphql.ObjectConfig{
-		Name: "DeviceParamValueHistogram",
-		Fields: graphql.FieldsThunk(func() graphql.Fields {
-			return graphql.Fields{
-				"category": &graphql.Field{Type: graphql.NewList(graphql.String), Description: "直方图x轴category"},
-				"serie":    &graphql.Field{Type: graphql.NewList(graphql.Int), Description: "直方图serie data"},
-			}
-		}),
-	})
+	DeviceParamValue.AddFieldConfig(
+		"deviceParam",
+		&graphql.Field{Type: DeviceParam, Description: "设备参数", Resolve: resolver.LoadDeviceParam},
+	)
 }
 
 /*							   fields

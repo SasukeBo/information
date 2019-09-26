@@ -9,24 +9,20 @@ import (
 ------------------------------------------ */
 
 // SendSmsCodeResponse 短信验证码response消息体
-var SendSmsCodeResponse *graphql.Object
-
-func init() {
-	SendSmsCodeResponse = graphql.NewObject(graphql.ObjectConfig{
-		Name:        "SendSmsCodeResponse",
-		Description: "短信验证码response消息体",
-		Fields: graphql.Fields{
-			"message":   &graphql.Field{Type: graphql.String, Description: "状态码的描述"},
-			"requestID": &graphql.Field{Type: graphql.String, Description: "请求ID"},
-			"code": &graphql.Field{Type: graphql.String, Description: `
+var SendSmsCodeResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "SendSmsCodeResponse",
+	Description: "短信验证码response消息体",
+	Fields: graphql.Fields{
+		"message":   &graphql.Field{Type: graphql.String, Description: "状态码的描述"},
+		"requestID": &graphql.Field{Type: graphql.String, Description: "请求ID"},
+		"code": &graphql.Field{Type: graphql.String, Description: `
       请求状态码。
       · 返回OK代表请求成功
       · 其他错误码见阿里云短信服务错误码列表
       `},
-			"bizID": &graphql.Field{Type: graphql.String, Description: "状态码的描述"},
-		},
-	})
-}
+		"bizID": &graphql.Field{Type: graphql.String, Description: "状态码的描述"},
+	},
+})
 
 /*							   fields
 ------------------------------------------ */
