@@ -23,11 +23,10 @@ func init() {
 	DeviceStatusLog.AddFieldConfig("device", &graphql.Field{Type: DeviceType, Description: "设备", Resolve: resolver.LoadDevice})
 }
 
-/*							query fields
------------------------------------------- */
+/*							query
+----------------------------------- */
 
-// DeviceStatusLogListField doc false
-var deviceStatusLogListField = &graphql.Field{
+var deviceStatusLogList = &graphql.Field{
 	Type: graphql.NewList(DeviceStatusLog),
 	Args: graphql.FieldConfigArgument{
 		"deviceUUID": GenArg(graphql.String, "设备UUID", false),
@@ -36,27 +35,29 @@ var deviceStatusLogListField = &graphql.Field{
 		"afterTime":  GenArg(graphql.DateTime, "结束时间"),
 		"limit":      GenArg(graphql.Int, "最大返回条数"),
 	},
-	Resolve: resolver.ListDeviceStatusLog,
+	Description: "获取设备状态变更列表",
+	Resolve:     resolver.ListDeviceStatusLog,
 }
 
-// DeviceStatusDurationField _
-var deviceStatusDurationField = &graphql.Field{
+var deviceStatusDuration = &graphql.Field{
 	Type: graphql.String,
 	Args: graphql.FieldConfigArgument{
 		"deviceID": GenArg(graphql.Int, "设备ID", false),
 		"status":   GenArg(DeviceStatus, "运行状态", false),
 	},
-	Resolve: resolver.DeviceStatusDuration,
+	Description: "获取设备状态持续时间",
+	Resolve:     resolver.DeviceStatusDuration,
 }
 
-/*						mutation fields
------------------------------------------- */
+/*						mutation
+----------------------------------- */
 
-// DeviceStatusRefreshField _
-var deviceStatusRefreshField = &graphql.Field{
+// TODO: 重构subscription的resolver
+var deviceStatusRefresh = &graphql.Field{
 	Type: DeviceType,
 	Args: graphql.FieldConfigArgument{
 		"deviceID": GenArg(graphql.Int, "设备ID", false),
 	},
-	Resolve: resolver.RefreshDeviceStatus,
+	Description: "刷新设备状态",
+	Resolve:     resolver.RefreshDeviceStatus,
 }

@@ -34,12 +34,13 @@ var deviceParamValueHistogramResponse = graphql.NewObject(graphql.ObjectConfig{
 		"category": &graphql.Field{Type: graphql.NewList(graphql.String), Description: "直方图x轴category"},
 		"serie":    &graphql.Field{Type: graphql.NewList(graphql.Int), Description: "直方图serie data"},
 	},
+	Description: "设备参数值直方图数据",
 })
 
-/*							 query fields
+/*							 query
 ------------------------------------------ */
 
-var deviceParamValueListField = &graphql.Field{
+var deviceParamValueList = &graphql.Field{
 	Type: graphql.NewList(DeviceParamValue),
 	Args: graphql.FieldConfigArgument{
 		"limit":         GenArg(graphql.Int, "返回数量限制"),
@@ -48,11 +49,11 @@ var deviceParamValueListField = &graphql.Field{
 		"beforeTime":    GenArg(graphql.DateTime, "开始时间"),
 		"afterTime":     GenArg(graphql.DateTime, "结束时间"),
 	},
-	Resolve:     resolver.ListDeviceParamValue,
 	Description: "获取设备参数值列表",
+	Resolve:     resolver.ListDeviceParamValue,
 }
 
-var deviceParamValueCountField = &graphql.Field{
+var deviceParamValueCount = &graphql.Field{
 	Type: graphql.Int,
 	Args: graphql.FieldConfigArgument{
 		"deviceUUID": GenArg(graphql.String, "设备UUID", false),
@@ -63,7 +64,7 @@ var deviceParamValueCountField = &graphql.Field{
 	Description: "查询时间段内设备参数值的最大记录数",
 }
 
-var deviceParamValueHistogramField = &graphql.Field{
+var deviceParamValueHistogram = &graphql.Field{
 	Type: deviceParamValueHistogramResponse,
 	Args: graphql.FieldConfigArgument{
 		"paramID":    GenArg(graphql.Int, "参数ID", false),
@@ -74,10 +75,10 @@ var deviceParamValueHistogramField = &graphql.Field{
 	Description: "获取时间段内参数值直方图数据",
 }
 
-/*						subscription fields
+/*						subscription
 ------------------------------------------ */
 
-var deviceParamValueSubField = &graphql.Field{
+var deviceParamValueAdd = &graphql.Field{
 	Type: DeviceParamValue,
 	Args: graphql.FieldConfigArgument{
 		"id": GenArg(graphql.Int, "值记录ID", false),

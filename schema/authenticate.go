@@ -5,19 +5,19 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-/*						query fields
------------------------------------------- */
+/*						 query
+---------------------------------- */
 
-var currentUserField = &graphql.Field{
+var currentUser = &graphql.Field{
 	Type:        User,
 	Resolve:     resolver.CurrentUser,
 	Description: `#### 获取当前登录用户`,
 }
 
-/*						mutation fields
------------------------------------------- */
+/*						mutation
+---------------------------------- */
 
-var signInField = &graphql.Field{
+var signIn = &graphql.Field{
 	Type: graphql.String,
 	Args: graphql.FieldConfigArgument{
 		"phone":    GenArg(graphql.String, "手机号", false),
@@ -32,7 +32,7 @@ var signInField = &graphql.Field{
 	`,
 }
 
-var signOutField = &graphql.Field{
+var signOut = &graphql.Field{
 	Type:    graphql.String,
 	Resolve: resolver.SignOut,
 	Description: `

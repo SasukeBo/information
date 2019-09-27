@@ -28,34 +28,32 @@ func init() {
 	DeviceCharger.AddFieldConfig("device", &graphql.Field{Type: DeviceType, Description: "设备", Resolve: resolver.LoadDevice})
 }
 
-/*							query fields
------------------------------------------- */
+/*							query
+------------------------------------ */
 
-var deviceChargerGetField = &graphql.Field{
+var deviceChargerGet = &graphql.Field{
 	Type: DeviceCharger,
 	Args: graphql.FieldConfigArgument{
 		"id": GenArg(graphql.Int, "设备负责人ID", false),
 	},
-	Description: "通过id获取设备负责人",
+	Description: `**获取设备负责人**`,
 	Resolve:     resolver.GetDeviceCharger,
 }
 
-var deviceChargerListField = &graphql.Field{
+var deviceChargerList = &graphql.Field{
 	Type: graphql.NewList(DeviceCharger),
 	Args: graphql.FieldConfigArgument{
 		"deviceUUID": GenArg(graphql.String, "设备uuid", false),
 	},
-	Description: `
-	查询本人负责的设备或创建的设备的设备负责人列表，
-	可通过设备uuid指定某台设备，但必须是当前用户可访问的设备
-	`,
+	Description: `#### 获取设备负责人列表
+	指定设备UUID获取当前设备的负责人，当设备无权访问时，返回空列表及错误信息。`,
 	Resolve: resolver.ListDeviceCharger,
 }
 
-/*						mutation fields
------------------------------------------- */
+/*						mutation
+------------------------------------ */
 
-var deviceChargerCreateField = &graphql.Field{
+var deviceChargerCreate = &graphql.Field{
 	Type: DeviceCharger,
 	Args: graphql.FieldConfigArgument{
 		"deivceUUID": GenArg(graphql.String, "设备UUID", false),
@@ -64,19 +62,23 @@ var deviceChargerCreateField = &graphql.Field{
 		"department": GenArg(graphql.String, "部门名称"),
 		"jobNumber":  GenArg(graphql.String, "工号"),
 	},
-
+	Description: `#### 创建设备负责人
+	要求用户拥有当前设备的写权限。`,
 	Resolve: resolver.CreateDeviceCharger,
 }
 
-var deviceChargerDeleteField = &graphql.Field{
+var deviceChargerDelete = &graphql.Field{
 	Type: graphql.Int,
 	Args: graphql.FieldConfigArgument{
 		"id": GenArg(graphql.Int, "设备负责人ID", false),
 	},
+	Description: `#### 删除设备负责人
+	要求用户拥有当前设备写权限。
+	`,
 	Resolve: resolver.DeleteDeviceCharger,
 }
 
-var deviceChargerUpdateField = &graphql.Field{
+var deviceChargerUpdate = &graphql.Field{
 	Type: DeviceCharger,
 	Args: graphql.FieldConfigArgument{
 		"id":         GenArg(graphql.Int, "设备负责人ID", false),
@@ -85,5 +87,7 @@ var deviceChargerUpdateField = &graphql.Field{
 		"department": GenArg(graphql.String, "部门名称"),
 		"jobNumber":  GenArg(graphql.String, "工号"),
 	},
+	Description: `#### 更新设备负责人
+	要求用户拥有当前设备写权限`,
 	Resolve: resolver.UpdateDeviceCharger,
 }

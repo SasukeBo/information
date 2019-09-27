@@ -26,11 +26,10 @@ var User = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-/* 				 query fields
+/* 				 	query
 ------------------------------ */
 
-// UserGetField _
-var userGetField = &graphql.Field{
+var userGet = &graphql.Field{
 	Type: User,
 	Args: graphql.FieldConfigArgument{
 		"uuid": GenArg(graphql.String, "用户UUID", false),
@@ -39,8 +38,7 @@ var userGetField = &graphql.Field{
 	Description: "使用UUID获取用户",
 }
 
-// UserListField _
-var userListField = &graphql.Field{
+var userList = &graphql.Field{
 	Type: graphql.NewList(User),
 	Args: graphql.FieldConfigArgument{
 		"namePattern": GenArg(graphql.String, "用户名称模糊匹配"),
@@ -51,11 +49,10 @@ var userListField = &graphql.Field{
 	Description: "按条件查询用户列表，如果没有给出查询条件，返回空列表",
 }
 
-/* 				mutation fields
+/* 					mutation
 ------------------------------ */
 
-// SignUpField _
-var signUpField = &graphql.Field{
+var signUp = &graphql.Field{
 	Type: User,
 	Args: graphql.FieldConfigArgument{
 		"phone":    GenArg(graphql.String, "手机号", false),
@@ -63,27 +60,25 @@ var signUpField = &graphql.Field{
 		"password": GenArg(graphql.String, "密码", false),
 		"smsCode":  GenArg(graphql.String, "验证码", false),
 	},
-	Resolve:     resolver.SignUp,
-	Description: "请求时需要加上 operationName",
+	Description: `#### 注册账号
+**注意** 需要提供operationName`,
+	Resolve: resolver.SignUp,
 }
 
-// ResetPasswordField _
-var resetPasswordField = &graphql.Field{
+var resetPassword = &graphql.Field{
 	Type: User,
 	Args: graphql.FieldConfigArgument{
 		"phone":    GenArg(graphql.String, "手机号", false),
 		"password": GenArg(graphql.String, "密码", false),
 		"smsCode":  GenArg(graphql.String, "验证码", false),
 	},
+	Description: `#### 找回密码
+非登录状态下修改密码
+**注意** 需要提供operationName`,
 	Resolve: resolver.ResetPassword,
-	Description: `
-    未登录状态下修改密码
-    请求时需要加上 operationName
-    `,
 }
 
-// UserUpdateField _
-var userUpdateField = &graphql.Field{
+var userUpdate = &graphql.Field{
 	Type: User,
 	Args: graphql.FieldConfigArgument{
 		"avatarURL":   GenArg(graphql.String, "头像链接"),
@@ -92,9 +87,10 @@ var userUpdateField = &graphql.Field{
 		"newPhone":    GenArg(graphql.String, "新手机号"),
 		"smsCode":     GenArg(graphql.String, "短信验证码"),
 	},
+	Description: `#### 修改用户信息
+登录状态下修改用户账号信息。
+**注意**
+- 修改密码和修改手机号需要提供当前密码
+- 修改手机号需要提供短信验证码`,
 	Resolve: resolver.UpdateUser,
-	Description: `用户登录状态下修改账号信息，注意：
-		1. 修改密码和修改手机号需要提供当前密码
-		2. 修改手机号需要提供短信验证码
-	`,
 }

@@ -19,11 +19,10 @@ var Privilege = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-/* 				query fields
+/* 					query
 ------------------------------ */
 
-// PrivilegeListField get list of privilege
-var privilegeListField = &graphql.Field{
+var privilegeList = &graphql.Field{
 	Type: graphql.NewList(Privilege),
 	Args: graphql.FieldConfigArgument{
 		"privType":    GenArg(PrivType, "权限类型"),

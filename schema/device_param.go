@@ -38,19 +38,19 @@ func init() {
 	)
 }
 
-/*							query fields
------------------------------------------- */
+/*							query
+------------------------------------ */
 
-var deviceParamGetField = &graphql.Field{
+var deviceParamGet = &graphql.Field{
 	Type: DeviceParam,
 	Args: graphql.FieldConfigArgument{
 		"id": GenArg(graphql.Int, "ID", false),
 	},
-	Description: "ID获取设备参数",
+	Description: "获取设备参数信息",
 	Resolve:     resolver.GetDeviceParam,
 }
 
-var deviceParamListField = &graphql.Field{
+var deviceParamList = &graphql.Field{
 	Type: graphql.NewList(DeviceParam),
 	Args: graphql.FieldConfigArgument{
 		"deviceUUID":  GenArg(graphql.String, "设备UUID", false),
@@ -58,14 +58,14 @@ var deviceParamListField = &graphql.Field{
 		"signPattern": GenArg(graphql.String, "参数签名模糊匹配"),
 		"type":        GenArg(DeviceParamValueType, "参数值类型"),
 	},
+	Description: "获取设备参数列表",
 	Resolve:     resolver.ListDeviceParam,
-	Description: "按条件查询某设备的参数",
 }
 
-/*						mutation fields
------------------------------------------- */
+/*						mutation
+------------------------------------ */
 
-var deviceParamCreateField = &graphql.Field{
+var deviceParamCreate = &graphql.Field{
 	Type: DeviceParam,
 	Args: graphql.FieldConfigArgument{
 		"deviceUUID": GenArg(graphql.String, "设备UUID", false),
@@ -73,10 +73,11 @@ var deviceParamCreateField = &graphql.Field{
 		"sign":       GenArg(graphql.String, "参数签名", false),
 		"type":       GenArg(DeviceParamValueType, "参数值类型", false),
 	},
-	Resolve: resolver.CreateDeviceParam,
+	Description: "增加设备参数",
+	Resolve:     resolver.CreateDeviceParam,
 }
 
-var deviceParamUpdateField = &graphql.Field{
+var deviceParamUpdate = &graphql.Field{
 	Type: DeviceParam,
 	Args: graphql.FieldConfigArgument{
 		"id":   GenArg(graphql.Int, "ID", false),
@@ -84,13 +85,15 @@ var deviceParamUpdateField = &graphql.Field{
 		"sign": GenArg(graphql.String, "参数签名"),
 		"type": GenArg(DeviceParamValueType, "参数值类型"),
 	},
-	Resolve: resolver.UpdateDeviceParam,
+	Description: "设备参数更新",
+	Resolve:     resolver.UpdateDeviceParam,
 }
 
-var deviceParamDeleteField = &graphql.Field{
+var deviceParamDelete = &graphql.Field{
 	Type: graphql.Int,
 	Args: graphql.FieldConfigArgument{
 		"id": GenArg(graphql.Int, "ID", false),
 	},
-	Resolve: resolver.DeleteDeviceParam,
+	Description: "删除设备参数",
+	Resolve:     resolver.DeleteDeviceParam,
 }
