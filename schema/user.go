@@ -22,18 +22,40 @@ var User = graphql.NewObject(graphql.ObjectConfig{
 		"status":    &graphql.Field{Type: BaseStatus, Description: "基础状态"},
 		"updatedAt": &graphql.Field{Type: graphql.DateTime},
 		"uuid":      &graphql.Field{Type: graphql.String, Description: "通用唯一标识"},
+		"role":      &graphql.Field{Type: Role, Description: "用户角色", Resolve: resolver.LoadRole},
 	},
 })
 
-func init() {
-	User.AddFieldConfig("role", &graphql.Field{Type: Role, Description: "用户角色", Resolve: resolver.LoadRole})
+/* 				 query fields
+------------------------------ */
+
+// UserGetField _
+var userGetField = &graphql.Field{
+	Type: User,
+	Args: graphql.FieldConfigArgument{
+		"uuid": GenArg(graphql.String, "用户UUID", false),
+	},
+	Resolve:     resolver.GetUser,
+	Description: "使用UUID获取用户",
 }
 
-/* 					 fields
+// UserListField _
+var userListField = &graphql.Field{
+	Type: graphql.NewList(User),
+	Args: graphql.FieldConfigArgument{
+		"namePattern": GenArg(graphql.String, "用户名称模糊匹配"),
+		"phone":       GenArg(graphql.String, "用户手机号"),
+		"email":       GenArg(graphql.String, "用户邮箱"),
+	},
+	Resolve:     resolver.ListUser,
+	Description: "按条件查询用户列表，如果没有给出查询条件，返回空列表",
+}
+
+/* 				mutation fields
 ------------------------------ */
 
 // SignUpField _
-var SignUpField = &graphql.Field{
+var signUpField = &graphql.Field{
 	Type: User,
 	Args: graphql.FieldConfigArgument{
 		"phone":    GenArg(graphql.String, "手机号", false),
@@ -46,7 +68,7 @@ var SignUpField = &graphql.Field{
 }
 
 // ResetPasswordField _
-var ResetPasswordField = &graphql.Field{
+var resetPasswordField = &graphql.Field{
 	Type: User,
 	Args: graphql.FieldConfigArgument{
 		"phone":    GenArg(graphql.String, "手机号", false),
@@ -60,30 +82,8 @@ var ResetPasswordField = &graphql.Field{
     `,
 }
 
-// UserGetField _
-var UserGetField = &graphql.Field{
-	Type: User,
-	Args: graphql.FieldConfigArgument{
-		"uuid": GenArg(graphql.String, "用户UUID", false),
-	},
-	Resolve:     resolver.GetUser,
-	Description: "使用UUID获取用户",
-}
-
-// UserListField _
-var UserListField = &graphql.Field{
-	Type: graphql.NewList(User),
-	Args: graphql.FieldConfigArgument{
-		"namePattern": GenArg(graphql.String, "用户名称模糊匹配"),
-		"phone":       GenArg(graphql.String, "用户手机号"),
-		"email":       GenArg(graphql.String, "用户邮箱"),
-	},
-	Resolve:     resolver.ListUser,
-	Description: "按条件查询用户列表，如果没有给出查询条件，返回空列表",
-}
-
 // UserUpdateField _
-var UserUpdateField = &graphql.Field{
+var userUpdateField = &graphql.Field{
 	Type: User,
 	Args: graphql.FieldConfigArgument{
 		"avatarURL":   GenArg(graphql.String, "头像链接"),

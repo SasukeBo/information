@@ -5,31 +5,39 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-/*							   fields
+/*						query fields
 ------------------------------------------ */
 
-// CurrentUserField 获取当前登录的用户
-var CurrentUserField = &graphql.Field{
+var currentUserField = &graphql.Field{
 	Type:        User,
 	Resolve:     resolver.CurrentUser,
-	Description: "返回当前用户信息",
+	Description: `#### 获取当前登录用户`,
 }
 
-// SignInField login by password
-var SignInField = &graphql.Field{
+/*						mutation fields
+------------------------------------------ */
+
+var signInField = &graphql.Field{
 	Type: graphql.String,
 	Args: graphql.FieldConfigArgument{
 		"phone":    GenArg(graphql.String, "手机号", false),
 		"password": GenArg(graphql.String, "密码", false),
 		"remember": GenArg(graphql.Boolean, "记住登录", true, true),
 	},
-	Resolve:     resolver.SignIn,
-	Description: "请求时需要加上 operationName",
+	Resolve: resolver.SignIn,
+	Description: `
+#### 使用账号密码登录
+
+**注意** 需要提供operationName
+	`,
 }
 
-// SignOutField logout
-var SignOutField = &graphql.Field{
-	Type:        graphql.String,
-	Resolve:     resolver.SignOut,
-	Description: "请求时需要加上 operationName",
+var signOutField = &graphql.Field{
+	Type:    graphql.String,
+	Resolve: resolver.SignOut,
+	Description: `
+#### 退出登录
+
+**注意** 需要提供operationName
+	`,
 }

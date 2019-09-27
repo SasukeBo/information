@@ -36,9 +36,13 @@ var StatusMap = VMap{
 // BaseStatus is a scalars graphql type
 var BaseStatus = graphql.NewScalar(graphql.ScalarConfig{
 	Name: "BaseStatus",
-	Description: `BaseStatus is represent role current status,
-  it convert string to int for DB,
-  and convert int to string for output`,
+	Description: `
+#### 基础状态
+可选值为：
+- **default** 默认状态
+- **publish** 发布状态
+- **block** 禁用状态
+- **deleted** 删除状态`,
 	// Serialize 用于将 BaseStatus 类型值转换为 string 类型从gql接口输出
 	Serialize: func(value interface{}) interface{} {
 		rs, ok := value.(int)
@@ -87,9 +91,12 @@ var DeviceStatusMap = VMap{
 // DeviceStatus is a scalars graphql type
 var DeviceStatus = graphql.NewScalar(graphql.ScalarConfig{
 	Name: "DeviceStatus",
-	Description: `DeviceStatus is represent device current status,
-  it convert string to int for DB,
-  and convert int to string for output`,
+	Description: `
+#### 设备状态
+可选值：
+- **prod** 生产状态
+- **offline** 离线状态
+- **stop** 停机状态`,
 	Serialize: func(value interface{}) interface{} {
 		rs, ok := value.(int)
 		if !ok {
@@ -137,9 +144,12 @@ var PrivTypeMap = VMap{
 // PrivType is a scalars graphql type
 var PrivType = graphql.NewScalar(graphql.ScalarConfig{
 	Name: "PrivType",
-	Description: `PrivType is represent privilege type,
-  it convert string to int for DB,
-  and convert int to string for output`,
+	Description: `
+#### 权限类型
+可选值：
+- **default** 默认权限
+- **device** 设备相关权限
+- **admin** 管理员相关权限`,
 	Serialize: func(value interface{}) interface{} {
 		rs, ok := value.(int)
 		if !ok {
@@ -188,10 +198,13 @@ var DeviceParamValueTypeMap = VMap{
 // DeviceParamValueType is a scalars graphql type
 var DeviceParamValueType = graphql.NewScalar(graphql.ScalarConfig{
 	Name: "DeviceParamValueType",
-	Description: `DeviceParamValueType is represent device param value type,
-	can be string/bool/int/float,
-  it convert string to int for DB,
-  and convert int to string for output`,
+	Description: `
+#### 设备参数值类型
+可选值：
+- **string** 字符串类型
+- **bool** 布尔类型
+- **int** 整数类型
+- **float** 浮点数类型`,
 	Serialize: func(value interface{}) interface{} {
 		rs, ok := value.(int)
 		if !ok {

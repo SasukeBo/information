@@ -8,8 +8,8 @@ import (
 /* 					 types
 ------------------------------ */
 
-// Device 设备类型
-var Device = graphql.NewObject(graphql.ObjectConfig{
+// DeviceType 设备类型
+var DeviceType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Device",
 	Fields: graphql.Fields{
 		"type":           &graphql.Field{Type: graphql.String, Description: "设备类型"},
@@ -25,53 +25,93 @@ var Device = graphql.NewObject(graphql.ObjectConfig{
 		"createdAt":      &graphql.Field{Type: graphql.DateTime},
 		"updatedAt":      &graphql.Field{Type: graphql.DateTime},
 		"remoteIP":       &graphql.Field{Type: graphql.String},
-		// TODO: "statistics": 		&graphql.Field{Type: graphql.String},
+		// "statistics": 		&graphql.Field{Type: graphql.String},
 	},
 })
 
 func init() {
-	Device.AddFieldConfig("user", &graphql.Field{Type: User, Description: "注册人用户", Resolve: resolver.LoadUser})
-	Device.AddFieldConfig("params", &graphql.Field{Type: graphql.NewList(DeviceParam), Description: "设备参数", Resolve: resolver.LoadDeviceParam})
-	Device.AddFieldConfig("deviceChargers", &graphql.Field{Type: graphql.NewList(DeviceCharger), Description: "设备负责人", Resolve: resolver.LoadDeviceCharger})
+	DeviceType.AddFieldConfig("user", &graphql.Field{Type: User, Description: "注册人用户", Resolve: resolver.LoadUser})
+	DeviceType.AddFieldConfig("params", &graphql.Field{Type: graphql.NewList(DeviceParam), Description: "设备参数", Resolve: resolver.LoadDeviceParam})
+	DeviceType.AddFieldConfig("deviceChargers", &graphql.Field{Type: graphql.NewList(DeviceCharger), Description: "设备负责人", Resolve: resolver.LoadDeviceCharger})
 }
 
-// DeviceStatusCount graphql object contian counts of each device status
-var DeviceStatusCount = graphql.NewObject(graphql.ObjectConfig{
-	Name: "DeviceStatusCount",
-	Fields: graphql.FieldsThunk(func() graphql.Fields {
-		return graphql.Fields{
-			"offline": &graphql.Field{Type: graphql.Int, Description: "离线状态下的设备数量"},
-			"prod":    &graphql.Field{Type: graphql.Int, Description: "生产状态下的设备数量"},
-			"stop":    &graphql.Field{Type: graphql.Int, Description: "停机状态下的设备数量"},
-		}
-	}),
-})
-
-// DeviceList _
-var DeviceList = graphql.NewObject(graphql.ObjectConfig{
-	Name: "DeviceList",
-	Fields: graphql.FieldsThunk(func() graphql.Fields {
-		return graphql.Fields{
-			"total":   &graphql.Field{Type: graphql.Int, Description: "当前筛选条件下记录数"},
-			"devices": &graphql.Field{Type: graphql.NewList(Device), Description: "设备列表"},
-		}
-	}),
-})
-
-/* 					 fields
+/* 					response
 ------------------------------ */
 
-// DeviceStatusCountField _
-var DeviceStatusCountField = &graphql.Field{
-	Type: DeviceStatusCount,
-	Args: graphql.FieldConfigArgument{
-		"filter": GenArg(graphql.String, "条件筛选，'register'为请求当前用户创建的，'all'为请求所有设备的统计数据，默认为'all'", true, "all"),
+var deviceListResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name: "DeviceListResponse",
+	Fields: graphql.Fields{
+		"total":   &graphql.Field{Type: graphql.Int, Description: "当前筛选条件下记录数"},
+		"devices": &graphql.Field{Type: graphql.NewList(DeviceType), Description: "设备列表"},
 	},
-	Resolve: resolver.CountDeviceStatus,
+	Description: "设备列表对象",
+})
+
+var deviceStatusCountResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name: "DeviceStatusCountResponse",
+	Fields: graphql.Fields{
+		"offline": &graphql.Field{Type: graphql.Int, Description: "离线状态下的设备数量"},
+		"prod":    &graphql.Field{Type: graphql.Int, Description: "生产状态下的设备数量"},
+		"stop":    &graphql.Field{Type: graphql.Int, Description: "停机状态下的设备数量"},
+	},
+	Description: "设备状态数量对象",
+})
+
+/* 				query fields
+------------------------------ */
+
+var deviceStatusCountField = &graphql.Field{
+	Type: deviceStatusCountResponse,
+	Args: graphql.FieldConfigArgument{
+		"filter": GenArg(graphql.String, `
+条件筛选，默认值'all'
+- 'register' 统计当前用户注册的设备
+- 'all' 统计平台所有设备`,
+			true, "all"),
+	},
+	Description: `统计设备各状态数量`,
+	Resolve:     resolver.CountDeviceStatus,
 }
 
+// deviceGetField get a device by uuid
+var deviceGetField = &graphql.Field{
+	Type: DeviceType,
+	Args: graphql.FieldConfigArgument{
+		"uuid": GenArg(graphql.String, "设备UUID", false),
+	},
+	Description: "使用uuid获取device",
+	Resolve:     resolver.GetDevice,
+}
+
+// deviceTokenGetField get a device by token
+var deviceTokenGetField = &graphql.Field{
+	Type: DeviceType,
+	Args: graphql.FieldConfigArgument{
+		"token": GenArg(graphql.String, "设备token", false),
+	},
+	Description: "使用token获取device",
+	Resolve:     resolver.GetDeviceByToken,
+}
+
+// DeviceListField get a device list with options
+var deviceListField = &graphql.Field{
+	Type: deviceListResponse,
+	Args: graphql.FieldConfigArgument{
+		"limit":      GenArg(graphql.Int, "最大数量"),
+		"offset":     GenArg(graphql.Int, "数据偏移量"),
+		"pattern":    GenArg(graphql.String, "设备类型/设备名称模糊搜索"),
+		"status":     GenArg(DeviceStatus, "设备状态 prod/stop/offline"),
+		"isRegister": GenArg(graphql.Boolean, "是否为创建人"),
+	},
+	Description: "查询device列表",
+	Resolve:     resolver.ListDevice,
+}
+
+/* 			mutation fields
+------------------------------ */
+
 // DeviceCreateField create a device
-var DeviceCreateField = &graphql.Field{
+var deviceCreateField = &graphql.Field{
 	Type: graphql.Int,
 	Args: graphql.FieldConfigArgument{
 		"count":       GenArg(graphql.Int, "创建数量", false, 1),
@@ -84,8 +124,8 @@ var DeviceCreateField = &graphql.Field{
 }
 
 // DeviceUpdateField update a device
-var DeviceUpdateField = &graphql.Field{
-	Type: Device,
+var deviceUpdateField = &graphql.Field{
+	Type: DeviceType,
 	Args: graphql.FieldConfigArgument{
 		"uuid":        GenArg(graphql.String, "设备UUID", false),
 		"type":        GenArg(graphql.String, "设备类型"),
@@ -97,44 +137,10 @@ var DeviceUpdateField = &graphql.Field{
 }
 
 // DeviceDeleteField update a device
-var DeviceDeleteField = &graphql.Field{
+var deviceDeleteField = &graphql.Field{
 	Type: graphql.String,
 	Args: graphql.FieldConfigArgument{
 		"uuid": GenArg(graphql.String, "设备UUID", false),
 	},
 	Resolve: resolver.DeleteDevice,
-}
-
-// DeviceGetField get a device by uuid
-var DeviceGetField = &graphql.Field{
-	Type: Device,
-	Args: graphql.FieldConfigArgument{
-		"uuid": GenArg(graphql.String, "设备UUID", false),
-	},
-	Description: "使用uuid获取device",
-	Resolve:     resolver.GetDevice,
-}
-
-// DeviceTokenGetField get a device by token
-var DeviceTokenGetField = &graphql.Field{
-	Type: Device,
-	Args: graphql.FieldConfigArgument{
-		"token": GenArg(graphql.String, "设备token", false),
-	},
-	Description: "使用token获取device",
-	Resolve:     resolver.GetDeviceByToken,
-}
-
-// DeviceListField get a device list with options
-var DeviceListField = &graphql.Field{
-	Type: DeviceList,
-	Args: graphql.FieldConfigArgument{
-		"limit":      GenArg(graphql.Int, "最大数量"),
-		"offset":     GenArg(graphql.Int, "数据偏移量"),
-		"pattern":    GenArg(graphql.String, "设备类型/设备名称模糊搜索"),
-		"status":     GenArg(DeviceStatus, "设备状态 prod/stop/offline"),
-		"isRegister": GenArg(graphql.Boolean, "是否为创建人"),
-	},
-	Description: "查询device列表",
-	Resolve:     resolver.ListDevice,
 }

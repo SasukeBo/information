@@ -20,14 +20,14 @@ var DeviceStatusLog = graphql.NewObject(graphql.ObjectConfig{
 })
 
 func init() {
-	DeviceStatusLog.AddFieldConfig("device", &graphql.Field{Type: Device, Description: "设备", Resolve: resolver.LoadDevice})
+	DeviceStatusLog.AddFieldConfig("device", &graphql.Field{Type: DeviceType, Description: "设备", Resolve: resolver.LoadDevice})
 }
 
-/*							   fields
+/*							query fields
 ------------------------------------------ */
 
 // DeviceStatusLogListField doc false
-var DeviceStatusLogListField = &graphql.Field{
+var deviceStatusLogListField = &graphql.Field{
 	Type: graphql.NewList(DeviceStatusLog),
 	Args: graphql.FieldConfigArgument{
 		"deviceUUID": GenArg(graphql.String, "设备UUID", false),
@@ -39,21 +39,24 @@ var DeviceStatusLogListField = &graphql.Field{
 	Resolve: resolver.ListDeviceStatusLog,
 }
 
-// DeviceStatusRefreshField _
-var DeviceStatusRefreshField = &graphql.Field{
-	Type: Device,
-	Args: graphql.FieldConfigArgument{
-		"deviceID": GenArg(graphql.Int, "设备ID", false),
-	},
-	Resolve: resolver.RefreshDeviceStatus,
-}
-
 // DeviceStatusDurationField _
-var DeviceStatusDurationField = &graphql.Field{
+var deviceStatusDurationField = &graphql.Field{
 	Type: graphql.String,
 	Args: graphql.FieldConfigArgument{
 		"deviceID": GenArg(graphql.Int, "设备ID", false),
 		"status":   GenArg(DeviceStatus, "运行状态", false),
 	},
 	Resolve: resolver.DeviceStatusDuration,
+}
+
+/*						mutation fields
+------------------------------------------ */
+
+// DeviceStatusRefreshField _
+var deviceStatusRefreshField = &graphql.Field{
+	Type: DeviceType,
+	Args: graphql.FieldConfigArgument{
+		"deviceID": GenArg(graphql.Int, "设备ID", false),
+	},
+	Resolve: resolver.RefreshDeviceStatus,
 }

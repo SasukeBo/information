@@ -8,7 +8,7 @@ import (
 
 // DeviceGetField get a device
 var DeviceGetField = &graphql.Field{
-	Type: schema.Device,
+	Type: schema.DeviceType,
 	Args: graphql.FieldConfigArgument{
 		"uuid": schema.GenArg(graphql.String, "设备UUID", false),
 	},
@@ -17,7 +17,7 @@ var DeviceGetField = &graphql.Field{
 
 // DeviceListField _
 var DeviceListField = &graphql.Field{
-	Type: graphql.NewList(schema.Device),
+	Type: graphql.NewList(schema.DeviceType),
 	Args: graphql.FieldConfigArgument{
 		"limit":       schema.GenArg(graphql.Int, "最大获取条数"),
 		"offset":      schema.GenArg(graphql.Int, "偏移量"),
@@ -38,7 +38,7 @@ var DeviceListField = &graphql.Field{
 
 // DeviceUpdateField _
 var DeviceUpdateField = &graphql.Field{
-	Type: schema.Device,
+	Type: schema.DeviceType,
 	Args: graphql.FieldConfigArgument{
 		"uuid":        schema.GenArg(graphql.String, "设备UUID", false),
 		"name":        schema.GenArg(graphql.String, "设备名称"),

@@ -9,8 +9,8 @@ import (
 var Subscription = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Subscription",
 	Fields: graphql.Fields{
-		"deviceParamValueSub": DeviceParamValueSubField,
-		"deviceStatusRefresh": DeviceStatusRefreshField,
+		"deviceParamValueSub": deviceParamValueSubField,
+		"deviceStatusRefresh": deviceStatusRefreshField,
 	},
 })
 
@@ -19,29 +19,29 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
 	Fields: graphql.Fields{
 		/*    user    */
-		"signUp":        SignUpField,
-		"signIn":        SignInField,
-		"signOut":       SignOutField,
-		"resetPassword": ResetPasswordField,
-		"updateUser":    UserUpdateField,
+		"signUp":        signUpField,
+		"signIn":        signInField,
+		"signOut":       signOutField,
+		"resetPassword": resetPasswordField,
+		"updateUser":    userUpdateField,
 
 		/*    aliyun    */
-		"sendSmsCode": SendSmsCodeField,
+		"sendSmsCode": sendSmsCodeField,
 
 		/*    device    */
-		"deviceCreate": DeviceCreateField,
-		"deviceUpdate": DeviceUpdateField,
-		"deviceDelete": DeviceDeleteField,
+		"deviceCreate": deviceCreateField,
+		"deviceUpdate": deviceUpdateField,
+		"deviceDelete": deviceDeleteField,
 
 		/*    deviceCharge    */
-		"deviceChargerCreate": DeviceChargerCreateField,
-		"deviceChargerDelete": DeviceChargerDeleteField,
-		"deviceChargerUpdate": DeviceChargerUpdateField,
+		"deviceChargerCreate": deviceChargerCreateField,
+		"deviceChargerDelete": deviceChargerDeleteField,
+		"deviceChargerUpdate": deviceChargerUpdateField,
 
 		/*    deviceParam    */
-		"deviceParamCreate": DeviceParamCreateField,
-		"deviceParamUpdate": DeviceParamUpdateField,
-		"deviceParamDelete": DeviceParamDeleteField,
+		"deviceParamCreate": deviceParamCreateField,
+		"deviceParamUpdate": deviceParamUpdateField,
+		"deviceParamDelete": deviceParamDeleteField,
 	},
 })
 
@@ -50,39 +50,39 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
 	Fields: graphql.Fields{
 		/* user */
-		"currentUser": CurrentUserField,
-		"userGet":     UserGetField,
-		"userList":    UserListField,
+		"currentUser": currentUserField,
+		"userGet":     userGetField,
+		"userList":    userListField,
 
 		/*    aliyun    */
-		"getSmsCode": GetSmsCodeField,
+		"getSmsCode": getSmsCodeField,
 
 		/*    device    */
-		"deviceGet":         DeviceGetField,
-		"deviceList":        DeviceListField,
-		"deviceTokenGet":    DeviceTokenGetField,
-		"deviceStatusCount": DeviceStatusCountField,
+		"deviceGet":         deviceGetField,
+		"deviceList":        deviceListField,
+		"deviceTokenGet":    deviceTokenGetField,
+		"deviceStatusCount": deviceStatusCountField,
 
-		"deviceChargerGet":  DeviceChargerGetField,
-		"deviceChargerList": DeviceChargerListField,
+		"deviceChargerGet":  deviceChargerGetField,
+		"deviceChargerList": deviceChargerListField,
 
-		"deviceParamGet":  DeviceParamGetField,
-		"deviceParamList": DeviceParamListField,
+		"deviceParamGet":  deviceParamGetField,
+		"deviceParamList": deviceParamListField,
 
-		"deviceParamValueList":      DeviceParamValueListField,
-		"deviceParamValueCount":     DeviceParamValueCountField,
-		"deviceParamValueHistogram": DeviceParamValueHistogramField,
+		"deviceParamValueList":      deviceParamValueListField,
+		"deviceParamValueCount":     deviceParamValueCountField,
+		"deviceParamValueHistogram": deviceParamValueHistogramField,
 
-		"deviceStatusLogList":  DeviceStatusLogListField,
-		"deviceStatusDuration": DeviceStatusDurationField,
+		"deviceStatusLogList":  deviceStatusLogListField,
+		"deviceStatusDuration": deviceStatusDurationField,
 
 		/* userLogin */
-		"userLoginList": UserLoginListField,
-		"getLastLogin":  UserLoginLastField,
-		"getThisLogin":  UserLoginThisField,
+		"userLoginList": userLoginListField,
+		"getLastLogin":  userLoginLastField,
+		"getThisLogin":  userLoginThisField,
 
 		/* privilege */
-		"privilegeList": PrivilegeListField,
+		"privilegeList": privilegeListField,
 	},
 })
 

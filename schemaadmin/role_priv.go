@@ -8,7 +8,7 @@ import (
 
 // RolePrivCreateField _
 var RolePrivCreateField = &graphql.Field{
-	Type: schema.RolePriv,
+	Type: graphql.String,
 	Args: graphql.FieldConfigArgument{
 		"roleID": schema.GenArg(graphql.Int, "角色ID", false),
 		"privID": schema.GenArg(graphql.Int, "权限ID", false),

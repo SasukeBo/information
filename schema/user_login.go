@@ -25,11 +25,11 @@ func init() {
 	UserLogin.AddFieldConfig("user", &graphql.Field{Type: User, Description: "用户", Resolve: resolver.LoadUser})
 }
 
-/* 					 fields
+/* 				query fields
 ------------------------------ */
 
 // UserLoginListField _
-var UserLoginListField = &graphql.Field{
+var userLoginListField = &graphql.Field{
 	Type: graphql.NewList(UserLogin),
 	Args: graphql.FieldConfigArgument{
 		"limit":      GenArg(graphql.Int, "单次查询最大返回条数"),
@@ -42,15 +42,18 @@ var UserLoginListField = &graphql.Field{
 }
 
 // UserLoginLastField _
-var UserLoginLastField = &graphql.Field{
+var userLoginLastField = &graphql.Field{
 	Type:        UserLogin,
 	Description: "获取用户非本session的最近一次登录记录。",
 	Resolve:     resolver.LastUserLogin,
 }
 
 // UserLoginThisField _
-var UserLoginThisField = &graphql.Field{
+var userLoginThisField = &graphql.Field{
 	Type:        UserLogin,
 	Description: "获取用户此次登录记录。",
 	Resolve:     resolver.ThisUserLogin,
 }
+
+/* 			mutation fields
+------------------------------ */

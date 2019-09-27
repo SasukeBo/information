@@ -28,7 +28,7 @@ func CreateRolePriv(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	return rolePriv, nil
+	return "ok", nil
 }
 
 // DeleteRolePriv _

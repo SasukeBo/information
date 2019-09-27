@@ -18,15 +18,6 @@ var DeviceParamValue = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-// DeviceParamValueHistogram 设备参数值类型
-var DeviceParamValueHistogram = graphql.NewObject(graphql.ObjectConfig{
-	Name: "DeviceParamValueHistogram",
-	Fields: graphql.Fields{
-		"category": &graphql.Field{Type: graphql.NewList(graphql.String), Description: "直方图x轴category"},
-		"serie":    &graphql.Field{Type: graphql.NewList(graphql.Int), Description: "直方图serie data"},
-	},
-})
-
 func init() {
 	DeviceParamValue.AddFieldConfig(
 		"deviceParam",
@@ -34,11 +25,21 @@ func init() {
 	)
 }
 
+/*							response
+------------------------------------------ */
+
+var deviceParamValueHistogramResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name: "DeviceParamValueHistogram",
+	Fields: graphql.Fields{
+		"category": &graphql.Field{Type: graphql.NewList(graphql.String), Description: "直方图x轴category"},
+		"serie":    &graphql.Field{Type: graphql.NewList(graphql.Int), Description: "直方图serie data"},
+	},
+})
+
 /*							 query fields
 ------------------------------------------ */
 
-// DeviceParamValueListField doc false
-var DeviceParamValueListField = &graphql.Field{
+var deviceParamValueListField = &graphql.Field{
 	Type: graphql.NewList(DeviceParamValue),
 	Args: graphql.FieldConfigArgument{
 		"limit":         GenArg(graphql.Int, "返回数量限制"),
@@ -51,8 +52,7 @@ var DeviceParamValueListField = &graphql.Field{
 	Description: "获取设备参数值列表",
 }
 
-// DeviceParamValueCountField _
-var DeviceParamValueCountField = &graphql.Field{
+var deviceParamValueCountField = &graphql.Field{
 	Type: graphql.Int,
 	Args: graphql.FieldConfigArgument{
 		"deviceUUID": GenArg(graphql.String, "设备UUID", false),
@@ -63,9 +63,8 @@ var DeviceParamValueCountField = &graphql.Field{
 	Description: "查询时间段内设备参数值的最大记录数",
 }
 
-// DeviceParamValueHistogramField _
-var DeviceParamValueHistogramField = &graphql.Field{
-	Type: DeviceParamValueHistogram,
+var deviceParamValueHistogramField = &graphql.Field{
+	Type: deviceParamValueHistogramResponse,
 	Args: graphql.FieldConfigArgument{
 		"paramID":    GenArg(graphql.Int, "参数ID", false),
 		"beforeTime": GenArg(graphql.DateTime, "开始时间"),
@@ -78,8 +77,7 @@ var DeviceParamValueHistogramField = &graphql.Field{
 /*						subscription fields
 ------------------------------------------ */
 
-// DeviceParamValueSubField _
-var DeviceParamValueSubField = &graphql.Field{
+var deviceParamValueSubField = &graphql.Field{
 	Type: DeviceParamValue,
 	Args: graphql.FieldConfigArgument{
 		"id": GenArg(graphql.Int, "值记录ID", false),
