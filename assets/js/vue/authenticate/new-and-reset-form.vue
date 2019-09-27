@@ -1,6 +1,16 @@
 <template>
   <div>
     <el-form :model="form" :rules="rules" ref="form">
+      <el-form-item prop="name">
+        <el-input
+          placeholder="真实姓名"
+          ref="name"
+          v-if="$route.name === 'register'"
+          @keyup.native.enter="beforeSubmit"
+          v-model="form.name"
+          prefix-icon="iconfont icon-shouji"
+        ></el-input>
+      </el-form-item>
       <el-form-item prop="phone">
         <el-input
           placeholder="填写手机号"
@@ -91,6 +101,13 @@ export default {
         callback();
       }
     };
+    var validateName = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请填写名称!'));
+      } else {
+        callback();
+      }
+    };
 
     return {
       showCaptcha: false,
@@ -98,11 +115,13 @@ export default {
       placeholder: '',
       submitName: '',
       form: {
+        name: '',
         phone: '',
         smsCode: '',
         password: ''
       },
       rules: {
+        name: [{ validator: validateName, trigger: 'blur' }],
         phone: [{ validator: validatePhone, trigger: 'blur' }],
         smsCode: [{ validator: validateCode, trigger: 'blur' }],
         password: [{ validator: validatePasswd, trigger: 'blur' }]

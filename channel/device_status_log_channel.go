@@ -7,7 +7,6 @@ import (
 	// "github.com/astaxie/beego"
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/schema"
-	"github.com/SasukeBo/information/schema/scalars"
 	"github.com/astaxie/beego/logs"
 	"github.com/graphql-go/graphql"
 	"golang.org/x/net/websocket"
@@ -43,7 +42,7 @@ func (dsl *dslChannelType) HandleOut(sm *SocketMessage) {
 	if value == "online" {
 		value = "stop"
 	}
-	newStatus := scalars.DeviceStatusMap[value].(int)
+	newStatus := schema.DeviceStatusMap[value].(int)
 
 	remoteIP, ok := (*sm)["remoteIP"].(string)
 	if !ok {
@@ -81,9 +80,9 @@ func (dsl *dslChannelType) HandleOut(sm *SocketMessage) {
 	}
 
 	statusLog := models.DeviceStatusLog{
-		Device:   &device,
-		Duration: validDuration,
-		Status:   oldStatus,
+		Device: &device,
+		// Duration: validDuration,
+		Status: oldStatus,
 	}
 
 	if err := statusLog.Insert(); err != nil {
@@ -104,7 +103,7 @@ func (dsl *dslChannelType) HandleOut(sm *SocketMessage) {
 		}
 
 		result := graphql.Do(graphql.Params{
-			Schema:         schema.PublicSchema,
+			Schema:         schema.Root,
 			RequestString:  query,
 			VariableValues: map[string]interface{}{"deviceID": device.ID},
 		})

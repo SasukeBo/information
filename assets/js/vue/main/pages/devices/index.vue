@@ -35,31 +35,43 @@
           </div>
 
           <div class="global-card name-search">
-            <el-input placeholder="搜索设备" prefix-icon="el-icon-search" v-model="search"></el-input>
+            <el-input placeholder="类型/名称模糊搜索" prefix-icon="el-icon-search" v-model="pattern"></el-input>
           </div>
 
           <div class="global-card ship-btns">
-            <div class="ship-btns__label">关系类型：</div>
-            <el-checkbox-group v-model="checkboxGroup">
-              <el-checkbox-button label="register">创建的</el-checkbox-button>
-              <el-checkbox-button label="charger">负责的</el-checkbox-button>
-            </el-checkbox-group>
+            <div class="ship-btns__label">
+              <el-radio-group v-model="isRegister">
+                <el-radio-button :label="true">我的设备</el-radio-button>
+                <el-radio-button :label="false">所有设备</el-radio-button>
+              </el-radio-group>
+            </div>
           </div>
         </div>
       </transition>
     </div>
 
     <div class="page-right">
-      <div></div>
       <div class="right-title">设备列表</div>
 
-      <div class="device-card-list">
-        <device-card
-          v-for="device in devices.filter(d => !status || d.status === status)"
-          :item="device"
-          v-bind:device.sync="device"
-          :key="device.uuid"
-        ></device-card>
+      <div
+        class="device-card-list"
+        v-loading="$apollo.queries.deviceList.loading"
+        element-loading-background="unset"
+      >
+        <device-card v-for="device in deviceList.devices" :item="device" :key="device.uuid"></device-card>
+        <el-pagination
+          :current-page="currentPage"
+          @current-change="handleCurrentChange"
+          :page-size="limit"
+          hide-on-single-page
+          layout="total, prev, pager, next, jumper"
+          :total="deviceList.total"
+        ></el-pagination>
+
+        <div
+          class="list__empty"
+          v-if="!$apollo.queries.deviceList.loading && !deviceList.total"
+        >没有设备</div>
       </div>
     </div>
   </div>
@@ -67,35 +79,61 @@
 <script>
 import DeviceCard from './_device-card';
 import devicesQuery from './gql/query.devices.gql';
+import { RadioGroup, RadioButton, Pagination } from 'element-ui';
 
 export default {
   name: 'devices',
-  components: { DeviceCard },
+  components: {
+    ElPagination: Pagination,
+    ElRadioGroup: RadioGroup,
+    ElRadioButton: RadioButton,
+    DeviceCard
+  },
   apollo: {
-    devices: {
+    deviceList: {
       query: devicesQuery,
       variables() {
         return {
-          ownership: this.checkboxGroup,
-          namePattern: this.search
+          pattern: this.pattern,
+          status: this.status,
+          isRegister: this.isRegister,
+          limit: this.limit,
+          offset: this.offset
         };
-      }
+      },
+      fetchPolicy: 'network-only'
     }
   },
   data() {
     return {
-      search: '',
-      checkboxGroup: ['register'],
+      pattern: '',
+      status: null,
+      isRegister: false,
+      limit: 9,
+      currentPage: 1,
       isExpand: false,
-      devices: [],
-      status: ''
+      deviceList: {
+        total: 0,
+        devices: []
+      }
     };
+  },
+  computed: {
+    offset() {
+      return (this.currentPage - 1) * this.limit;
+    }
   },
   methods: {
     filterStatus(status) {
-      if (this.status === status) this.status = '';
+      if (this.status === status) this.status = null;
       else this.status = status;
+    },
+    handleCurrentChange(index) {
+      this.currentPage = index;
     }
+  },
+  mounted() {
+    NProgress.done();
   }
 };
 </script>

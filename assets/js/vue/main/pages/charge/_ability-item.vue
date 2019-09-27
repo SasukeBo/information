@@ -6,7 +6,7 @@
 </template>
 <script>
 import abilityDelete from './gql/mutation.ability-delete.gql';
-import chargeQuery from './gql/query.charge.gql';
+import chargeQuery from './gql/query.charger.gql';
 
 export default {
   name: 'ability-item',

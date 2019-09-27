@@ -1,6 +1,6 @@
 <template>
   <div class="device-new">
-    <div class="form-body global-card">
+    <div class="form-body">
       <div class="form-title">
         <i class="el-icon-back go-back-btn" @click="$router.go(-1)"></i>
         <i class="el-icon-s-order"></i> 注册设备
@@ -8,31 +8,44 @@
 
       <div class="device-form">
         <el-form label-position="left" :model="form" label-width="100px" :rules="rules" ref="form">
-          <el-form-item label="设备名称" prop="name">
-            <el-input v-model="form.name"></el-input>
+          <el-form-item prop="name">
+            <el-input v-model="form.name" placeholder="填写设备名称"></el-input>
           </el-form-item>
 
-          <el-form-item label="设备类型" prop="type">
-            <el-input v-model="form.type"></el-input>
+          <el-form-item prop="type">
+            <el-input v-model="form.type" placeholder="填写设备类型"></el-input>
           </el-form-item>
 
-          <el-form-item label="设备描述" prop="description">
-            <el-input type="textarea" :rows="10" v-model="form.description"></el-input>
+          <el-form-item prop="address">
+            <el-input placeholder="填写设备地址" v-model="form.address"></el-input>
           </el-form-item>
 
-          <el-form-item style="text-align: center">
-            <el-button :loading="loading" @click="submit()" style="width: 100%;" type="primary">提交</el-button>
+          <el-form-item prop="description">
+            <el-input type="textarea" placeholder="填写设备描述" :rows="10" v-model="form.description"></el-input>
           </el-form-item>
         </el-form>
+      </div>
+    </div>
+
+    <div class="deploy-order">
+      <div class="deploy-order__body">
+        <span class="label">批量创建</span><!-- 此处注释目的是除去inline-block之间的空格间隙
+        --><el-input-number v-model="form.count" :min="1"></el-input-number>
+        <div style="flex: auto"></div>
+        <el-button :loading="loading" type="primary" @click="submit">立即注册</el-button>
       </div>
     </div>
   </div>
 </template>
 <script>
 import deviceCreateMutation from './gql/mutation.device-create.gql';
+import { InputNumber } from 'element-ui';
 
 export default {
   name: 'device-new',
+  components: {
+    ElInputNumber: InputNumber
+  },
   data() {
     return {
       loading: false,
@@ -41,9 +54,11 @@ export default {
         type: [{ required: true, message: '设备类型必填', trigger: 'blur' }]
       },
       form: {
-        name: '测试设备',
-        type: '测试',
-        description: '测试注册设备交互是否正常'
+        count: 1,
+        name: '',
+        type: '',
+        address: '',
+        description: ''
       }
     };
   },
@@ -58,15 +73,15 @@ export default {
             })
             .then(({ data }) => {
               this.loading = false;
-              this.$router.push({
-                name: 'device-show',
-                params: { uuid: data.device.uuid }
-              });
+              this.$router.push({ name: 'device-list' });
             })
             .catch(e => console.error(e));
         }
       });
     }
+  },
+  mounted() {
+    NProgress.done();
   }
 };
 </script>

@@ -15,7 +15,6 @@ type DeviceParam struct {
 	Type      int       // 参数值类型，string？int？bool？
 	Device    *Device   `orm:"rel(fk);on_delete()"`
 	ID        int       `orm:"auto;pk;column(id)"`
-	Author    *User     `orm:"rel(fk);null;on_delete(set_null)"` // 创建人，删除时置空
 	CreatedAt time.Time `orm:"auto_now_add;type(datetime)"`
 }
 
@@ -100,19 +99,6 @@ func (dp *DeviceParam) Update(cols ...string) error {
 	return nil
 }
 
-// LoadAuthor _
-func (dp *DeviceParam) LoadAuthor() (*User, error) {
-	if _, err := Repo.LoadRelated(dp, "Author"); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "device_param load author error",
-			OriErr:  err,
-		}
-	}
-
-	return dp.Author, nil
-}
-
 // LoadDevice _
 func (dp *DeviceParam) LoadDevice() (*Device, error) {
 	if _, err := Repo.LoadRelated(dp, "Device"); err != nil {
@@ -156,19 +142,4 @@ func (dp *DeviceParam) LoadDeviceParamValues(params graphql.ResolveParams) ([]*D
 	}
 
 	return dpvs, nil
-}
-
-// ValidateAccess _
-func (dp *DeviceParam) ValidateAccess(params graphql.ResolveParams, sign ...string) error {
-	var device *Device
-	var err error
-	if device, err = dp.LoadDevice(); err != nil {
-		return err
-	}
-
-	if err := device.ValidateAccess(params, sign...); err != nil {
-		return err
-	}
-
-	return nil
 }

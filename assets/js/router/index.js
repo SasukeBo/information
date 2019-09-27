@@ -10,6 +10,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  NProgress.start()
   var app = router.app
 
   if (!store.state.user.uuid) { // 没有用户信息
@@ -22,10 +23,8 @@ router.beforeEach((to, from, next) => {
           phone
           status
           avatarURL
-          userExtend {
-            name
-            email
-          }
+          name
+          email
           role {
             roleName
             isAdmin

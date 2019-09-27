@@ -77,6 +77,9 @@ export default {
       var index = this.params.findIndex(p => p.id === id);
       this.params.splice(index, 1);
     }
+  },
+  mounted() {
+    NProgress.done();
   }
 };
 </script>

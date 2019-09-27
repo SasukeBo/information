@@ -38,21 +38,21 @@ var operationNameRegStr = `^((query|mutation)\s*(\w+)?\s*(\([\w\[\]\d\s$!:,]*\))
 func gqlGetSession(conn *beego.Controller, obj gqlRootObject, rootFieldName string) {
 	switch rootFieldName {
 	case
-		"register",
+		"signUp",
 		"resetPassword",
 		"getSmsCode",
-		"userUpdatePhone":
+		"userUpdate":
 		obj["phone"] = conn.GetSession("phone")
 		obj["smsCode"] = conn.GetSession("smsCode")
 
-	case "loginByPassword":
+	case "signIn":
 		// 登录操作不需要后面的验证
 		// 需要记录 IP UA
 		obj["remote_ip"] = conn.Ctx.Input.IP()
 		obj["user_agent"] = conn.Ctx.Input.UserAgent()
 		fallthrough
 
-	case "logout", "getLastLogin", "getThisLogin":
+	case "signOut", "getLastLogin", "getThisLogin":
 		obj["session_id"] = conn.Ctx.Input.CruSession.SessionID()
 	}
 
@@ -116,10 +116,10 @@ func HandleGraphql(ctx *context.Context) {
 	switch params.RootFieldName {
 	case
 		"sendSmsCode",
-		"register",
+		"signUp",
 		"resetPassword",
 		"getSmsCode",
-		"loginByPassword":
+		"signIn":
 		ctx.Input.SetData("need_auth", false)
 	}
 

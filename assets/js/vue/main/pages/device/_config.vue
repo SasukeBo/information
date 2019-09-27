@@ -3,6 +3,9 @@
 </template>
 <script>
 export default {
-  name: 'device-config'
+  name: 'device-config',
+  mounted() {
+    NProgress.done();
+  }
 }
 </script>

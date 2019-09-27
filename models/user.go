@@ -9,16 +9,17 @@ import (
 
 // User 用户模型
 type User struct {
-	Password   string
-	ID         int         `orm:"auto;pk;column(id)"`
-	UUID       string      `orm:"column(uuid);unique;index"`
-	Phone      string      `orm:"unique"`
-	AvatarURL  string      `orm:"column(avatar_url);null"`          // 头像链接
-	Role       *Role       `orm:"rel(fk);null;on_delete(set_null)"` // 用户角色，删除时置空
-	UserExtend *UserExtend `orm:"rel(one)"`                         // 用户信息拓展
-	Status     int         `orm:"default(0)"`                       // 基础状态
-	CreatedAt  time.Time   `orm:"auto_now_add;type(datetime)"`
-	UpdatedAt  time.Time   `orm:"auto_now;type(datetime)"`
+	AvatarURL string    `orm:"column(avatar_url);null"` // 头像链接
+	CreatedAt time.Time `orm:"auto_now_add;type(datetime)"`
+	Email     string    `orm:"null"`
+	ID        int       `orm:"auto;pk;column(id)"`
+	Name      string    // 真实姓名
+	Password  string
+	Phone     string    `orm:"unique"`
+	Role      *Role     `orm:"rel(fk);null;on_delete(set_null)"` // 用户角色，删除时置空
+	Status    int       `orm:"default(0)"`                       // 基础状态
+	UpdatedAt time.Time `orm:"auto_now;type(datetime)"`
+	UUID      string    `orm:"column(uuid);unique;index"`
 }
 
 // GetBy get user by col
@@ -72,17 +73,4 @@ func (u *User) LoadRole() (*Role, error) {
 	}
 
 	return u.Role, nil
-}
-
-// LoadUserExtend related load user_extend
-func (u *User) LoadUserExtend() (*UserExtend, error) {
-	if _, err := Repo.LoadRelated(u, "UserExtend"); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "user load user_extend error",
-			OriErr:  err,
-		}
-	}
-
-	return u.UserExtend, nil
 }

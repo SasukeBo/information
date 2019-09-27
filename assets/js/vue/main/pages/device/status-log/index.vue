@@ -99,6 +99,9 @@ export default {
         ]
       }
     };
+  },
+  mounted() {
+    NProgress.done();
   }
 };
 </script>

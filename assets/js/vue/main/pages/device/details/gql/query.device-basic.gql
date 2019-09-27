@@ -4,6 +4,7 @@ query ($uuid: String!) {
     name
     type
     description
+    address
     token
   }
 }

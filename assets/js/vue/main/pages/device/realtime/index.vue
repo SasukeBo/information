@@ -100,6 +100,9 @@ export default {
     status() {
       return this.statusMap[this.statusTag];
     }
+  },
+  mounted() {
+    NProgress.done();
   }
 };
 </script>

@@ -9,8 +9,8 @@
       <div class="item">
         <span>创建人</span>
         <span
-          v-if="device.register && device.register.userExtend && device.register.userExtend.name"
-        >{{ device.register.userExtend.name }}</span>
+          v-if="device.register && device.register.name"
+        >{{ device.register.name }}</span>
         <span v-else>-</span>
       </div>
 
@@ -23,8 +23,8 @@
       <div class="item">
         <span>邮箱</span>
         <span
-          v-if="device.register && device.register.userExtend && device.register.userExtend.email"
-        >{{ device.register.userExtend.email }}</span>
+          v-if="device.register && device.register.email"
+        >{{ device.register.email }}</span>
         <span v-else>-</span>
       </div>
 

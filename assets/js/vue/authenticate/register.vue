@@ -15,7 +15,7 @@
 </template>
 <script>
 import NewAndResetForm from './new-and-reset-form';
-import register from './gql/mutation.register.gql';
+import MutationSignUp from './gql/mutation.signUp.gql';
 import { parseGQLError } from 'js/utils';
 
 export default {
@@ -30,7 +30,7 @@ export default {
     submit() {
       this.$apollo
         .mutate({
-          mutation: register,
+          mutation: MutationSignUp,
           variables: this.$refs.registerForm.form
         })
         .then(({ data: { register: r } }) => {

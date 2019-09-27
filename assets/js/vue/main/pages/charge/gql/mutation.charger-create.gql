@@ -1,0 +1,15 @@
+#import '../../device/charge/gql/fragment.device-charger.gql'
+
+mutation (
+  $deviceUUID: String!
+  $userUUID: String!
+  $privIDs: [Int]!
+) {
+  deviceCharge: deviceChargeCreate(
+    uuid: $deviceUUID
+    userUUID: $userUUID
+    privIDs: $privIDs
+  ) {
+    ...deviceCharge
+  }
+}
