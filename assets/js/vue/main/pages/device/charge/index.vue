@@ -50,6 +50,9 @@ export default {
       var index = this.charges.findIndex(c => c.id === id);
       this.charges.splice(index, 1);
     }
+  },
+  mounted() {
+    NProgress.done();
   }
 };
 </script>

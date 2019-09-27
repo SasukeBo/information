@@ -8,24 +8,33 @@ import (
 /* 					 types
 ------------------------------ */
 
+// DeviceStatisticsType 设备统计数据
+var DeviceStatisticsType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "DeviceStatistics",
+	Fields: graphql.Fields{
+		"activation": &graphql.Field{Type: graphql.Float, Description: "稼动率"},
+		"yield":      &graphql.Field{Type: graphql.Float, Description: "良率"},
+	},
+})
+
 // DeviceType 设备类型
 var DeviceType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Device",
 	Fields: graphql.Fields{
+		"id":             &graphql.Field{Type: graphql.Int},
 		"type":           &graphql.Field{Type: graphql.String, Description: "设备类型"},
 		"name":           &graphql.Field{Type: graphql.String, Description: "设备名称"},
 		"token":          &graphql.Field{Type: graphql.String, Description: "设备token，用于数据加密"},
 		"status":         &graphql.Field{Type: DeviceStatus, Description: "基础状态"},
 		"address":        &graphql.Field{Type: graphql.String, Description: "设备地址"},
 		"number":         &graphql.Field{Type: graphql.String, Description: "设备编号"},
-		"id":             &graphql.Field{Type: graphql.Int},
 		"uuid":           &graphql.Field{Type: graphql.String, Description: "设备UUID"},
 		"statusChangeAt": &graphql.Field{Type: graphql.DateTime, Description: "设备状态变更时间"},
 		"description":    &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
 		"createdAt":      &graphql.Field{Type: graphql.DateTime},
 		"updatedAt":      &graphql.Field{Type: graphql.DateTime},
 		"remoteIP":       &graphql.Field{Type: graphql.String},
-		// "statistics": 		&graphql.Field{Type: graphql.String},
+		"statistics":     &graphql.Field{Type: DeviceStatisticsType, Description: "设备统计数据"},
 	},
 })
 
