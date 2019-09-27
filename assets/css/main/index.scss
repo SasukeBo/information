@@ -1,0 +1,39 @@
+@import "css/vars.scss";
+@import "./header";
+@import "./menu-panel";
+
+.main-pages:before {
+  content: ' ';
+  display: block;
+  height: 50px;
+}
+
+.main-pages .page-body {
+  padding: 1rem 0.5rem;
+}
+
+.el-dialog__wrapper {
+  position: fixed;
+  top: 50px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+  margin: 0;
+}
+
+.menu-drawer {
+  .el-drawer__header {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .menu-drawer {
+    width: 70% !important;
+  }
+
+  .main-pages .page-body {
+    padding: 1rem 0;
+  }
+}

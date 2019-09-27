@@ -1,0 +1,130 @@
+@import "css/vars.scss";
+
+.charge-show {
+  margin: 0 0.5rem;
+}
+
+.charge-show .charge-show__title .title {
+  font-size: 2rem;
+  vertical-align: middle;
+  padding-left: 1.5rem;
+}
+
+.charge-show .charge-show__title .go-back-btn {
+  font-size: 1.2rem;
+  font-weight: bolder;
+  padding: 1rem;
+  border-radius: 50%;
+  background: $--color-theme__main;
+  box-shadow: 0 0 3px darken($--color-theme__main, 80%), 0 0 5px $--color-theme__white;
+  transition: background 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: darken($--color-theme__main, 15%);
+  }
+}
+
+.charge-show .charge-show__body {
+  margin-top: 1rem;
+}
+
+.charge-show .user-data {
+  margin: 0.5rem 1rem;
+  box-shadow: $--shadow__global-card;
+
+  .item {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 3rem;
+  }
+}
+
+.charge-show .user-data .avatar-name {
+  background: $--color-theme__light-black;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+
+  .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+  }
+
+  .name {
+    font-size: 1.5rem;
+  }
+
+  i {
+    font-size: 1.5rem;
+    vertical-align: middle;
+    color: $--color-theme__warning;
+    margin-right: 0.2rem;
+  }
+}
+
+.charge-show .device-data {
+  padding: 0.5rem 1rem;
+  font-size: 2rem;
+  border-bottom: 2px solid;
+  margin-bottom: 1.5rem;
+
+  .label {
+    font-size: 0.8rem;
+    display: inline-block;
+    padding-left: 1rem;
+  }
+}
+
+.charge-show .privs-data {
+  padding: 0.5rem 1rem;
+
+  .title {
+    font-size: 2rem;
+    padding-bottom: 1rem;
+
+    * {
+      vertical-align: middle;
+    }
+
+    .el-button {
+      margin-left: 2rem;
+    }
+  }
+
+  .ability-item:before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: $--color-theme__success;
+    margin-right: 0.5rem;
+    border-radius: 50%;
+  }
+
+  .ability-item {
+    margin-left: 2rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid;
+
+    i {
+      margin-left: 2rem;
+      color: $--color-theme__danger;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: $--color-theme__white;
+      }
+    }
+  }
+
+  .el-form {
+    margin-left: 2rem;
+  }
+
+  .el-form-item {
+    margin-bottom: 0;
+  }
+}

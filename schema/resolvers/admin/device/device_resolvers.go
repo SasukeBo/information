@@ -152,13 +152,6 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 		device.Name = name.(string)
 	}
 
-	if mac := params.Args["mac"]; mac != nil {
-		if err := utils.ValidateStringEmpty(mac.(string), "mac"); err != nil {
-			return nil, err
-		}
-		device.Mac = mac.(string)
-	}
-
 	if status := params.Args["status"]; status != nil {
 		device.Status = status.(int)
 	}
@@ -167,7 +160,7 @@ func Update(params graphql.ResolveParams) (interface{}, error) {
 		device.Description = description.(string)
 	}
 
-	if err := device.Update("name", "mac", "status", "description"); err != nil {
+	if err := device.Update("name", "status", "description"); err != nil {
 		return nil, err
 	}
 

@@ -11,18 +11,19 @@ import (
 
 // Device 设备模型
 type Device struct {
-	Type          string          // 类型
-	Name          string          // 设备名称
-	Mac           string          // 设备Mac地址
-	Token         string          `orm:"unique;index"`                     // 设备Token，用于数据加密
-	Status        int             `orm:"default(0)"`                       // 基础状态
-	ID            int             `orm:"auto;pk;column(id)"`               // PKey 主键
-	UUID          string          `orm:"column(uuid);unique;index"`        // 通用唯一标识符
-	User          *User           `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
-	DeviceCharges []*DeviceCharge `orm:"reverse(many)"`
-	Description   string          `orm:"null"` // 描述
-	CreatedAt     time.Time       `orm:"auto_now_add;type(datetime)"`
-	UpdatedAt     time.Time       `orm:"auto_now;type(datetime)"`
+	Type           string          // 类型
+	Name           string          // 设备名称
+	RemoteIP       string          `orm:"null;column(remote_ip)"`
+	Token          string          `orm:"unique;index"`                     // 设备Token，用于数据加密
+	Status         int             `orm:"default(0)"`                       // 离线状态
+	ID             int             `orm:"auto;pk;column(id)"`               // PKey 主键
+	UUID           string          `orm:"column(uuid);unique;index"`        // 通用唯一标识符
+	User           *User           `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
+	DeviceCharges  []*DeviceCharge `orm:"reverse(many)"`
+	Description    string          `orm:"null"` // 描述
+	CreatedAt      time.Time       `orm:"auto_now_add;type(datetime)"`
+	StatusChangeAt time.Time       `orm:"auto_now;type(datetime)"`
+	UpdatedAt      time.Time       `orm:"auto_now;type(datetime)"`
 }
 
 // GetBy get device by col
@@ -103,6 +104,22 @@ func (d *Device) LoadDeviceCharge() ([]*DeviceCharge, error) {
 	}
 
 	return d.DeviceCharges, nil
+}
+
+// LoadDeviceParams _
+func (d *Device) LoadDeviceParams() ([]*DeviceParam, error) {
+	qs := Repo.QueryTable("device_param").Filter("device_id", d.ID)
+
+	var dps []*DeviceParam
+	if _, err := qs.All(&dps); err != nil {
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Message: "device load device_params error",
+			OriErr:  err,
+		}
+	}
+
+	return dps, nil
 }
 
 // ValidateAccess validate access to device

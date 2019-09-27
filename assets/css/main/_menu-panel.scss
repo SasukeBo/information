@@ -1,0 +1,27 @@
+.menu-panel {
+  padding: 1rem 0;
+  height: 100%;
+  background: $--color-theme__dark;
+  overflow: auto;
+
+  .menu-item {
+    display: inline-block;
+    width: 100%;
+    padding: 0 2rem;
+    font-size: 1rem;
+    line-height: 3rem;
+    color: $--color-border__4;
+    transition: all 0.3s ease;
+
+    &:hover,
+    &.is-active {
+      background: $--color-theme__warning;
+      color: $--color-font__dark;
+      font-weight: bold;
+    }
+
+    .iconfont {
+      padding-right: 1rem;
+    }
+  }
+}

@@ -1,0 +1,91 @@
+<template>
+  <div class="com-header">
+    <div class="com-header__left">
+      <div class="menu-button">
+        <i
+          :class="['el-icon-s-unfold', menuOpen ? 'transform-rotate' : '']"
+          @click="$emit('toggle-menu')"
+        ></i>
+      </div>
+      <div class="title">
+        <div>普创智控</div>
+        <div>protron</div>
+      </div>
+    </div>
+    <div class="com-header__center">
+      <el-input placeholder="搜索" prefix-icon="el-icon-search"></el-input>
+    </div>
+
+    <div class="com-header__right">
+      <div class="topbar-entry">
+        <img class="topbar-entry__avatar" src="~images/avatar.jpg" />
+
+        <div class="topbar-body global-card">
+          <div class="topbar-body__header">
+            <img src="~images/avatar.jpg" class="avatar" />
+            <span style="font-size: 1.5rem">{{ userExtend.name ? userExtend.name : phone }}</span>
+            <el-tag :type="role.isAdmin ? 'warning' : 'success'" size="mini">{{ role.roleName }}</el-tag>
+          </div>
+
+          <div class="topbar-body__item">
+            <i class="el-icon-mobile-phone"></i>
+            <span>{{ phone }}</span>
+            <span class="hover-show">点击修改</span>
+          </div>
+
+          <div class="topbar-body__item" v-if="userExtend.email">
+            <i class="iconfont icon-185078emailmailstreamline"></i>
+            <span>{{ userExtend.email }}</span>
+            <span class="hover-show">点击修改</span>
+          </div>
+
+          <div class="topbar-body__item">
+            <i class="el-icon-setting"></i>
+            <span>设置中心</span>
+          </div>
+
+          <div class="topbar-body__footer" @click="logout">
+            <span>退出登录</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { mapState } from 'vuex';
+import gql from 'graphql-tag';
+
+export default {
+  name: 'com-header',
+  props: ['menuOpen'],
+  computed: {
+    ...mapState({
+      avatarURL: state => state.user.avatarURL,
+      phone: state => state.user.phone,
+      role: state => state.user.role,
+      userExtend: state => state.user.userExtend
+    })
+  },
+  methods: {
+    logout() {
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation logout {
+              logout
+            }
+          `
+        })
+        .then(() => {
+          this.$store.dispatch('user/logout', () => null);
+
+          this.$router.push({
+            name: 'login',
+            query: { return_to: this.$route.name, params: this.$route.params }
+          });
+        });
+    }
+  }
+};
+</script>

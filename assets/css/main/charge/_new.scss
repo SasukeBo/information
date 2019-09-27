@@ -1,0 +1,54 @@
+@import "css/vars.scss";
+
+.charge-new {
+  margin: 0 0.5rem;
+}
+
+.charge-new .charge-new__title {
+  padding-bottom: 1rem;
+
+  .title {
+    font-size: 2rem;
+    vertical-align: middle;
+    padding-left: 1.5rem;
+  }
+}
+
+.charge-new .charge-new__title .go-back-btn {
+  font-size: 1.2rem;
+  font-weight: bolder;
+  padding: 1rem;
+  border-radius: 50%;
+  background: $--color-theme__main;
+  box-shadow: 0 0 3px darken($--color-theme__main, 80%), 0 0 5px $--color-theme__white;
+  transition: background 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: darken($--color-theme__main, 15%);
+  }
+}
+
+.charge-new .charge-new__body .el-form-item__label {
+  color: $--color-font__light;
+}
+
+.charge-new .charge-new__body {
+  padding: 2rem 1rem;
+
+  .el-form {
+    width: 600px;
+  }
+
+  .submit.el-button {
+    width: 100%;
+  }
+
+  .el-transfer-panel__header .el-checkbox {
+    padding-top: 10px;
+
+    span.el-checkbox__label {
+      vertical-align: middle;
+    }
+  }
+}

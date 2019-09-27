@@ -13,7 +13,7 @@ import (
 var DeviceParamCreateField = &graphql.Field{
 	Type: types.DeviceParam,
 	Args: graphql.FieldConfigArgument{
-		"deviceID": fields.GenArg(graphql.Int, "设备ID", false),
+		"deviceUUID": fields.GenArg(graphql.String, "设备UUID", false),
 		"name":     fields.GenArg(graphql.String, "参数名称", false),
 		"sign":     fields.GenArg(graphql.String, "参数签名", false),
 		"type":     fields.GenArg(scalars.DeviceParamValueType, "参数值类型", false),
@@ -35,7 +35,7 @@ var DeviceParamUpdateField = &graphql.Field{
 
 // DeviceParamDeleteField doc false
 var DeviceParamDeleteField = &graphql.Field{
-	Type: graphql.String,
+	Type: graphql.Int,
 	Args: graphql.FieldConfigArgument{
 		"id": fields.GenArg(graphql.Int, "ID", false),
 	},
@@ -56,7 +56,7 @@ var DeviceParamGetField = &graphql.Field{
 var DeviceParamListField = &graphql.Field{
 	Type: graphql.NewList(types.DeviceParam),
 	Args: graphql.FieldConfigArgument{
-		"deviceUUID":  fields.GenArg(graphql.String, "设备UUID"),
+		"deviceUUID":  fields.GenArg(graphql.String, "设备UUID", false),
 		"namePattern": fields.GenArg(graphql.String, "参数名称模糊匹配"),
 		"signPattern": fields.GenArg(graphql.String, "参数签名模糊匹配"),
 		"type":        fields.GenArg(scalars.DeviceParamValueType, "参数值类型"),

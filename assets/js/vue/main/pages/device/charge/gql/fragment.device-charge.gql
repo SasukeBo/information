@@ -1,0 +1,10 @@
+fragment deviceCharge on DeviceCharge {
+  id
+  user {
+    phone
+    avatarURL
+    userExtend { name }
+  }
+  createdAt
+  privs: deviceChargeAbilities { id }
+}

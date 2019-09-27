@@ -1,0 +1,9 @@
+query (
+  $deviceID: Int!
+  $status: DeviceStatus!
+) {
+  duration: deviceStatusDuration(
+    deviceID: $deviceID
+    status: $status
+  )
+}

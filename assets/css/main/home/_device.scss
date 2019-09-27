@@ -1,0 +1,57 @@
+.page-home .device-card {
+  min-width: 20.75rem;
+
+  .device-groups {
+    display: flex;
+    flex-flow: wrap;
+  }
+
+  .device-group {
+    min-width: 300px;
+    margin: 0 1rem;
+    margin-bottom: 0.5rem;
+    flex: 1;
+  }
+
+  .device-item {
+    cursor: pointer;
+    display: inline-block;
+    border-radius: 0.25rem;
+    border: 1px solid $--color-theme__gray;
+    text-align: center;
+    margin-right: 0.5rem;
+    flex: auto;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    i {
+      display: block;
+      font-size: 2rem;
+      text-align: center;
+      padding: 1rem 1.5rem;
+    }
+
+    span {
+      display: block;
+      padding-bottom: 0.5rem;
+    }
+  }
+
+  .device-group__title {
+    padding-bottom: 0.5rem;
+  }
+
+  .icon-shebei {
+    color: $--color-theme__main;
+  }
+
+  .icon-on-line {
+    color: $--color-theme__success;
+  }
+
+  .icon-off-line {
+    color: $--color-font__light;
+  }
+}

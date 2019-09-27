@@ -34,9 +34,6 @@ var AdminQueryRoot = graphql.NewObject(graphql.ObjectConfig{
 
 		/* userLogin */
 		"adminUserLoginList": fields.UserLoginListField,
-
-		/* privilege */
-		"privilegeList": fields.PrivilegeListField,
 	},
 })
 

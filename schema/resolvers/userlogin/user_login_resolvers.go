@@ -42,3 +42,39 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 
 	return userLogins, nil
 }
+
+// Last _
+func Last(params graphql.ResolveParams) (interface{}, error) {
+	rootValue := params.Info.RootValue.(map[string]interface{})
+
+	sessionID := rootValue["session_id"]
+	user := rootValue["currentUser"].(models.User)
+
+	qs := models.Repo.QueryTable("user_login").OrderBy("-created_at").Limit(1)
+	cond := models.NewCond().And("user_id", user.ID).AndNot("session_id", sessionID)
+	qs = qs.SetCond(cond)
+
+	var lastLogin models.UserLogin
+	if err := qs.One(&lastLogin); err != nil {
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Message: "get last user_login error",
+			OriErr:  err,
+		}
+	}
+
+	return lastLogin, nil
+}
+
+// This _
+func This(params graphql.ResolveParams) (interface{}, error) {
+	rootValue := params.Info.RootValue.(map[string]interface{})
+	sessionID := rootValue["session_id"].(string)
+
+	userLogin := models.UserLogin{SessionID: sessionID}
+	if err := userLogin.GetBy("session_id"); err != nil {
+		return nil, err
+	}
+
+	return userLogin, nil
+}

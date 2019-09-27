@@ -139,7 +139,7 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	qs := models.Repo.QueryTable("user")
 
 	if namePattern != nil {
-		qs = qs.Filter("user_extend__name__icontains", namePattern)
+		qs = qs.Filter("UserExtend__name__icontains", namePattern)
 	}
 
 	if phone != nil {
@@ -147,7 +147,7 @@ func List(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	if email != nil {
-		qs = qs.Filter("user_extend__email", email)
+		qs = qs.Filter("UserExtend__email", email)
 	}
 
 	if _, err := qs.All(&users); err != nil {

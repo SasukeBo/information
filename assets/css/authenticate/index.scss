@@ -1,44 +1,53 @@
 @import "css/vars.scss";
 
 .main-passport {
-  .title {
-    height: 25%;
+  height: 100%;
+  overflow-y: auto;
+  background: linear-gradient(141deg, #aca0f2 0%, #03a9f4 85%, #8fc860 110%);
+}
 
-    .title-main {
-      text-align: center;
-      color: $--color-theme__white;
-      font-size: 34px;
-      padding-top: 100px;
-      line-height: 34px;
-    }
+.main-passport .title {
+  margin-bottom: 20px;
 
-    .title-sub {
-      text-align: center;
-      color: $--color-theme__white;
-      padding-top: 16px;
-    }
-  }
-
-  .link {
+  .title-main {
     text-align: center;
-    color: $--color-font__gray;
+    color: $--color-theme__white;
+    font-size: 34px;
+    padding-top: 100px;
+    line-height: 34px;
   }
+
+  .title-sub {
+    text-align: center;
+    color: $--color-theme__white;
+    padding-top: 16px;
+  }
+}
+
+.main-passport .link {
+  text-align: center;
+  color: $--color-font__gray;
 }
 
 .main-passport .passport-form {
-  left: 0;
-  right: 0;
-  width: 480px;
-  min-height: 484px;
+  max-width: 440px;
   background: $--color-theme__white;
-  position: absolute;
   margin: auto;
   border-radius: 4px;
-  padding: 36px 56px 48px;
-}
+  padding: 20px 30px;
+  box-shadow: 2px 2px 15px 0px rgba(0, 0, 0, 0.3);
 
-.main-passport .passport-form .form-item {
-  margin-bottom: 25px;
+  .form-item {
+    margin-bottom: 25px;
+  }
+
+  .passport-form__btn {
+    border: none;
+  }
+
+  .login-options {
+    padding-left: 2px;
+  }
 }
 
 .main-passport .passport-form .el-input {
@@ -60,14 +69,14 @@
   .el-input__icon {
     font-size: 27px;
     line-height: 55px;
-    color: darken($color: $--color-theme__main, $amount: 20);
+    color: $--color-font__gray;
   }
 }
 
 .main-passport .passport-form .form-title {
   text-align: center;
   font-size: 30px;
-  color: $--color-font__gray;
+  color: $--color-theme__main;
   line-height: 50px;
 }
 
@@ -114,5 +123,27 @@
   .fade-enter {
     transform: translateY(30px);
     opacity: 0;
+  }
+}
+
+@media only screen and (max-width: 440px) {
+  .main-passport .passport-form {
+    width: 100%;
+    padding: 20px 8px;
+    border-radius: 0;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  .main-passport .title .title-main {
+    padding-top: 50px;
+    font-size: 20px;
+  }
+
+  .main-passport .passport-form {
+    .form-title {
+      font-size: 20px;
+      line-height: 20px;
+    }
   }
 }

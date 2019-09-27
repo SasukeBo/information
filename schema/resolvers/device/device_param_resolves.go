@@ -12,8 +12,8 @@ import (
 func ParamCreate(params graphql.ResolveParams) (interface{}, error) {
 	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 
-	device := models.Device{ID: params.Args["deviceID"].(int)}
-	if err := device.GetBy("id"); err != nil {
+	device := models.Device{UUID: params.Args["deviceUUID"].(string)}
+	if err := device.GetBy("uuid"); err != nil {
 		return nil, err
 	}
 	// 创建参数的权限验证
@@ -96,7 +96,7 @@ func ParamDelete(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	return "ok", nil
+	return id, nil
 }
 
 // ParamGet ID获取设备参数
@@ -127,7 +127,7 @@ func ParamList(params graphql.ResolveParams) (interface{}, error) {
 		return nil, accessErr
 	}
 
-	qs := models.Repo.QueryTable("device_param").Filter("device_id", device.ID)
+	qs := models.Repo.QueryTable("device_param").Filter("device_id", device.ID).OrderBy("-created_at")
 
 	if namePattern := params.Args["namePattern"]; namePattern != nil {
 		qs = qs.Filter("name__icontains", namePattern)
@@ -165,6 +165,10 @@ func ParamRelatedLoad(params graphql.ResolveParams) (interface{}, error) {
 		return v.LoadDeviceParam()
 	case *models.DeviceParamValue:
 		return v.LoadDeviceParam()
+	case models.Device:
+		return v.LoadDeviceParams()
+	case *models.Device:
+		return v.LoadDeviceParams()
 	default:
 		return nil, errors.LogicError{
 			Type:    "Resolver",

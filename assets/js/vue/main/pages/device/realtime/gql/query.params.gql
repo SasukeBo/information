@@ -1,0 +1,8 @@
+query ($deviceUUID: String!) {
+  params: deviceParamList(deviceUUID: $deviceUUID) {
+    id
+    name
+    sign
+    type
+  }
+}

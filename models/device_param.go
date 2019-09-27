@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/graphql-go/graphql"
 	"time"
 
@@ -25,6 +26,27 @@ var DeviceParamValueType = struct {
 	Integer int
 	Float   int
 }{0, 1, 2, 3}
+
+// TableUnique 自定义唯一键
+func (dp *DeviceParam) TableUnique() [][]string {
+	return [][]string{
+		[]string{"device_id", "sign"},
+	}
+}
+
+// GetBy get device_param by col
+func (dp *DeviceParam) GetBy(col string) error {
+	if err := Repo.Read(dp, col); err != nil {
+		return errors.LogicError{
+			Type:    "Model",
+			Field:   col,
+			Message: fmt.Sprintf("get device_param by %s error", col),
+			OriErr:  err,
+		}
+	}
+
+	return nil
+}
 
 // Get get device_param by id
 func (dp *DeviceParam) Get() error {
@@ -102,6 +124,38 @@ func (dp *DeviceParam) LoadDevice() (*Device, error) {
 	}
 
 	return dp.Device, nil
+}
+
+// LoadDeviceParamValues _
+func (dp *DeviceParam) LoadDeviceParamValues(params graphql.ResolveParams) ([]*DeviceParamValue, error) {
+	qs := Repo.QueryTable("device_param_value").Filter("device_param_id", dp.ID).OrderBy("-created_at")
+
+	if limit := params.Args["limit"]; limit != nil {
+		qs = qs.Limit(limit)
+	}
+
+	if offset := params.Args["offset"]; offset != nil {
+		qs = qs.Offset(offset)
+	}
+
+	if beforeTime := params.Args["beforeTime"]; beforeTime != nil {
+		qs = qs.Filter("created_at__lt", beforeTime)
+	}
+
+	if afterTime := params.Args["afterTime"]; afterTime != nil {
+		qs = qs.Filter("created_at__gt", afterTime)
+	}
+
+	var dpvs []*DeviceParamValue
+	if _, err := qs.All(&dpvs); err != nil {
+		return nil, errors.LogicError{
+			Type:    "Model",
+			Message: "device_param load device_param_value error",
+			OriErr:  err,
+		}
+	}
+
+	return dpvs, nil
 }
 
 // ValidateAccess _

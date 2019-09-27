@@ -1,0 +1,11 @@
+fragment param on DeviceParam {
+  id
+  name
+  sign
+  type
+  author {
+    uuid
+    userExtend {name}
+  }
+  createdAt
+}

@@ -3,6 +3,7 @@ package types
 import (
 	"github.com/graphql-go/graphql"
 
+	"github.com/SasukeBo/information/schema/fields"
 	"github.com/SasukeBo/information/schema/resolvers/device"
 	"github.com/SasukeBo/information/schema/resolvers/privilege"
 	"github.com/SasukeBo/information/schema/resolvers/role"
@@ -26,6 +27,9 @@ var DeviceParam graphql.Type
 
 // DeviceParamValue 设备参数值类型
 var DeviceParamValue graphql.Type
+
+// DeviceParamValueHistogram 设备参数值直方图数据类型
+var DeviceParamValueHistogram graphql.Type
 
 // DeviceStatusLog 设备状态变更记录类型
 var DeviceStatusLog graphql.Type
@@ -101,12 +105,23 @@ func init() {
 		Name: "DeviceParam",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
 			return graphql.Fields{
-				"id":        &graphql.Field{Type: graphql.Int},
-				"name":      &graphql.Field{Type: graphql.String, Description: "参数名称"},
-				"sign":      &graphql.Field{Type: graphql.String, Description: "参数签名"},
-				"type":      &graphql.Field{Type: scalars.DeviceParamValueType, Description: "参数值类型"},
-				"author":    &graphql.Field{Type: User, Description: "创建人", Resolve: user.RelatedLoad},
-				"device":    &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
+				"id":     &graphql.Field{Type: graphql.Int},
+				"name":   &graphql.Field{Type: graphql.String, Description: "参数名称"},
+				"sign":   &graphql.Field{Type: graphql.String, Description: "参数签名"},
+				"type":   &graphql.Field{Type: scalars.DeviceParamValueType, Description: "参数值类型"},
+				"author": &graphql.Field{Type: User, Description: "创建人", Resolve: user.RelatedLoad},
+				"device": &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
+				"values": &graphql.Field{
+					Type:        graphql.NewList(DeviceParamValue),
+					Description: "参数值记录",
+					Args: graphql.FieldConfigArgument{
+						"limit":      fields.GenArg(graphql.Int, "最大数量"),
+						"offset":     fields.GenArg(graphql.Int, "偏移量"),
+						"beforeTime": fields.GenArg(graphql.DateTime, "开始时间"),
+						"afterTime":  fields.GenArg(graphql.DateTime, "结束时间"),
+					},
+					Resolve: device.ValueRelatedLoad,
+				},
 				"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
 			}
 		}),
@@ -124,14 +139,25 @@ func init() {
 		}),
 	})
 
+	DeviceParamValueHistogram = graphql.NewObject(graphql.ObjectConfig{
+		Name: "DeviceParamValueHistogram",
+		Fields: graphql.FieldsThunk(func() graphql.Fields {
+			return graphql.Fields{
+				"category": &graphql.Field{Type: graphql.NewList(graphql.String), Description: "直方图x轴category"},
+				"serie":    &graphql.Field{Type: graphql.NewList(graphql.Int), Description: "直方图serie data"},
+			}
+		}),
+	})
+
 	DeviceStatusLog = graphql.NewObject(graphql.ObjectConfig{
 		Name: "DeviceStatusLog",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
 			return graphql.Fields{
-				"id":       &graphql.Field{Type: graphql.Int},
-				"status":   &graphql.Field{Type: scalars.DeviceStatus, Description: "设备运行状态"},
-				"device":   &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
-				"changeAt": &graphql.Field{Type: graphql.DateTime, Description: "变更时间"},
+				"id":        &graphql.Field{Type: graphql.Int},
+				"status":    &graphql.Field{Type: scalars.DeviceStatus, Description: "设备运行状态"},
+				"device":    &graphql.Field{Type: Device, Description: "设备", Resolve: device.RelatedLoad},
+				"duration":  &graphql.Field{Type: graphql.Int, Description: "持续时间（s）"},
+				"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "变更时间"},
 			}
 		}),
 	})
@@ -140,18 +166,20 @@ func init() {
 		Name: "Device",
 		Fields: graphql.FieldsThunk(func() graphql.Fields {
 			return graphql.Fields{
-				"type":          &graphql.Field{Type: graphql.String, Description: "设备类型"},
-				"name":          &graphql.Field{Type: graphql.String, Description: "设备名称"},
-				"mac":           &graphql.Field{Type: graphql.String, Description: "设备Mac地址"},
-				"token":         &graphql.Field{Type: graphql.String, Description: "设备token，用于数据加密"},
-				"status":        &graphql.Field{Type: scalars.BaseStatus, Description: "基础状态"},
-				"id":            &graphql.Field{Type: graphql.Int},
-				"uuid":          &graphql.Field{Type: graphql.String, Description: "设备UUID"},
-				"user":          &graphql.Field{Type: User, Description: "注册人用户", Resolve: user.RelatedLoad},
-				"deviceCharges": &graphql.Field{Type: graphql.NewList(DeviceCharge), Description: "设备负责人", Resolve: device.ChargeRelatedLoad},
-				"description":   &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
-				"createdAt":     &graphql.Field{Type: graphql.DateTime},
-				"updatedAt":     &graphql.Field{Type: graphql.DateTime},
+				"type":           &graphql.Field{Type: graphql.String, Description: "设备类型"},
+				"name":           &graphql.Field{Type: graphql.String, Description: "设备名称"},
+				"token":          &graphql.Field{Type: graphql.String, Description: "设备token，用于数据加密"},
+				"status":         &graphql.Field{Type: scalars.DeviceStatus, Description: "基础状态"},
+				"id":             &graphql.Field{Type: graphql.Int},
+				"uuid":           &graphql.Field{Type: graphql.String, Description: "设备UUID"},
+				"user":           &graphql.Field{Type: User, Description: "注册人用户", Resolve: user.RelatedLoad},
+				"params":         &graphql.Field{Type: graphql.NewList(DeviceParam), Description: "设备参数", Resolve: device.ParamRelatedLoad},
+				"deviceCharges":  &graphql.Field{Type: graphql.NewList(DeviceCharge), Description: "设备负责人", Resolve: device.ChargeRelatedLoad},
+				"statusChangeAt": &graphql.Field{Type: graphql.DateTime, Description: "设备状态变更时间"},
+				"description":    &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
+				"createdAt":      &graphql.Field{Type: graphql.DateTime},
+				"updatedAt":      &graphql.Field{Type: graphql.DateTime},
+				"remoteIP":       &graphql.Field{Type: graphql.String},
 			}
 		}),
 	})

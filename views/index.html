@@ -8,9 +8,12 @@
   <link rel="stylesheet" href="{{ .AppCSS }}" />
 </head>
 
-<body style="margin: 0">
+<body style="margin: 0" id="body">
   <div id="vue-entry"></div>
-  <script type="text/javascript" src="{{ .BabelPolyfill }}"></script>
+  <script type="text/javascript" src="{{ .BabelPolyfillJS }}"></script>
+  <script type="text/javascript" src="{{ .VBabelPolyfillJS }}"></script>
+  <script type="text/javascript" src="{{ .ElJS }}"></script>
+  <script type="text/javascript" src="{{ .VueJS }}"></script>
   <script type="text/javascript" src="{{ .AppJS }}"></script>
 </body>
 

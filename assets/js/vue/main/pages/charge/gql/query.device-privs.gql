@@ -1,0 +1,12 @@
+query(
+  $privType: PrivType,
+  $namePattern: String
+){
+  devicePrivs: privilegeList(
+    privType: $privType,
+    namePattern: $namePattern
+  ) {
+    id
+    name
+  }
+}

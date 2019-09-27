@@ -1,0 +1,107 @@
+.device-realtime {
+  padding: 1rem;
+
+  .realtime__left {
+    flex: 5;
+    min-width: 500px;
+    margin-bottom: 1rem;
+  }
+
+  .realtime__right {
+    flex: 3;
+    min-width: 500px;
+    margin-bottom: 1rem;
+  }
+}
+
+.device-realtime .flex-content {
+  display: flex;
+  flex-flow: wrap-reverse;
+}
+
+.device-realtime .params-realtime-chart {
+  position: relative;
+  flex: auto;
+  min-width: 300px;
+}
+
+.device-realtime .device-status-card {
+  display: flex;
+  padding: 1rem;
+  margin: 1rem;
+  background: $--color-theme__bg;
+
+  .summary {
+    flex: auto;
+    display: flex;
+    flex-flow: wrap;
+  }
+
+  .summary-list {
+    flex: 1;
+  }
+
+  .summary-item {
+    padding: 0.5rem 0;
+
+    span {
+      font-size: 0.86rem;
+      color: $--color-font__gray;
+    }
+
+    span:first-child {
+      display: inline-block;
+      color: $--color-font__light;
+      width: 60px;
+    }
+  }
+
+  .status {
+    text-align: center;
+    padding-right: 2rem;
+    color: $--color-font__gray;
+    font-size: 0.85rem;
+
+    .status-text {
+      padding-top: 0.5rem;
+    }
+  }
+  .status-icon {
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    position: relative;
+
+    i.el-icon-s-tools {
+      font-size: 3rem;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+
+    i.el-icon-setting {
+      font-size: 4.5rem;
+    }
+  }
+
+  .status_stop,
+  .status_prod {
+    i.el-icon-s-tools {
+      color: $--color-theme__warning;
+    }
+
+    i.el-icon-setting {
+      color: $--color-theme__success;
+    }
+  }
+
+  .status_prod {
+    i.el-icon-s-tools {
+      animation: rotating 1.5s linear infinite;
+    }
+
+    i.el-icon-setting {
+      animation: rotating reverse 1.5s linear infinite;
+    }
+  }
+}

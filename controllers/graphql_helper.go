@@ -27,7 +27,7 @@ type graphiqlData struct {
 type gqlRootObject map[string]interface{}
 
 // 匹配 graphql query oprtationName
-var operationNameRegStr = `^((query)|(mutation))\s*(\w+)?\s*(\([\w\d\s$!:,]*\))?\s*{\s*(\w+:)?\s*(\w+)\s*(\((\n|.)*\))?\s*({(\n|.)*})?\s*}`
+var operationNameRegStr = `^((query|mutation)\s*(\w+)?\s*(\([\w\[\]\d\s$!:,]*\))?\s*|^){\s*(\w+:)?\s*(\w+)\s*(\((\n|.)*\))?\s*({(\n|.)*})?\s*}`
 
 /*
   gqlGetSession 获取 session 中的数据到 gqlRootObject 中。
@@ -52,7 +52,7 @@ func gqlGetSession(conn *beego.Controller, obj gqlRootObject, rootFieldName stri
 		obj["user_agent"] = conn.Ctx.Input.UserAgent()
 		fallthrough
 
-	case "logout":
+	case "logout", "getLastLogin", "getThisLogin":
 		obj["session_id"] = conn.Ctx.Input.CruSession.SessionID()
 	}
 
@@ -128,12 +128,11 @@ func HandleGraphql(ctx *context.Context) {
 
 // HandleAdminGraphql validate user role isAdmin before HandleGraphql
 func HandleAdminGraphql(ctx *context.Context) {
-	if currentUser := ctx.Input.Session("currentUser"); currentUser != nil {
+	if currentUser, ok := ctx.Input.Session("currentUser").(models.User); ok {
 		var role *models.Role
 		var err error
-		user := currentUser.(models.User)
 
-		if role, err = user.LoadRole(); err != nil {
+		if role, err = currentUser.LoadRole(); err != nil {
 			ctx.Input.SetData("gql_error", err)
 		}
 
@@ -156,19 +155,26 @@ func fetchParams(ctx *context.Context) queryParams {
 	reg := regexp.MustCompile(operationNameRegStr)
 	matches := reg.FindStringSubmatch(strings.TrimSpace(params.Query))
 
-	if len(matches) > 1 {
-		params.Type = matches[1]
+	if len(matches) > 2 {
+		if matches[2] == "" {
+			params.Type = "query"
+		} else {
+			params.Type = matches[2]
+		}
 	}
 
-	if params.OperationName == "" && len(matches) > 4 {
-		params.OperationName = matches[4]
+	if params.OperationName == "" && len(matches) > 3 {
+		params.OperationName = matches[3]
 	}
 
-	if len(matches) > 7 {
-		params.RootFieldName = matches[7]
+	if len(matches) > 6 {
+		params.RootFieldName = matches[6]
 	}
 
-	logs.Info(params.Query)
+	env := beego.AppConfig.String
+	if env("runmode") == "dev" {
+		logs.Info(params.Query)
+	}
 
 	return params
 }

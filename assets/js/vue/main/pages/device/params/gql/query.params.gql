@@ -1,0 +1,13 @@
+#import './fragment.param.gql'
+
+query (
+  $deviceUUID: String!
+  $namePattern: String
+) {
+  deviceParams: deviceParamList(
+    deviceUUID: $deviceUUID
+    namePattern: $namePattern
+  ) {
+    ...param
+  }
+}

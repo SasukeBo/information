@@ -43,7 +43,7 @@ var DeviceChargePrivCreateField = &graphql.Field{
 
 // DeviceChargePrivDeleteField doc false
 var DeviceChargePrivDeleteField = &graphql.Field{
-	Type: graphql.String,
+	Type: graphql.Int,
 	Args: graphql.FieldConfigArgument{
 		"id": fields.GenArg(graphql.Int, "设备负责人权限ID", false),
 	},

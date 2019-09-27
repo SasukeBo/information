@@ -17,6 +17,26 @@ var DeviceStatusLogListField = &graphql.Field{
 		"status":     fields.GenArg(scalars.DeviceStatus, "运行状态"),
 		"beforeTime": fields.GenArg(graphql.DateTime, "开始时间"),
 		"afterTime":  fields.GenArg(graphql.DateTime, "结束时间"),
+		"limit":      fields.GenArg(graphql.Int, "最大返回条数"),
 	},
 	Resolve: device.StatusLogList,
+}
+
+// DeviceStatusRefreshField _
+var DeviceStatusRefreshField = &graphql.Field{
+	Type: types.Device,
+	Args: graphql.FieldConfigArgument{
+		"deviceID": fields.GenArg(graphql.Int, "设备ID", false),
+	},
+	Resolve: device.StatusRefresh,
+}
+
+// DeviceStatusDurationField _
+var DeviceStatusDurationField = &graphql.Field{
+	Type: graphql.String,
+	Args: graphql.FieldConfigArgument{
+		"deviceID": fields.GenArg(graphql.Int, "设备ID", false),
+		"status":   fields.GenArg(scalars.DeviceStatus, "运行状态", false),
+	},
+	Resolve: device.StatusDuration,
 }

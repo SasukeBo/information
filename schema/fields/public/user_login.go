@@ -20,3 +20,17 @@ var UserLoginListField = &graphql.Field{
 	Description: "获取用户登录记录列表，按照时间倒序排列",
 	Resolve:     userlogin.List,
 }
+
+// UserLoginLastField _
+var UserLoginLastField = &graphql.Field{
+	Type:        types.UserLogin,
+	Description: "获取用户非本session的最近一次登录记录。",
+	Resolve:     userlogin.Last,
+}
+
+// UserLoginThisField _
+var UserLoginThisField = &graphql.Field{
+	Type:        types.UserLogin,
+	Description: "获取用户此次登录记录。",
+	Resolve:     userlogin.This,
+}

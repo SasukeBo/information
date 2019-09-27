@@ -9,7 +9,6 @@
         <el-form-item prop="phone">
           <el-input
             placeholder="手机号"
-            size="large"
             @keyup.native.enter="beforeSubmit"
             v-model="loginForm.phone"
             prefix-icon="iconfont icon-shouji"
@@ -36,7 +35,7 @@
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="large" @click="beforeSubmit">登录</el-button>
+          <el-button type="primary" size="large" @click="beforeSubmit" class="passport-form__btn">登录</el-button>
         </el-form-item>
       </el-form>
       <div class="link form-item">
@@ -46,9 +45,12 @@
   </div>
 </template>
 <script>
-import gql from './graphql'
+import loginByPassword from './gql/mutation.loginByPassword.gql';
+import { parseGQLError } from 'js/utils';
+
 export default {
   name: 'login',
+
   data() {
     var reg = new RegExp(
       '^(?:\\+?86)?1(?:3\\d{3}|5[^4\\D]\\d{2}|8\\d{3}|7(?:[35678]\\d{2}|4(?:0\\d|1[0-2]|9\\d))|9[189]\\d{2}|66\\d{2})\\d{6}$'
@@ -86,12 +88,20 @@ export default {
     beforeSubmit() {
       this.$refs['loginForm'].validate(valid => {
         if (valid) {
-          gql.login(this);
-        } else {
-          console.log('submit failed');
+          this.$apollo
+            .mutate({
+              mutation: loginByPassword,
+              variables: this.loginForm
+            })
+            .then(() => {
+              this.$router.push({ name: 'home' });
+            })
+            .catch(e => {
+              this.message = parseGQLError(e).message;
+            });
         }
       });
-    },
+    }
   }
 };
 </script>

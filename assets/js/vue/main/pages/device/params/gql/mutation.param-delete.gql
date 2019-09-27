@@ -1,0 +1,3 @@
+mutation ($id: Int!) {
+  id: deviceParamDelete(id: $id)
+}

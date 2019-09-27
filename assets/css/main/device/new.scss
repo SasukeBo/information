@@ -1,0 +1,74 @@
+@import 'css/vars.scss';
+
+.device-new {
+  height: calc(100% - 50px);
+  overflow: auto;
+  color: $--color-font__light;
+}
+
+.device-new .form-title {
+  font-size: 1.5rem;
+  width: 600px;
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid $--color-theme__black;
+}
+
+.device-new .form-body {
+  padding: 1.5rem;
+}
+
+.device-new .device-form {
+  width: 600px;
+}
+
+.device-new .device-form {
+  .el-form-item__label {
+    color: $--color-font__light;
+  }
+}
+
+.device-new .device-form .el-tag {
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.device-new .form-title .go-back-btn {
+  font-size: 1.2rem;
+  font-weight: bolder;
+  padding: 1rem;
+  border-radius: 50%;
+  background: $--color-theme__main;
+  box-shadow: 0 0 3px darken($--color-theme__main, 80%), 0 0 5px $--color-theme__white;
+  transition: background 0.3s ease;
+  margin-right: 2.5rem;
+  cursor: pointer;
+
+  &:hover {
+    background: darken($--color-theme__main, 15%);
+  }
+}
+
+@media only screen and(max-width: 664px) {
+  .device-new .form-body {
+    padding: 1.5rem 0.5rem;
+    min-width: 316px;
+    margin: 0.5rem;
+  }
+
+  .device-form .el-input,
+  .device-form .el-textarea {
+    width: 200px;
+  }
+
+  .device-new .form-title,
+  .device-new .device-form {
+    width: 300px;
+    margin: auto;
+  }
+
+  .device-new .form-title {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+}

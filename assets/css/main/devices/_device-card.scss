@@ -1,0 +1,85 @@
+.user-device .page-right .device-card {
+  margin: 0 0.5rem 1rem;
+  min-width: 300px;
+  cursor: pointer;
+  flex: 1;
+
+  .global-card {
+    transition: background 0.3s ease;
+  }
+
+  &:hover .global-card {
+    background: lighten($--color-theme__bg, 10%);
+  }
+
+  .data-item {
+    padding: 0 1rem;
+    margin-bottom: 0.5rem;
+    color: $--color-font__gray;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .data-item .label,
+  .data-item .label-center {
+    width: 3.5rem;
+    font-size: 0.75rem;
+    color: $--color-font__light;
+    margin: auto;
+  }
+
+  .data-item .label-center {
+    padding-bottom: 0.5rem;
+  }
+
+  .data-item .label {
+    display: inline-block;
+  }
+
+  .data-item.device-status {
+    text-align: center;
+    padding: 1rem 0;
+
+    .iconfont {
+      display: inline-block;
+      font-size: 2rem;
+    }
+
+    &.device-prod {
+      color: $--color-theme__success;
+    }
+
+    &.device-offline {
+      color: $--color-theme__gray;
+    }
+
+    &.device-stop {
+      color: $--color-theme__warning;
+    }
+  }
+
+  hr {
+    margin: 0 1rem;
+  }
+
+  .see-more {
+    font-size: 0.875rem;
+    padding-top: 0.5rem;
+
+    &:before {
+      content: " ";
+      display: inline-block;
+      height: 1rem;
+    }
+
+    .label {
+      float: left;
+    }
+
+    .el-icon-arrow-right {
+      float: right;
+    }
+  }
+}

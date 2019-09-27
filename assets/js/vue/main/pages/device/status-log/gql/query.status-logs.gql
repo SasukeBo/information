@@ -1,0 +1,19 @@
+query(
+  $deviceUUID: String!
+  $status: DeviceStatus
+  $beforeTime: DateTime
+  $afterTime: DateTime
+  $limit: Int
+) {
+  logs: deviceStatusLogList(
+    deviceUUID: $deviceUUID
+    status: $status
+    beforeTime: $beforeTime
+    afterTime: $afterTime
+    limit: $limit
+  ) {
+    status
+    duration
+    createdAt
+  }
+}

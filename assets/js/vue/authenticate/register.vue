@@ -5,52 +5,44 @@
       <div class="form-alert form-item" v-if="message">{{ message }}</div>
     </transition>
     <div class="form-body">
-      <new-and-reset-form
-        ref="form"
-        :waitForNextSend="waitForNextSend"
-        @sendSmsCode="showCaptcha = true"
-        @submit="submit"
-      ></new-and-reset-form>
-
+      <new-and-reset-form ref="registerForm" @submit="submit"></new-and-reset-form>
       <div class="link form-item">
         已有账号，
         <a href="/login" @click.prevent="$router.push({path: 'login'})">直接登录</a>
       </div>
     </div>
-
-    <in-slide-captcha :showCaptcha.sync="showCaptcha" v-if="showCaptcha" @verified="sendSmsCode()"></in-slide-captcha>
   </div>
 </template>
 <script>
-import InSlideCaptcha from './slide-captcha';
 import NewAndResetForm from './new-and-reset-form';
-import gql from './graphql';
+import register from './gql/mutation.register.gql';
+import { parseGQLError } from 'js/utils';
 
 export default {
   name: 'register',
-  components: {
-    NewAndResetForm,
-    InSlideCaptcha
-  },
+  components: { NewAndResetForm },
   data() {
     return {
-      showCaptcha: false,
-      message: '',
-      waitForNextSend: 0
+      message: ''
     };
   },
   methods: {
     submit() {
-      gql.register(this);
-    },
-    sendSmsCode() {
-      // 设置等待60s
-      this.waitForNextSend = 60;
-      var interval = setInterval(() => {
-        this.waitForNextSend--;
-        if (!this.waitForNextSend) clearInterval(interval);
-      }, 1000);
-      gql.sendSmsCode(this);
+      this.$apollo
+        .mutate({
+          mutation: register,
+          variables: this.$refs.registerForm.form
+        })
+        .then(({ data: { register: r } }) => {
+          this.$message({
+            type: 'success',
+            message: '恭喜您，注册成功，请登录。'
+          });
+          this.$router.push({ name: 'login' });
+        })
+        .catch(e => {
+          app.message = parseGQLError(e).message;
+        });
     }
   }
 };

@@ -1,28 +1,67 @@
-import 'css/app.css';
-import 'css/theme/index.css';
-import ElementUI from 'element-ui';
+import 'css/app.scss';
 import Vue from 'vue';
-import VueRouter from 'vue-router';
 import apolloProvider from './apollo-provider';
 
+import Vuex from 'vuex';
+import VueRouter from 'vue-router';
 Vue.use(VueRouter);
-Vue.use(ElementUI);
+Vue.use(Vuex);
 
+import {
+  Form,
+  FormItem,
+  Button,
+  Input,
+  Checkbox,
+  Message,
+  Row,
+  Col,
+  Tag,
+  Drawer,
+  CheckboxGroup,
+  CheckboxButton,
+  Select,
+  Option,
+  Loading
+} from 'element-ui'
+
+Vue.use(Form);
+Vue.use(FormItem);
+Vue.use(Button);
+Vue.use(Input);
+Vue.use(Checkbox);
+Vue.use(Row);
+Vue.use(Col);
+Vue.use(Tag);
+Vue.use(Drawer);
+Vue.use(CheckboxGroup);
+Vue.use(CheckboxButton);
+Vue.use(Select);
+Vue.use(Option);
+Vue.use(Loading.directive);
+Vue.prototype.$message = Message;
 
 const info = document.querySelector('#vue-entry');
 
 if (info) {
   require.ensure([], () => {
     const entry = require('js/vue').default;
+    const store = require('js/vuex').default;
     const router = require('js/router').default;
-    // const store = require('js/vuex').default;
 
     new Vue({
       el: info,
-      apolloProvider,
-      render: h => h(entry),
+      store,
       router,
-      // store
+      apolloProvider,
+      render: h => h(entry)
     })
   });
+}
+
+if (process.env.NODE_ENV !== 'production') {
+  var script = document.createElement('script');
+  script.setAttribute('type', 'text/javascript');
+  script.setAttribute('src', 'http://localhost:35729/livereload.js');
+  document.body.appendChild(script);
 }

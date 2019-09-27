@@ -1,19 +1,99 @@
-import { load } from './utils'
+import { load, denyIfLoggedIn } from './utils'
 
 function defaultRoutes() {
   return [
     {
       path: '/',
-      redirect: { path: '/login' }
-    },
-    {
-      path: '/home',
-      name: 'home',
-      component: load('home')
+      name: 'index',
+      component: load('main'),
+      redirect: '/home',
+      children: [
+        {
+          path: 'home',
+          name: 'home',
+          component: load('main/pages/home')
+        },
+        {
+          path: 'devices',
+          name: 'device-list',
+          component: load('main/pages/devices')
+        },
+        {
+          path: 'device/new',
+          name: 'device-new',
+          component: load('main/pages/device/new')
+        },
+        {
+          path: 'device/:uuid',
+          name: 'device-show',
+          props: true,
+          component: load('main/pages/device'),
+          redirect: { name: 'device-details' },
+          children: [
+            {
+              path: 'realtime',
+              name: 'device-realtime',
+              props: true,
+              component: load('main/pages/device/realtime')
+            },
+            {
+              path: 'charges',
+              name: 'device-charges',
+              props: true,
+              component: load('main/pages/device/charge')
+            },
+            {
+              path: 'params',
+              name: 'device-params',
+              props: true,
+              component: load('main/pages/device/params')
+            },
+            {
+              path: 'details',
+              name: 'device-details',
+              props: true,
+              component: load('main/pages/device/details')
+            },
+            {
+              path: 'status-log',
+              name: 'device-status-log',
+              props: true,
+              component: load('main/pages/device/status-log')
+            },
+            {
+              path: 'config',
+              name: 'device-config',
+              props: true,
+              component: load('main/pages/device/_config')
+            }
+          ]
+        },
+        {
+          path: 'device/:uuid/charge',
+          name: 'device-charge',
+          props: true,
+          component: load('main/pages/charge'),
+          children: [
+            {
+              path: ':id/show',
+              name: 'charge-show',
+              props: true,
+              component: load('main/pages/charge/_show.vue')
+            },
+            {
+              path: 'new',
+              name: 'charge-new',
+              props: true,
+              component: load('main/pages/charge/_new.vue')
+            }
+          ]
+        }
+      ]
     },
     {
       path: '/auth',
       component: load('authenticate'),
+      beforeEnter: denyIfLoggedIn(),
       children: [
         {
           path: 'register',

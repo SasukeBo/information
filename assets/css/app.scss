@@ -1,0 +1,64 @@
+@import "~css/vars.scss";
+@import "~css/fonts/iconfont.css";
+
+html,
+body {
+  height: 100%;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial,
+    sans-serif;
+}
+
+#app {
+  height: 100%;
+  overflow: auto;
+  // background: linear-gradient(225deg, rgba(0, 0, 0, 0.3), transparent);
+  background: $--color-theme__bg;
+  // color: $--color-font__dark;
+  color: $--color-font__white;
+  font-size: 0.875rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: darken($--color-theme__main, 10%);
+  transition: all 0.5s linear;
+
+  &:hover {
+    color: lighten($color: $--color-theme__main, $amount: 20);
+  }
+}
+
+.global-card {
+  background: lighten($--color-theme__bg, 5%);
+  box-shadow: $--shadow__global-card;
+  border-radius: 0.25rem;
+  padding: 0.75rem 0;
+  margin-bottom: 1rem;
+  color: $--color-font__light;
+}
+
+.global-card:last-child {
+  margin-bottom: 0;
+}
+
+.global-card .global-card__title {
+  display: block;
+  font-size: 1.25rem;
+  padding-bottom: 0.2rem;
+  margin: 0 1rem;
+  margin-bottom: 0.5rem;
+  color: $--color-theme__main;
+  border-bottom: 1px solid $--color-theme__black;
+}
+
+.global-card .global-card__body {
+  margin: 0 1rem;
+}
+
+body .el-message {
+  top: 70px !important;
+}

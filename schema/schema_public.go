@@ -8,6 +8,15 @@ import (
 	fields "github.com/SasukeBo/information/schema/fields/public"
 )
 
+// Subscription _
+var Subscription = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Subscription",
+	Fields: graphql.Fields{
+		"deviceParamValueAdd": fields.DeviceParamValueAddField,
+		"deviceStatusRefresh": fields.DeviceStatusRefreshField,
+	},
+})
+
 // MutateRoot is mutation root
 var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
@@ -32,7 +41,6 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		"deviceCreate": fields.DeviceCreateField,
 		"deviceUpdate": fields.DeviceUpdateField,
 		"deviceDelete": fields.DeviceDeleteField,
-		"deviceBind":   fields.DeviceBindField,
 
 		/*    deviceCharge    */
 		"deviceChargeCreate": fields.DeviceChargeCreateField,
@@ -63,14 +71,22 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		"getSmsCode": fields.GetSmsCodeField,
 
 		/*    device    */
-		"deviceGet":            fields.DeviceGetField,
-		"deviceList":           fields.DeviceListField,
-		"deviceChargeGet":      fields.DeviceChargeGetField,
-		"deviceChargeList":     fields.DeviceChargeListField,
-		"deviceParamGet":       fields.DeviceParamGetField,
-		"deviceParamList":      fields.DeviceParamListField,
-		"deviceParamValueList": fields.DeviceParamValueListField,
+		"deviceGet":      fields.DeviceGetField,
+		"deviceTokenGet": fields.DeviceTokenGetField,
+		"deviceList":     fields.DeviceListField,
+
+		"deviceChargeGet":  fields.DeviceChargeGetField,
+		"deviceChargeList": fields.DeviceChargeListField,
+
+		"deviceParamGet":  fields.DeviceParamGetField,
+		"deviceParamList": fields.DeviceParamListField,
+
+		"deviceParamValueList":      fields.DeviceParamValueListField,
+		"deviceParamValueCount":     fields.DeviceParamValueCountField,
+		"deviceParamValueHistogram": fields.DeviceParamValueHistogramField,
+
 		"deviceStatusLogList":  fields.DeviceStatusLogListField,
+		"deviceStatusDuration": fields.DeviceStatusDurationField,
 		/*
 			FIXME: 暂时不需要的接口
 			"deviceChargePrivGet":  fields.DeviceChargePrivGetField,
@@ -79,6 +95,11 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 
 		/* userLogin */
 		"userLoginList": fields.UserLoginListField,
+		"getLastLogin":  fields.UserLoginLastField,
+		"getThisLogin":  fields.UserLoginThisField,
+
+		/* privilege */
+		"privilegeList": fields.PrivilegeListField,
 	},
 })
 
@@ -88,8 +109,9 @@ var PublicSchema graphql.Schema
 func init() {
 	var err error
 	PublicSchema, err = graphql.NewSchema(graphql.SchemaConfig{
-		Query:    QueryRoot,
-		Mutation: MutateRoot,
+		Query:        QueryRoot,
+		Mutation:     MutateRoot,
+		Subscription: Subscription,
 	})
 	if err != nil {
 		log.Fatal("failed to create public schema, err: ", err)

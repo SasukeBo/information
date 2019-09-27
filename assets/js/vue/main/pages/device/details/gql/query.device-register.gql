@@ -1,0 +1,13 @@
+query ($uuid: String!) {
+  device: deviceGet(uuid: $uuid) {
+    id
+    createdAt
+    register: user {
+      phone
+      userExtend {
+        name
+        email
+      }
+    }
+  }
+}

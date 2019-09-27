@@ -1,0 +1,128 @@
+@import "css/vars.scss";
+@import "./details";
+@import "./charge";
+@import "./params";
+
+.device-show.page-body {
+  padding: 0;
+  color: $--color-font__light;
+}
+
+.device-show__header {
+  display: flex;
+  flex-flow: wrap;
+  margin: 1rem 0;
+}
+
+.device-show__title {
+  max-width: 600px;
+  padding: 0 1rem;
+  font-size: 0.85rem;
+  color: $--color-font__white;
+
+  span {
+    display: inline-block;
+    vertical-align: bottom;
+  }
+
+  .device-title:before {
+    content: "";
+    display: inline-block;
+    vertical-align: bottom;
+  }
+
+  .device-show__tab-box {
+    background: linear-gradient(90deg, $--color-theme__white, $--color-theme__bg);
+    padding: 0.1rem 0.5rem;
+    border-radius: 2px;
+  }
+
+  .device-show__tab-name {
+    font-size: 1rem;
+    color: $--color-theme__dark;
+    font-weight: bold;
+  }
+}
+
+.device-show__device-name {
+  color: $--color-font__white;
+  font-size: 2rem;
+  padding-right: 0.5rem;
+}
+
+.device-show .device-menu {
+  flex: auto;
+  text-align: right;
+  margin-right: 2rem;
+
+  .device-menu__item {
+    display: inline-block;
+    text-align: center;
+    padding: 0.2rem 1rem;
+    color: $--color-font__gray;
+    width: 80px;
+    cursor: pointer;
+
+    &:hover,
+    &.is-selected {
+      i {
+        box-shadow: 0 0 6px $--color-theme__main;
+        color: darken($--color-theme__main, 5%);
+      }
+
+      span {
+        color: $--color-theme__main;
+        text-shadow: 0 0 6px $--color-theme__main;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .device-menu__item i {
+    margin: 0.3rem auto;
+    box-shadow: 0 0 6px $--color-theme__white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    line-height: 40px;
+    color: $--color-font__light;
+    display: block;
+    font-size: 1.3rem;
+    border: 2px solid;
+    transition: all 0.3s ease;
+  }
+
+  .device-menu__item span {
+    color: $--color-font__light;
+    display: block;
+    font-size: 0.75rem;
+    padding-top: 0.3rem;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 3px $--color-theme__white;
+  }
+}
+
+@media only screen and (max-width: 790px) {
+  .device-show .device-menu {
+    text-align: left;
+    margin-top: 1rem;
+  }
+}
+
+.device-show__tab-box {
+  .slide-fade-enter-active,
+  .slide-fade-leave-active {
+    transition: all 0.3s ease;
+  }
+
+  .slide-fade-enter {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+
+  .slide-fade-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+}
