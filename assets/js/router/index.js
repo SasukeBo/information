@@ -13,13 +13,12 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
   var app = router.app
 
-  if (!store.state.user.uuid) { // 没有用户信息
+  if (!store.state.user.phone) { // 没有用户信息
     app.$apollo.query({
       query: tag`
       query {
         currentUser
         {
-          uuid
           phone
           status
           avatarURL

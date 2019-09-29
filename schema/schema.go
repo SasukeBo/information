@@ -30,11 +30,12 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		"deviceChargerCreate": deviceChargerCreate,
 		"deviceChargerDelete": deviceChargerDelete,
 		"deviceChargerUpdate": deviceChargerUpdate,
-		"productCreate":       productCreate,
-		"productDelete":       productDelete,
-		"detectItemCreate":    detectItemCreate,
-		"detectItemUpdate":    detectItemUpdate,
-		"detectItemDelete":    detectItemDelete,
+		// "deviceProductShipCreate": deviceProductShipCreate,
+		"productCreate":    productCreate,
+		"productDelete":    productDelete,
+		"detectItemCreate": detectItemCreate,
+		"detectItemUpdate": detectItemUpdate,
+		"detectItemDelete": detectItemDelete,
 		// "productUpdate":       productUpdate,
 
 		/*    deviceParam    */

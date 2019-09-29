@@ -9,7 +9,6 @@ type Product struct {
 	ID          int           `orm:"auto;pk;column(id)"`
 	Name        string        `orm:"unique"`        // 产品名称
 	DetectItems []*DetectItem `orm:"reverse(many)"` // 产品检测项
-	Instances   []*ProductIns `orm:"reverse(many)"`
 	CreatedAt   time.Time     `orm:"auto_now_add;type(datetime)"`
 	UpdatedAt   time.Time     `orm:"auto_now;type(datetime)"`
 }
