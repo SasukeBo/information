@@ -18,7 +18,7 @@ var currentUser = &graphql.Field{
 ---------------------------------- */
 
 var signIn = &graphql.Field{
-	Type: graphql.String,
+	Type: User,
 	Args: graphql.FieldConfigArgument{
 		"phone":    GenArg(graphql.String, "手机号", false),
 		"password": GenArg(graphql.String, "密码", false),

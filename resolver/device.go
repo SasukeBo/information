@@ -1,22 +1,18 @@
 package resolver
 
 import (
-	"github.com/google/uuid"
-	"github.com/graphql-go/graphql"
-
-	// "github.com/astaxie/beego/logs"
-
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
+	"github.com/graphql-go/graphql"
 )
 
 // GetDevice 获取设备
 func GetDevice(params graphql.ResolveParams) (interface{}, error) {
-	uuid := params.Args["uuid"].(string)
+	id := params.Args["id"].(int)
 
-	device := models.Device{UUID: uuid}
-	if err := device.GetBy("uuid"); err != nil {
+	device := models.Device{ID: id}
+	if err := device.GetBy("id"); err != nil {
 		return nil, err
 	}
 
@@ -119,7 +115,6 @@ func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
 	devices := []models.Device{}
 	for i := 0; i < count; i++ {
 		device.Token = utils.GenRandomToken(8)
-		device.UUID = uuid.New().String()
 		devices = append(devices, device)
 	}
 
@@ -134,8 +129,8 @@ func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
 // UpdateDevice 更新设备
 func UpdateDevice(params graphql.ResolveParams) (interface{}, error) {
 	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
-	device := models.Device{UUID: params.Args["uuid"].(string)}
-	if err := device.GetBy("uuid"); err != nil {
+	device := models.Device{ID: params.Args["id"].(int)}
+	if err := device.GetBy("id"); err != nil {
 		return nil, err
 	}
 
@@ -175,8 +170,8 @@ func UpdateDevice(params graphql.ResolveParams) (interface{}, error) {
 // DeleteDevice 更新设备
 func DeleteDevice(params graphql.ResolveParams) (interface{}, error) {
 	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
-	device := models.Device{UUID: params.Args["uuid"].(string)}
-	if err := device.GetBy("uuid"); err != nil {
+	device := models.Device{ID: params.Args["id"].(int)}
+	if err := device.GetBy("id"); err != nil {
 		return nil, err
 	}
 
@@ -191,7 +186,7 @@ func DeleteDevice(params graphql.ResolveParams) (interface{}, error) {
 	return "ok", nil
 }
 
-// RelatedLoad _
+// LoadDevice _
 func LoadDevice(params graphql.ResolveParams) (interface{}, error) {
 	switch v := params.Source.(type) {
 	case models.DeviceCharger:
@@ -201,10 +196,6 @@ func LoadDevice(params graphql.ResolveParams) (interface{}, error) {
 	case models.DeviceStatusLog:
 		return v.LoadDevice()
 	case *models.DeviceStatusLog:
-		return v.LoadDevice()
-	case models.DeviceParam:
-		return v.LoadDevice()
-	case *models.DeviceParam:
 		return v.LoadDevice()
 	default:
 		return nil, errors.LogicError{

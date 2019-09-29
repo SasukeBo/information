@@ -1,5 +1,6 @@
 package schemaadmin
 
+/*
 import (
 	resolver "github.com/SasukeBo/information/resolveradmin"
 	"github.com/SasukeBo/information/schema"
@@ -24,3 +25,4 @@ var RolePrivDeleteField = &graphql.Field{
 	},
 	Resolve: resolver.DeleteRolePriv,
 }
+*/

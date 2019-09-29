@@ -10,8 +10,8 @@ import (
 // CreateDeviceCharger 增加设备负责人
 func CreateDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
 	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
-	device := models.Device{UUID: params.Args["deviceUUID"].(string)}
-	if err := device.GetBy("uuid"); err != nil {
+	device := models.Device{ID: params.Args["deviceID"].(int)}
+	if err := device.GetBy("id"); err != nil {
 		return nil, err
 	}
 
@@ -121,8 +121,8 @@ func GetDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
 // ListDeviceCharger 条件查询设备负责关系列表
 func ListDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
 	qs := models.Repo.QueryTable("device_charger")
-	deviceUUID := params.Args["deviceUUID"].(string)
-	device := models.Device{UUID: deviceUUID}
+	deviceID := params.Args["deviceID"].(int)
+	device := models.Device{ID: deviceID}
 	if err := device.GetBy("uuid"); err != nil {
 		return nil, err
 	}

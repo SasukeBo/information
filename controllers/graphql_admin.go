@@ -1,5 +1,6 @@
 package controllers
 
+/*
 import (
 	"github.com/astaxie/beego"
 	"github.com/graphql-go/graphql"
@@ -46,3 +47,5 @@ func (conn *AdminGQLController) Post() {
 	conn.Data["json"] = result
 	conn.ServeJSON()
 }
+
+*/

@@ -1,5 +1,6 @@
 package schemaadmin
 
+/*
 import (
 	resolver "github.com/SasukeBo/information/resolveradmin"
 	"github.com/SasukeBo/information/schema"
@@ -44,3 +45,4 @@ var UserListField = &graphql.Field{
 	Description: "默认按照账号注册时间倒序排列",
 	Resolve:     resolver.ListUser,
 }
+*/

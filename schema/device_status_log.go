@@ -20,7 +20,7 @@ var DeviceStatusLog = graphql.NewObject(graphql.ObjectConfig{
 })
 
 func init() {
-	DeviceStatusLog.AddFieldConfig("device", &graphql.Field{Type: DeviceType, Description: "设备", Resolve: resolver.LoadDevice})
+	DeviceStatusLog.AddFieldConfig("device", &graphql.Field{Type: deviceType, Description: "设备", Resolve: resolver.LoadDevice})
 }
 
 /*							query
@@ -54,7 +54,7 @@ var deviceStatusDuration = &graphql.Field{
 
 // TODO: 重构subscription的resolver
 var deviceStatusRefresh = &graphql.Field{
-	Type: DeviceType,
+	Type: deviceType,
 	Args: graphql.FieldConfigArgument{
 		"deviceID": GenArg(graphql.Int, "设备ID", false),
 	},

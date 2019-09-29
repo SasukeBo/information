@@ -13,6 +13,29 @@ import (
 // Repo is Ormer
 var Repo orm.Ormer
 
+// LogicError Error with logic type
+type LogicError struct {
+	Type    string
+	Field   string
+	Message string
+	OriErr  error
+}
+
+func (e LogicError) Error() string {
+	var oriMsg = ""
+	if e.OriErr != nil {
+		oriMsg = e.OriErr.Error()
+	}
+
+	return fmt.Sprintf(
+		`{"type": "%s Error", "field": "%s", "message": "%s", "originMessage": "%s"}`,
+		e.Type,
+		e.Field,
+		e.Message,
+		oriMsg,
+	)
+}
+
 // BaseStatus 基础状态类型
 var BaseStatus = struct {
 	Default int
@@ -46,9 +69,12 @@ func init() {
 		new(UserLogin),
 		new(Device),
 		new(DeviceCharger),
-		new(DeviceParam),
-		new(DeviceParamValue),
 		new(DeviceStatusLog),
+		new(DeviceProductShip),
+		new(Product),
+		new(ProductIns),
+		new(DetectItem),
+		new(DetectItemValue),
 	)
 
 	// 自动建表

@@ -1,5 +1,6 @@
 package resolveradmin
 
+/*
 import (
 	// "fmt"
 
@@ -144,3 +145,4 @@ func DeleteDevice(params graphql.ResolveParams) (interface{}, error) {
 
 	return "ok", nil
 }
+*/

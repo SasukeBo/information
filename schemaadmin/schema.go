@@ -5,6 +5,7 @@ package schemaadmin
 	禁止在前台中调用管理员接口。
 */
 
+/*
 import (
 	"github.com/graphql-go/graphql"
 	"log"
@@ -18,18 +19,12 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	禁止在前台中调用管理员接口。
 	`,
 	Fields: graphql.Fields{
-		/* user */
 		"adminUserList": UserListField,
-		/*    role    */
 		"adminRoleGet":       RoleGetField,
 		"adminRoleGetByName": RoleGetByNameField,
 		"adminRoleList":      RoleListField,
-
-		/* device */
 		"adminDeviceGet":  DeviceGetField,
 		"adminDeviceList": DeviceListField,
-
-		/* userLogin */
 		"adminUserLoginList": UserLoginListField,
 	},
 })
@@ -42,20 +37,13 @@ var MutationRoot = graphql.NewObject(graphql.ObjectConfig{
 	禁止在前台中调用管理员接口。
 	`,
 	Fields: graphql.Fields{
-		/*    role    */
 		"adminRoleCreate": RoleCreateField,
 		"adminRoleUpdate": RoleUpdateField,
 		"adminRoleDelete": RoleDeleteField,
-
-		/* user */
 		"adminUserDelete": UserDeleteField,
 		"adminUserUpdate": UserUpdateField,
-
-		/* rolePriv */
 		"adminRolePrivCreate": RolePrivCreateField,
 		"adminRolePrivDelete": RolePrivDeleteField,
-
-		/* device */
 		"adminDeviceUpdate": DeviceUpdateField,
 		"adminDeviceDelete": DeviceDeleteField,
 	},
@@ -75,3 +63,4 @@ func init() {
 		log.Fatal("failed to create admin schema, err: ", err)
 	}
 }
+*/

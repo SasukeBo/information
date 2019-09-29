@@ -1,5 +1,6 @@
 package schemaadmin
 
+/*
 import (
 	resolver "github.com/SasukeBo/information/resolveradmin"
 	"github.com/SasukeBo/information/schema"
@@ -20,3 +21,4 @@ var UserLoginListField = &graphql.Field{
 	Description: "获取用户登录记录，按照时间倒序返回列表",
 	Resolve:     resolver.ListUserLogin,
 }
+*/

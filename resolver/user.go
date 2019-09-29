@@ -2,7 +2,6 @@ package resolver
 
 import (
 	// "fmt"
-	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 
 	"github.com/SasukeBo/information/models"
@@ -19,12 +18,10 @@ func SignUp(params graphql.ResolveParams) (interface{}, error) {
 
 	rootValue := params.Info.RootValue.(map[string]interface{})
 
-	_uuid := uuid.New().String()
-
 	sessPhone := rootValue["phone"]
 	sessMsgCode := rootValue["smsCode"]
 
-	user := models.User{UUID: _uuid, Name: name}
+	user := models.User{Name: name}
 
 	// validate phone
 	if err := utils.ValidatePhone(phoneStr); err != nil {
@@ -109,10 +106,10 @@ func ResetPassword(params graphql.ResolveParams) (interface{}, error) {
 
 // GetUser _
 func GetUser(params graphql.ResolveParams) (interface{}, error) {
-	uuid := params.Args["uuid"].(string)
+	id := params.Args["id"].(int)
 
-	user := models.User{UUID: uuid}
-	if err := user.GetBy("uuid"); err != nil {
+	user := models.User{ID: id}
+	if err := user.GetBy("id"); err != nil {
 		return nil, err
 	}
 

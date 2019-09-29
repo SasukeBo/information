@@ -1,5 +1,6 @@
 package schemaadmin
 
+/*
 import (
 	resolver "github.com/SasukeBo/information/resolveradmin"
 	"github.com/SasukeBo/information/schema"
@@ -57,3 +58,4 @@ var DeviceDeleteField = &graphql.Field{
 	},
 	Resolve: resolver.DeleteDevice,
 }
+*/

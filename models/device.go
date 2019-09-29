@@ -22,7 +22,6 @@ type Device struct {
 	Token          string           `orm:"unique;index"`                     // 设备Token，用于数据加密
 	Status         int              `orm:"default(0)"`                       // 离线状态
 	ID             int              `orm:"auto;pk;column(id)"`               // PKey 主键
-	UUID           string           `orm:"column(uuid);unique;index"`        // 通用唯一标识符
 	User           *User            `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
 	DeviceChargers []*DeviceCharger `orm:"reverse(many)"`
 	Description    string           `orm:"null"` // 描述
@@ -109,22 +108,6 @@ func (d *Device) LoadDeviceCharge() ([]*DeviceCharger, error) {
 	}
 
 	return d.DeviceChargers, nil
-}
-
-// LoadDeviceParams _
-func (d *Device) LoadDeviceParams() ([]*DeviceParam, error) {
-	qs := Repo.QueryTable("device_param").Filter("device_id", d.ID)
-
-	var dps []*DeviceParam
-	if _, err := qs.All(&dps); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "device load device_params error",
-			OriErr:  err,
-		}
-	}
-
-	return dps, nil
 }
 
 // ValidateAccess _

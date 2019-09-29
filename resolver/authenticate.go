@@ -74,7 +74,7 @@ func SignIn(params graphql.ResolveParams) (interface{}, error) {
 	rootValue["setSession"] = []string{"currentUser"}
 	rootValue["remember"] = remember
 
-	return user.UUID, nil
+	return user, nil
 }
 
 // SignOut 登出系统

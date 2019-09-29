@@ -9,7 +9,7 @@ import (
 var Subscription = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Subscription",
 	Fields: graphql.Fields{
-		"deviceParamValueSub": deviceParamValueAdd,
+		// "deviceParamValueSub": deviceParamValueAdd,
 		"deviceStatusRefresh": deviceStatusRefresh,
 	},
 })
@@ -18,30 +18,29 @@ var Subscription = graphql.NewObject(graphql.ObjectConfig{
 var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
 	Fields: graphql.Fields{
-		/*    user    */
-		"signUp":        signUp,
-		"signIn":        signIn,
-		"signOut":       signOut,
-		"resetPassword": resetPassword,
-		"updateUser":    userUpdate,
-
-		/*    aliyun    */
-		"sendSmsCode": sendSmsCode,
-
-		/*    device    */
-		"deviceCreate": deviceCreate,
-		"deviceUpdate": deviceUpdate,
-		"deviceDelete": deviceDelete,
-
-		/*    deviceCharge    */
+		"signUp":              signUp,
+		"signIn":              signIn,
+		"signOut":             signOut,
+		"resetPassword":       resetPassword,
+		"updateUser":          userUpdate,
+		"sendSmsCode":         sendSmsCode,
+		"deviceCreate":        deviceCreate,
+		"deviceUpdate":        deviceUpdate,
+		"deviceDelete":        deviceDelete,
 		"deviceChargerCreate": deviceChargerCreate,
 		"deviceChargerDelete": deviceChargerDelete,
 		"deviceChargerUpdate": deviceChargerUpdate,
+		"productCreate":       productCreate,
+		"productDelete":       productDelete,
+		"detectItemCreate":    detectItemCreate,
+		"detectItemUpdate":    detectItemUpdate,
+		"detectItemDelete":    detectItemDelete,
+		// "productUpdate":       productUpdate,
 
 		/*    deviceParam    */
-		"deviceParamCreate": deviceParamCreate,
-		"deviceParamUpdate": deviceParamUpdate,
-		"deviceParamDelete": deviceParamDelete,
+		// "deviceParamCreate": deviceParamCreate,
+		// "deviceParamUpdate": deviceParamUpdate,
+		// "deviceParamDelete": deviceParamDelete,
 	},
 })
 
@@ -49,40 +48,33 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
 	Fields: graphql.Fields{
-		/* user */
-		"currentUser": currentUser,
-		"userGet":     userGet,
-		"userList":    userList,
-
-		/*    aliyun    */
-		"getSmsCode": getSmsCode,
-
-		/*    device    */
-		"deviceGet":         deviceGet,
-		"deviceList":        deviceList,
-		"deviceTokenGet":    deviceTokenGet,
-		"deviceStatusCount": deviceStatusCount,
-
-		"deviceChargerGet":  deviceChargerGet,
-		"deviceChargerList": deviceChargerList,
-
-		"deviceParamGet":  deviceParamGet,
-		"deviceParamList": deviceParamList,
-
-		"deviceParamValueList":      deviceParamValueList,
-		"deviceParamValueCount":     deviceParamValueCount,
-		"deviceParamValueHistogram": deviceParamValueHistogram,
-
+		"currentUser":          currentUser,
+		"userGet":              userGet,
+		"userList":             userList,
+		"getSmsCode":           getSmsCode,
+		"deviceGet":            deviceGet,
+		"deviceList":           deviceList,
+		"deviceTokenGet":       deviceTokenGet,
+		"deviceStatusCount":    deviceStatusCount,
+		"deviceChargerGet":     deviceChargerGet,
+		"deviceChargerList":    deviceChargerList,
 		"deviceStatusLogList":  deviceStatusLogList,
 		"deviceStatusDuration": deviceStatusDuration,
+		"userLoginList":        userLoginList,
+		"getLastLogin":         userLoginLast,
+		"getThisLogin":         userLoginThis,
+		"privilegeList":        privilegeList,
+		"productGet":           productGet,
+		"productList":          productList,
+		"detectItemGet":        detectItemGet,
+		"detectItemList":       detectItemList,
 
-		/* userLogin */
-		"userLoginList": userLoginList,
-		"getLastLogin":  userLoginLast,
-		"getThisLogin":  userLoginThis,
+		// "deviceParamGet":  deviceParamGet,
+		// "deviceParamList": deviceParamList,
 
-		/* privilege */
-		"privilegeList": privilegeList,
+		// "deviceParamValueList":      deviceParamValueList,
+		// "deviceParamValueCount":     deviceParamValueCount,
+		// "deviceParamValueHistogram": deviceParamValueHistogram,
 	},
 })
 

@@ -25,7 +25,7 @@ var DeviceCharger = graphql.NewObject(graphql.ObjectConfig{
 
 func init() {
 	// circular references fixed by dynamically adding inside init(), see https://github.com/graphql-go/graphql/issues/164
-	DeviceCharger.AddFieldConfig("device", &graphql.Field{Type: DeviceType, Description: "设备", Resolve: resolver.LoadDevice})
+	DeviceCharger.AddFieldConfig("device", &graphql.Field{Type: deviceType, Description: "设备", Resolve: resolver.LoadDevice})
 }
 
 /*							query
