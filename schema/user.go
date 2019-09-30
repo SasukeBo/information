@@ -21,7 +21,6 @@ var User = graphql.NewObject(graphql.ObjectConfig{
 		"phone":     &graphql.Field{Type: graphql.String, Description: "手机号"},
 		"status":    &graphql.Field{Type: BaseStatus, Description: "基础状态"},
 		"updatedAt": &graphql.Field{Type: graphql.DateTime},
-		"uuid":      &graphql.Field{Type: graphql.String, Description: "通用唯一标识"},
 		"role":      &graphql.Field{Type: Role, Description: "用户角色", Resolve: resolver.LoadRole},
 	},
 })

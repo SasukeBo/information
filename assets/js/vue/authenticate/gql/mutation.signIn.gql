@@ -7,7 +7,5 @@ mutation signIn(
     phone: $phone
     password: $password
     remember: $remember
-  ) {
-    uuid
-  }
+  ) { id }
 }

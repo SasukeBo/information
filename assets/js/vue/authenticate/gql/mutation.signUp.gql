@@ -10,6 +10,6 @@ mutation signUp (
     password: $password
     smsCode: $smsCode
   ) {
-    uuid
+    id
   }
 }

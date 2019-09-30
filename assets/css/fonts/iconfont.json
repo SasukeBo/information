@@ -1,0 +1,156 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "141405",
+      "name": "185078 - email mail streamline",
+      "font_class": "185078emailmailstreamline",
+      "unicode": "e643",
+      "unicode_decimal": 58947
+    },
+    {
+      "icon_id": "404363",
+      "name": "pause",
+      "font_class": "pause",
+      "unicode": "e711",
+      "unicode_decimal": 59153
+    },
+    {
+      "icon_id": "925318",
+      "name": "手机",
+      "font_class": "shouji",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "954224",
+      "name": "密码",
+      "font_class": "mima",
+      "unicode": "e69f",
+      "unicode_decimal": 59039
+    },
+    {
+      "icon_id": "997892",
+      "name": "play",
+      "font_class": "play",
+      "unicode": "e848",
+      "unicode_decimal": 59464
+    },
+    {
+      "icon_id": "2269862",
+      "name": "设备管理",
+      "font_class": "shebeiguanli",
+      "unicode": "e60b",
+      "unicode_decimal": 58891
+    },
+    {
+      "icon_id": "2271297",
+      "name": "云服务器",
+      "font_class": "yunfuwuqi",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "2314886",
+      "name": "Ip",
+      "font_class": "Ip",
+      "unicode": "e645",
+      "unicode_decimal": 58949
+    },
+    {
+      "icon_id": "2988288",
+      "name": "客户端",
+      "font_class": "monitor-tablet-and-s",
+      "unicode": "e65c",
+      "unicode_decimal": 58972
+    },
+    {
+      "icon_id": "3050495",
+      "name": "验证码",
+      "font_class": "securityCode-b",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "3053665",
+      "name": "产品",
+      "font_class": "chanpin",
+      "unicode": "e73a",
+      "unicode_decimal": 59194
+    },
+    {
+      "icon_id": "3584011",
+      "name": "服务器",
+      "font_class": "fuwuqi1",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "6536805",
+      "name": "返回-01",
+      "font_class": "fanhui-",
+      "unicode": "e66b",
+      "unicode_decimal": 58987
+    },
+    {
+      "icon_id": "6694238",
+      "name": "machine_icon",
+      "font_class": "machine_icon",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "7983169",
+      "name": "production",
+      "font_class": "production",
+      "unicode": "e6b0",
+      "unicode_decimal": 59056
+    },
+    {
+      "icon_id": "8299118",
+      "name": "net",
+      "font_class": "net",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "9007450",
+      "name": "机器",
+      "font_class": "jiqi",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "9515016",
+      "name": "home",
+      "font_class": "xuanzhongshangcheng",
+      "unicode": "e501",
+      "unicode_decimal": 58625
+    },
+    {
+      "icon_id": "9649760",
+      "name": "On-line",
+      "font_class": "On-line",
+      "unicode": "e746",
+      "unicode_decimal": 59206
+    },
+    {
+      "icon_id": "9997340",
+      "name": "设备",
+      "font_class": "shebei",
+      "unicode": "e644",
+      "unicode_decimal": 58948
+    },
+    {
+      "icon_id": "10302734",
+      "name": "Off-line",
+      "font_class": "off-line",
+      "unicode": "e502",
+      "unicode_decimal": 58626
+    }
+  ]
+}

@@ -14,6 +14,11 @@ function defaultRoutes() {
           component: load('main/pages/home')
         },
         {
+          path: 'products',
+          name: 'product-list',
+          component: load('main/pages/products')
+        },
+        {
           path: 'devices',
           name: 'device-list',
           component: load('main/pages/devices')

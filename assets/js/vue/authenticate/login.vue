@@ -93,7 +93,7 @@ export default {
               mutation: signIn,
               variables: this.loginForm
             })
-            .then(() => {
+            .then(({ data: { signIn } }) => {
               this.$router.push({ name: 'home' });
             })
             .catch(e => {
@@ -102,6 +102,9 @@ export default {
         }
       });
     }
+  },
+  mounted() {
+    NProgress.done();
   }
 };
 </script>
