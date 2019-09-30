@@ -5,12 +5,33 @@ import (
 	"log"
 )
 
-// Subscription _
-var Subscription = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Subscription",
+// Root is graphql schema root
+var Root graphql.Schema
+
+// QueryRoot is query root
+var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
+	Name: "RootQuery",
 	Fields: graphql.Fields{
-		// "deviceParamValueSub": deviceParamValueAdd,
-		"deviceStatusRefresh": deviceStatusRefresh,
+		"currentUser":          currentUser,
+		"userGet":              userGet,
+		"userList":             userList,
+		"getSmsCode":           getSmsCode,
+		"deviceGet":            deviceGet,
+		"deviceList":           deviceList,
+		"deviceTokenGet":       deviceTokenGet,
+		"deviceStatusCount":    deviceStatusCount,
+		"deviceChargerGet":     deviceChargerGet,
+		"deviceChargerList":    deviceChargerList,
+		"deviceStatusLogList":  deviceStatusLogList,
+		"deviceStatusDuration": deviceStatusDuration,
+		"userLoginList":        userLoginList,
+		"getLastLogin":         userLoginLast,
+		"getThisLogin":         userLoginThis,
+		"privilegeList":        privilegeList,
+		"productGet":           productGet,
+		"productList":          productList,
+		"detectItemGet":        detectItemGet,
+		"detectItemList":       detectItemList,
 	},
 })
 
@@ -40,42 +61,14 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-// QueryRoot is query root
-var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
-	Name: "RootQuery",
+// Subscription _
+var Subscription = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Subscription",
 	Fields: graphql.Fields{
-		"currentUser":          currentUser,
-		"userGet":              userGet,
-		"userList":             userList,
-		"getSmsCode":           getSmsCode,
-		"deviceGet":            deviceGet,
-		"deviceList":           deviceList,
-		"deviceTokenGet":       deviceTokenGet,
-		"deviceStatusCount":    deviceStatusCount,
-		"deviceChargerGet":     deviceChargerGet,
-		"deviceChargerList":    deviceChargerList,
-		"deviceStatusLogList":  deviceStatusLogList,
-		"deviceStatusDuration": deviceStatusDuration,
-		"userLoginList":        userLoginList,
-		"getLastLogin":         userLoginLast,
-		"getThisLogin":         userLoginThis,
-		"privilegeList":        privilegeList,
-		"productGet":           productGet,
-		"productList":          productList,
-		"detectItemGet":        detectItemGet,
-		"detectItemList":       detectItemList,
-
-		// "deviceParamGet":  deviceParamGet,
-		// "deviceParamList": deviceParamList,
-
-		// "deviceParamValueList":      deviceParamValueList,
-		// "deviceParamValueCount":     deviceParamValueCount,
-		// "deviceParamValueHistogram": deviceParamValueHistogram,
+		// "deviceParamValueSub": deviceParamValueAdd,
+		"deviceStatusRefresh": deviceStatusRefresh,
 	},
 })
-
-// Root is graphql schema root
-var Root graphql.Schema
 
 func init() {
 	var err error

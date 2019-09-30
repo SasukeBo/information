@@ -41,7 +41,6 @@
   </div>
 </template>
 <script>
-import { Autocomplete, Transfer } from 'element-ui';
 
 import usersQuery from './gql/query.users.gql';
 import chargesQuery from '../device/charge/gql/query.chargers.gql';
@@ -51,10 +50,6 @@ import chargeCreate from './gql/mutation.charger-create.gql';
 export default {
   name: 'charge-new',
   props: ['uuid'],
-  components: {
-    ElAutocomplete: Autocomplete,
-    ElTransfer: Transfer
-  },
   apollo: {
     users: {
       query: usersQuery,

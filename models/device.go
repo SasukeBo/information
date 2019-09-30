@@ -14,14 +14,14 @@ var accErr = errors.LogicError{
 
 // Device 设备模型
 type Device struct {
+	ID             int              `orm:"auto;pk;column(id)"` // PKey 主键
 	Type           string           // 类型
 	Name           string           // 设备名称
-	Address        string           `orm:"null"` // 设备地址
-	Number         string           `orm:"null"` // 设备编号
-	RemoteIP       string           `orm:"null;column(remote_ip)"`
+	Address        string           `orm:"null"`                             // 设备地址
+	Number         string           `orm:"null"`                             // 设备编号
+	RemoteIP       string           `orm:"null;column(remote_ip)"`           // 接入IP
 	Token          string           `orm:"unique;index"`                     // 设备Token，用于数据加密
 	Status         int              `orm:"default(0)"`                       // 离线状态
-	ID             int              `orm:"auto;pk;column(id)"`               // PKey 主键
 	User           *User            `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
 	DeviceChargers []*DeviceCharger `orm:"reverse(many)"`
 	Description    string           `orm:"null"` // 描述

@@ -99,11 +99,11 @@ var deviceTokenGet = &graphql.Field{
 var deviceList = &graphql.Field{
 	Type: deviceListResponse,
 	Args: graphql.FieldConfigArgument{
-		"limit":      GenArg(graphql.Int, "最大数量"),
-		"offset":     GenArg(graphql.Int, "数据偏移量"),
-		"pattern":    GenArg(graphql.String, "设备类型/设备名称模糊搜索"),
-		"status":     GenArg(DeviceStatus, "设备状态 prod/stop/offline"),
-		"isRegister": GenArg(graphql.Boolean, "是否为创建人"),
+		"limit":  GenArg(graphql.Int, "最大数量"),
+		"offset": GenArg(graphql.Int, "数据偏移量"),
+		"search": GenArg(graphql.String, "设备类型/设备名称/地址/设备编号模糊搜索"),
+		"status": GenArg(DeviceStatus, "设备状态 prod/stop/offline"),
+		"filter": GenArg(graphql.Boolean, "仅显示本人创建"),
 	},
 	Description: "获取device列表",
 	Resolve:     resolver.ListDevice,

@@ -20,7 +20,6 @@
   </div>
 </template>
 <script>
-import { Tooltip } from 'element-ui';
 import ChargeItem from './_charge-item';
 import chargersQuery from './gql/query.chargers.gql';
 
@@ -28,7 +27,6 @@ export default {
   name: 'device-charger',
   props: ['uuid'],
   components: {
-    ElTooltip: Tooltip,
     ChargeItem
   },
   apollo: {

@@ -34,17 +34,13 @@
   </div>
 </template>
 <script>
-import { Tooltip } from 'element-ui';
 import ParamItem from './_param-item';
-import deviceParamsQuery from './gql/query.params.gql'
+import deviceParamsQuery from './gql/query.params.gql';
 
 export default {
   name: 'device-params',
   props: ['uuid'],
-  components: {
-    ParamItem,
-    ElTooltip: Tooltip
-  },
+  components: { ParamItem },
   apollo: {
     deviceParams: {
       query: deviceParamsQuery,

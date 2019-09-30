@@ -34,7 +34,6 @@
 <script>
 import paramWithValues from './gql/query.param-values.gql';
 import paramValueCount from './gql/query.param-value-count.gql';
-import { Pagination } from 'element-ui';
 import { timeFormatter } from 'js/utils';
 
 export default {
@@ -43,7 +42,6 @@ export default {
   */
   name: 'values-table',
   props: ['uuid', 'afterTime', 'beforeTime'],
-  components: { ElPagination: Pagination },
   apollo: {
     params: {
       query: paramWithValues,

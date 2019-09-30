@@ -20,13 +20,11 @@
 <script>
 import queryHistogram from './gql/query.histogram.gql';
 import queryParams from './gql/query.params.gql';
-import { DatePicker } from 'element-ui';
 import echarts from 'echarts';
 import 'echarts/lib/chart/line';
 
 export default {
   name: 'details-histogram',
-  components: { ElDatePicker: DatePicker },
   props: ['uuid'],
   apollo: {
     histogram: {

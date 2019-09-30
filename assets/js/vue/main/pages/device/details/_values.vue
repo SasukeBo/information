@@ -48,7 +48,6 @@
   </div>
 </template>
 <script>
-import { DatePicker, Carousel, CarouselItem } from 'element-ui';
 import ValuesTable from './_values-table';
 
 export default {
@@ -58,12 +57,7 @@ export default {
    */
   name: 'param-values',
   props: ['uuid'],
-  components: {
-    ValuesTable,
-    ElDatePicker: DatePicker,
-    ElCarousel: Carousel,
-    ElCarouselItem: CarouselItem
-  },
+  components: { ValuesTable },
   data() {
     return {
       currentIndex: 1,

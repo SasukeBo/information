@@ -35,16 +35,16 @@ func GetDeviceByToken(params graphql.ResolveParams) (interface{}, error) {
 func ListDevice(params graphql.ResolveParams) (interface{}, error) {
 	cond := models.NewCond()
 
-	if pattern := params.Args["pattern"]; pattern != nil {
+	if pattern := params.Args["search"]; pattern != nil {
 		subCond := models.NewCond()
-		cond = cond.AndCond(subCond.Or("type__icontains", pattern).Or("name__icontains", pattern))
+		cond = cond.AndCond(subCond.Or("type__icontains", pattern).Or("name__icontains", pattern).Or("address__icontains", pattern).Or("number__icontains", pattern))
 	}
 
 	if status := params.Args["status"]; status != nil {
 		cond = cond.And("status", status)
 	}
 
-	if isRegister := params.Args["isRegister"]; isRegister != nil {
+	if isRegister := params.Args["filter"]; isRegister != nil {
 		if isRegister.(bool) {
 			user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 			cond = cond.And("user_id", user.ID)

@@ -25,15 +25,13 @@
 import InScatter from './_scatter';
 import InTable from './_table';
 import logsQuery from './gql/query.status-logs.gql';
-import { DatePicker } from 'element-ui';
 
 export default {
   name: 'status-log',
   props: ['uuid'],
   components: {
     InScatter,
-    InTable,
-    ElDatePicker: DatePicker
+    InTable
   },
   apollo: {
     logs: {

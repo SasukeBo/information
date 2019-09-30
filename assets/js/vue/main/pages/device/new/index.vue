@@ -29,7 +29,8 @@
 
     <div class="deploy-order">
       <div class="deploy-order__body">
-        <span class="label">批量创建</span><!-- 此处注释目的是除去inline-block之间的空格间隙
+        <span class="label">批量创建</span>
+        <!-- 此处注释目的是除去inline-block之间的空格间隙
         --><el-input-number v-model="form.count" :min="1"></el-input-number>
         <div style="flex: auto"></div>
         <el-button :loading="loading" type="primary" @click="submit">立即注册</el-button>
@@ -39,13 +40,9 @@
 </template>
 <script>
 import deviceCreateMutation from './gql/mutation.device-create.gql';
-import { InputNumber } from 'element-ui';
 
 export default {
   name: 'device-new',
-  components: {
-    ElInputNumber: InputNumber
-  },
   data() {
     return {
       loading: false,
