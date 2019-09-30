@@ -1,14 +1,14 @@
 query (
   $status: DeviceStatus
-  $pattern: String
-  $isRegister: Boolean
+  $search: String
+  $filter: Boolean
   $limit: Int
   $offset: Int
 ) {
   deviceList(
     status: $status
-    pattern: $pattern
-    isRegister: $isRegister
+    search: $search
+    filter: $filter
     limit: $limit
     offset: $offset
   ){
