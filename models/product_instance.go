@@ -11,16 +11,3 @@ type ProductIns struct {
 	DetectItemValues  []*DetectItemValue `orm:"reverse(many)"`       // 产品实例的检测项值，对应参数表格的一行
 	CreatedAt         time.Time          `orm:"type(datetime)"`
 }
-
-// Insert _
-func (pi *ProductIns) Insert() error {
-	if _, err := Repo.Insert(pi); err != nil {
-		return LogicError{
-			Type:    "Model",
-			Message: "Insert product_ins failed.",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}

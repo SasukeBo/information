@@ -111,7 +111,7 @@ func ListRole(params graphql.ResolveParams) (interface{}, error) {
 
 	var roles []*models.Role
 	if _, err := qs.All(&roles); err != nil {
-		return nil, errors.LogicError{
+		return nil, errors.Error{
 			Type:    "Resolver",
 			Message: "get role list error",
 			OriErr:  err,

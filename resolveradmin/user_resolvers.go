@@ -112,7 +112,7 @@ func ListUser(params graphql.ResolveParams) (interface{}, error) {
 
 	var users []*models.User
 	if _, err := qs.All(&users); err != nil {
-		return nil, errors.LogicError{
+		return nil, errors.Error{
 			Type:    "Model",
 			Message: "admin user get list error",
 			OriErr:  err,

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/SasukeBo/information/models/errors"
+	"github.com/astaxie/beego/orm"
 	"time"
 )
 
@@ -21,27 +21,11 @@ type DeviceStatusLog struct {
 	CreatedAt time.Time `orm:"auto_now;type(datetime)"`
 }
 
-// Insert _
-func (dsl *DeviceStatusLog) Insert() error {
-	if _, err := Repo.Insert(dsl); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "device_status_log insert error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
 // LoadDevice _
 func (dsl *DeviceStatusLog) LoadDevice() (*Device, error) {
-	if _, err := Repo.LoadRelated(dsl, "Device"); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "device_status_log load device error",
-			OriErr:  err,
-		}
+	o := orm.NewOrm()
+	if _, err := o.LoadRelated(dsl, "Device"); err != nil {
+		return nil, Error{Message: "load related device failed.", OriErr: err}
 	}
 
 	return dsl.Device, nil

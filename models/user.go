@@ -1,10 +1,8 @@
 package models
 
 import (
-	"fmt"
+	"github.com/astaxie/beego/orm"
 	"time"
-
-	"github.com/SasukeBo/information/models/errors"
 )
 
 // User 用户模型
@@ -21,54 +19,11 @@ type User struct {
 	UpdatedAt time.Time `orm:"auto_now;type(datetime)"`
 }
 
-// GetBy get user by col
-func (u *User) GetBy(col string) error {
-	if err := Repo.Read(u, col); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Field:   col,
-			Message: fmt.Sprintf("get user by %s error", col),
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// Insert _
-func (u *User) Insert() error {
-	if _, err := Repo.Insert(u); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "insert user error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// Update _
-func (u *User) Update(cols ...string) error {
-	if _, err := Repo.Update(u, cols...); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "update user error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
 // LoadRole related load role
 func (u *User) LoadRole() (*Role, error) {
-	if _, err := Repo.LoadRelated(u, "Role"); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "user load role error",
-			OriErr:  err,
-		}
+	o := orm.NewOrm()
+	if _, err := o.LoadRelated(u, "Role"); err != nil {
+		return nil, Error{Message: "load related role failed.", OriErr: err}
 	}
 
 	return u.Role, nil

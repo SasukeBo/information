@@ -14,19 +14,17 @@ func LoadDetectItem(params graphql.ResolveParams) (interface{}, error) {
 	case *models.Product:
 		return v.LoadDetectItem()
 	default:
-		return nil, models.LogicError{
-			Type:    "Resolver",
-			Message: "load detectItem failed.",
-		}
+		return nil, models.Error{Message: "load related detect_item failed."}
 	}
 }
 
 // CreateDetectItem _
 func CreateDetectItem(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	productID := params.Args["productID"].(int)
 	product := models.Product{ID: productID}
-	if err := product.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(&product, "id"); err != nil {
+		return nil, models.Error{Message: "get product failed.", OriErr: err}
 	}
 
 	sign := params.Args["sign"].(string)
@@ -40,8 +38,8 @@ func CreateDetectItem(params graphql.ResolveParams) (interface{}, error) {
 		detectItem.LowerLimit = lowerLimit.(float64)
 	}
 
-	if err := detectItem.Insert(); err != nil {
-		return nil, err
+	if _, err := o.Insert(&detectItem); err != nil {
+		return nil, models.Error{Message: "insert detect_item failed.", OriErr: err}
 	}
 
 	return detectItem, nil
@@ -49,10 +47,11 @@ func CreateDetectItem(params graphql.ResolveParams) (interface{}, error) {
 
 // UpdateDetectItem _
 func UpdateDetectItem(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	id := params.Args["id"].(int)
 	detectItem := &models.DetectItem{ID: id}
-	if err := detectItem.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(detectItem, "id"); err != nil {
+		return nil, models.Error{Message: "get detect_item failed.", OriErr: err}
 	}
 
 	if value := params.Args["sign"]; value != nil {
@@ -70,8 +69,8 @@ func UpdateDetectItem(params graphql.ResolveParams) (interface{}, error) {
 		detectItem.LowerLimit = lowerLimit.(float64)
 	}
 
-	if err := detectItem.Update("sign", "upper_limit", "lower_limit"); err != nil {
-		return nil, err
+	if _, err := o.Update(detectItem, "sign", "upper_limit", "lower_limit"); err != nil {
+		return nil, models.Error{Message: "update detect_item failed.", OriErr: err}
 	}
 
 	return detectItem, nil
@@ -79,11 +78,12 @@ func UpdateDetectItem(params graphql.ResolveParams) (interface{}, error) {
 
 // DeleteDetectItem _
 func DeleteDetectItem(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	id := params.Args["id"].(int)
 	detectItem := models.DetectItem{ID: id}
 
-	if err := detectItem.Delete(); err != nil {
-		return nil, err
+	if _, err := o.Delete(detectItem); err != nil {
+		return nil, models.Error{Message: "delete detect_item failed.", OriErr: err}
 	}
 
 	return id, nil
@@ -91,10 +91,11 @@ func DeleteDetectItem(params graphql.ResolveParams) (interface{}, error) {
 
 // GetDetectItem _
 func GetDetectItem(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	id := params.Args["id"].(int)
 	detectItem := models.DetectItem{ID: id}
 
-	if err := detectItem.GetBy("id"); err != nil {
+	if err := o.Read(&detectItem, "id"); err != nil {
 		return nil, err
 	}
 
@@ -111,11 +112,7 @@ func ListDetectItem(params graphql.ResolveParams) (interface{}, error) {
 	cnt, err := qs.Count()
 	if err != nil {
 		o.Rollback()
-		return nil, models.LogicError{
-			Type:    "Model",
-			Message: "Count detect_item failed.",
-			OriErr:  err,
-		}
+		return nil, models.Error{Message: "count detect_item failed", OriErr: err}
 	}
 
 	if limit := params.Args["limit"]; limit != nil {
@@ -129,11 +126,7 @@ func ListDetectItem(params graphql.ResolveParams) (interface{}, error) {
 	var detectItems []*models.DetectItem
 	if _, err := qs.All(&detectItems); err != nil {
 		o.Rollback()
-		return nil, models.LogicError{
-			Type:    "Model",
-			Message: "Get list of detect_items failed.",
-			OriErr:  err,
-		}
+		return nil, models.Error{Message: "list detect_item failed.", OriErr: err}
 	}
 
 	return struct {

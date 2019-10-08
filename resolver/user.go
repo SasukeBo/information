@@ -1,16 +1,15 @@
 package resolver
 
 import (
-	// "fmt"
-	"github.com/graphql-go/graphql"
-
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
+	"github.com/astaxie/beego/orm"
+	"github.com/graphql-go/graphql"
 )
 
 // SignUp _
 func SignUp(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	phoneStr := params.Args["phone"].(string)
 	msgCodeStr := params.Args["smsCode"].(string)
 	passwordStr := params.Args["password"].(string)
@@ -29,11 +28,7 @@ func SignUp(params graphql.ResolveParams) (interface{}, error) {
 	}
 	if sessPhone == nil || sessMsgCode == nil || phoneStr != sessPhone || msgCodeStr != sessMsgCode {
 		// 用户发送验证码的手机号与提交注册时的手机号不匹配，按照验证码不正确处理
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "smsCode",
-			Message: "smsCode incorrect.",
-		}
+		return nil, models.Error{Message: "smsCode incorrect."}
 	}
 	user.Phone = phoneStr
 
@@ -45,13 +40,13 @@ func SignUp(params graphql.ResolveParams) (interface{}, error) {
 
 	// 事务处理
 	role := models.Role{RoleName: "default"}
-	if err := role.GetBy("role_name"); err != nil {
-		return nil, err
+	if err := o.Read(&role, "role_name"); err != nil {
+		return nil, models.Error{Message: "get role failed.", OriErr: err}
 	}
 	user.Role = &role
 
-	if err := user.Insert(); err != nil {
-		return nil, err
+	if _, err := o.Insert(&user); err != nil {
+		return nil, models.Error{Message: "insert user failed.", OriErr: err}
 	}
 
 	rootValue["smsCode"] = nil
@@ -62,6 +57,7 @@ func SignUp(params graphql.ResolveParams) (interface{}, error) {
 
 // ResetPassword is a gql resolver, reset user password
 func ResetPassword(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	phoneStr := params.Args["phone"].(string)
 	msgCodeStr := params.Args["smsCode"].(string)
 	passwordStr := params.Args["password"].(string)
@@ -77,24 +73,20 @@ func ResetPassword(params graphql.ResolveParams) (interface{}, error) {
 	}
 	if sessPhone == nil || sessMsgCode == nil || phoneStr != sessPhone || msgCodeStr != sessMsgCode {
 		// 用户发送验证码的手机号与提交注册时的手机号不匹配，按照验证码不正确处理
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "smsCode",
-			Message: "smsCode incorrect.",
-		}
+		return nil, models.Error{Message: "smsCode incorrect."}
 	}
 	if err := utils.ValidatePassword(passwordStr); err != nil {
 		return nil, err
 	}
 
 	user := models.User{Phone: phoneStr}
-	if err := user.GetBy("phone"); err != nil {
-		return nil, err
+	if err := o.Read(&user, "phone"); err != nil {
+		return nil, models.Error{Message: "get user failed.", OriErr: err}
 	}
 
 	user.Password = utils.Encrypt(passwordStr)
-	if err := user.Update("password"); err != nil {
-		return nil, err
+	if _, err := o.Update(&user, "password"); err != nil {
+		return nil, models.Error{Message: "update password failed.", OriErr: err}
 	}
 
 	rootValue["currentUser"] = nil
@@ -106,11 +98,12 @@ func ResetPassword(params graphql.ResolveParams) (interface{}, error) {
 
 // GetUser _
 func GetUser(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	id := params.Args["id"].(int)
 
 	user := models.User{ID: id}
-	if err := user.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(&user, "id"); err != nil {
+		return nil, models.Error{Message: "get user failed.", OriErr: err}
 	}
 
 	return user, nil
@@ -118,13 +111,14 @@ func GetUser(params graphql.ResolveParams) (interface{}, error) {
 
 // ListUser _
 func ListUser(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	namePattern := params.Args["namePattern"]
 	phone := params.Args["phone"]
 	email := params.Args["email"]
 
 	var users []*models.User
 
-	qs := models.Repo.QueryTable("user")
+	qs := o.QueryTable("user")
 
 	if namePattern != nil {
 		qs = qs.Filter("UserExtend__name__icontains", namePattern)
@@ -139,11 +133,7 @@ func ListUser(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	if _, err := qs.All(&users); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "get user list error.",
-			OriErr:  err,
-		}
+		return nil, models.Error{Message: "list user failed.", OriErr: err}
 	}
 
 	return users, nil
@@ -151,6 +141,7 @@ func ListUser(params graphql.ResolveParams) (interface{}, error) {
 
 // UpdateUser _
 func UpdateUser(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	avatarURL := params.Args["avatarURL"].(string)
 
@@ -159,8 +150,8 @@ func UpdateUser(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	user.AvatarURL = avatarURL
-	if err := user.Update("avatar_url"); err != nil {
-		return nil, err
+	if _, err := o.Update(&user, "avatar_url"); err != nil {
+		return nil, models.Error{Message: "update user avatar_url failed.", OriErr: err}
 	}
 
 	return user, nil
@@ -173,7 +164,7 @@ func UpdatePassword(params graphql.ResolveParams) (interface{}, error) {
 	oldPassword := params.Args["oldPassword"].(string)
 
 	if user.Password != utils.Encrypt(oldPassword) {
-		return nil, errors.LogicError{
+		return nil, errors.Error{
 			Type:    "Resolver",
 			Field:   "password",
 			Message: "password incorrect.",
@@ -200,7 +191,7 @@ func UpdatePhone(params graphql.ResolveParams) (interface{}, error) {
 	password := params.Args["password"].(string)
 
 	if user.Password != utils.Encrypt(password) {
-		return nil, errors.LogicError{
+		return nil, errors.Error{
 			Type:    "Resolver",
 			Field:   "password",
 			Message: "password incorrect.",
@@ -218,7 +209,7 @@ func UpdatePhone(params graphql.ResolveParams) (interface{}, error) {
 
 	if sessPhone == nil || sessSmsCode == nil || newPhone != sessPhone || smsCode != sessSmsCode {
 		// 用户发送验证码的手机号与提交注册时的手机号不匹配，按照验证码不正确处理
-		return nil, errors.LogicError{
+		return nil, errors.Error{
 			Type:    "Resolver",
 			Field:   "smsCode",
 			Message: "smsCode incorrect.",
@@ -244,9 +235,6 @@ func LoadUser(params graphql.ResolveParams) (interface{}, error) {
 	case *models.UserLogin:
 		return v.LoadUser()
 	default:
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Message: "load related source type unmatched error.",
-		}
+		return nil, models.Error{Message: "load related user failed."}
 	}
 }

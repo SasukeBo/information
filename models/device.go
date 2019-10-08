@@ -1,16 +1,11 @@
 package models
 
 import (
-	"fmt"
+	"github.com/astaxie/beego/orm"
 	"time"
-
-	"github.com/SasukeBo/information/models/errors"
 )
 
-var accErr = errors.LogicError{
-	Type:    "Resolvers",
-	Message: "only device register can make this operation!",
-}
+var accErr = Error{Message: "only device register can make this operation!"}
 
 // Device 设备模型
 type Device struct {
@@ -30,68 +25,11 @@ type Device struct {
 	UpdatedAt      time.Time        `orm:"auto_now;type(datetime)"`
 }
 
-// GetBy get device by col
-func (d *Device) GetBy(col string) error {
-	if err := Repo.Read(d, col); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Field:   col,
-			Message: fmt.Sprintf("get device by %s error", col),
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// Insert _
-func (d *Device) Insert() error {
-	if _, err := Repo.Insert(d); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "insert device error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// Update device with cols
-func (d *Device) Update(cols ...string) error {
-	if _, err := Repo.Update(d, cols...); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "update device error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// Delete _
-func (d *Device) Delete() error {
-	if _, err := Repo.Delete(d); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Field:   "uuid",
-			Message: "delete device by uuid error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
 // LoadUser _
 func (d *Device) LoadUser() (*User, error) {
-	if _, err := Repo.LoadRelated(d, "User"); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "device load user error",
-			OriErr:  err,
-		}
+	o := orm.NewOrm()
+	if _, err := o.LoadRelated(d, "User"); err != nil {
+		return nil, Error{Message: "load related user failed.", OriErr: err}
 	}
 
 	return d.User, nil
@@ -99,12 +37,9 @@ func (d *Device) LoadUser() (*User, error) {
 
 // LoadDeviceCharge _
 func (d *Device) LoadDeviceCharge() ([]*DeviceCharger, error) {
-	if _, err := Repo.LoadRelated(d, "DeviceChargers"); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "device load device_chargers error",
-			OriErr:  err,
-		}
+	o := orm.NewOrm()
+	if _, err := o.LoadRelated(d, "DeviceChargers"); err != nil {
+		return nil, Error{Message: "load related device_chargers failed.", OriErr: err}
 	}
 
 	return d.DeviceChargers, nil

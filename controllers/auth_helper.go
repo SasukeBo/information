@@ -1,11 +1,10 @@
 package controllers
 
 import (
+	"github.com/SasukeBo/information/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
-
-	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/models/errors"
+	"github.com/astaxie/beego/orm"
 )
 
 // authenticate 校验用户登录有效性
@@ -14,19 +13,16 @@ import (
 // 验证失败则返回 error
 // FIXME: 设计有漏洞，拿到sessionID可以冒充登录
 func authenticate(ctx *context.Context) error {
+	o := orm.NewOrm()
 	// 如果当前 session 中有 currentUser
 	if currentUser, ok := ctx.Input.Session("currentUser").(models.User); ok {
-		if err := currentUser.GetBy("id"); err != nil {
-			return err
+		if err := o.Read(&currentUser, "id"); err != nil {
+			return models.Error{Message: "get user failed.", OriErr: err}
 		}
 
 		// 且用户当前状态正常
 		if currentUser.Status == models.BaseStatus.Block {
-			return errors.LogicError{
-				Type:    "Controller",
-				Field:   "status",
-				Message: "account has been blocked",
-			}
+			return models.Error{Message: "user has been blocked"}
 		}
 
 		// 则验证成功
@@ -41,30 +37,19 @@ func authenticate(ctx *context.Context) error {
 	userLogin := models.UserLogin{SessionID: sessionID}
 
 	// 获取 userLogin
-	if err := models.Repo.Read(&userLogin, "session_id"); err != nil {
+	if err := o.Read(&userLogin, "session_id"); err != nil {
 		// 查找userLogin失败，返回身份验证失败
-		return errors.LogicError{
-			Type:    "Controller",
-			Message: "user not authenticated.",
-		}
+		return models.Error{Message: "user not authenticated.", OriErr: err}
 	}
 
 	// 用户已经登出
 	if userLogin.Logout {
-		return errors.LogicError{
-			Type:    "Controller",
-			Field:   "logout",
-			Message: "user already logout.",
-		}
+		return models.Error{Message: "user already logout."}
 	}
 
 	// 用户没有记住登录
 	if !userLogin.Remembered {
-		return errors.LogicError{
-			Type:    "Controller",
-			Field:   "remembered",
-			Message: "user login unremembered.",
-		}
+		return models.Error{Message: "user not keep login."}
 	}
 
 	var currentUser *models.User
@@ -76,19 +61,15 @@ func authenticate(ctx *context.Context) error {
 	// 判断密码是否匹配
 	if currentUser.Password != userLogin.EncryptedPasswd {
 		// 登录记录的密码与用户密码不匹配，验证失败
-		return errors.LogicError{
-			Type:    "Controller",
-			Field:   "password",
-			Message: "user password unmatch.",
-		}
+		return models.Error{Message: "password incorrect."}
 	}
 
 	// 当前session ID
 	sessionID = ctx.Input.CruSession.SessionID()
 
 	userLogin.Logout = true
-	if err := userLogin.Update("logout"); err != nil {
-		return err
+	if _, err := o.Update(&userLogin, "logout"); err != nil {
+		return models.Error{Message: "update user_login failed.", OriErr: err}
 	}
 	userLogin.ID = 0
 
@@ -102,8 +83,8 @@ func authenticate(ctx *context.Context) error {
 	}
 
 	ctx.Output.Session("currentUser", *currentUser)
-	if err := newUserLogin.Insert(); err != nil {
-		return err
+	if _, err := o.Insert(&newUserLogin); err != nil {
+		return models.Error{Message: "insert user_login failed.", OriErr: err}
 	}
 
 	expires, err := beego.AppConfig.Int("SessionCookieLifeTime")

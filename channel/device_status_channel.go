@@ -3,13 +3,13 @@ package channel
 import (
 	"container/list"
 	"encoding/json"
-	"time"
-	// "github.com/astaxie/beego"
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/schema"
 	"github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
 	"golang.org/x/net/websocket"
+	"time"
 	// "strconv"
 )
 
@@ -31,6 +31,7 @@ func (dsl *dslChannelType) HandleIn(sm *SocketMessage) {
 }
 
 func (dsl *dslChannelType) HandleOut(sm *SocketMessage) {
+	o := orm.NewOrm()
 	variables := sm.GetVariables()
 
 	value, ok := variables["v"].(string)
@@ -57,7 +58,7 @@ func (dsl *dslChannelType) HandleOut(sm *SocketMessage) {
 	}
 
 	device := models.Device{Token: subTopic}
-	if err := device.GetBy("token"); err != nil {
+	if err := o.Read(&device, "token"); err != nil {
 		logs.Error(err)
 		return
 	}
@@ -69,7 +70,7 @@ func (dsl *dslChannelType) HandleOut(sm *SocketMessage) {
 	device.Status = newStatus
 	device.RemoteIP = remoteIP
 	device.StatusChangeAt = now
-	if err := device.Update("status", "remote_ip", "status_change_at"); err != nil {
+	if _, err := o.Update(&device, "status", "remote_ip", "status_change_at"); err != nil {
 		logs.Error(err)
 		return
 	}
@@ -81,11 +82,10 @@ func (dsl *dslChannelType) HandleOut(sm *SocketMessage) {
 
 	statusLog := models.DeviceStatusLog{
 		Device: &device,
-		// Duration: validDuration,
 		Status: oldStatus,
 	}
 
-	if err := statusLog.Insert(); err != nil {
+	if _, err := o.Insert(&statusLog); err != nil {
 		logs.Error(err)
 		return
 	}

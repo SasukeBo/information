@@ -1,7 +1,6 @@
 package resolver
 
 import (
-	// "fmt"
 	"github.com/SasukeBo/information/models"
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
@@ -15,10 +14,7 @@ func LoadProduct(params graphql.ResolveParams) (interface{}, error) {
 	case *models.DetectItem:
 		return v.LoadProduct()
 	default:
-		return nil, models.LogicError{
-			Type:    "Resolver",
-			Message: "load product failed.",
-		}
+		return nil, models.Error{Message: "load related product failed."}
 	}
 }
 
@@ -27,7 +23,7 @@ func CreateProduct(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
 	if err := o.Begin(); err != nil {
 		o.Rollback()
-		return nil, models.LogicError{Type: "Model", Message: "begin transaction failed.", OriErr: err}
+		return nil, models.Error{Message: "begin transaction failed.", OriErr: err}
 	}
 
 	name := params.Args["name"].(string)
@@ -35,7 +31,7 @@ func CreateProduct(params graphql.ResolveParams) (interface{}, error) {
 
 	if _, err := o.Insert(&product); err != nil {
 		o.Rollback()
-		return nil, models.LogicError{Type: "Model", Message: "Insert product failed.", OriErr: err}
+		return nil, models.Error{Message: "insert product failed.", OriErr: err}
 	}
 
 	detectItems := params.Args["detectItems"].([]interface{})
@@ -45,19 +41,19 @@ func CreateProduct(params graphql.ResolveParams) (interface{}, error) {
 		sign, ok := value["sign"].(string)
 		if !ok {
 			o.Rollback()
-			return nil, models.LogicError{Type: "Resolver", Field: "Sign", Message: "value invalid."}
+			return nil, models.Error{Message: "invalid sign."}
 		}
 
 		upperLimit, ok := value["upperLimit"].(float64)
 		if !ok {
 			o.Rollback()
-			return nil, models.LogicError{Type: "Resolver", Field: "UpperLimit", Message: "value invalid."}
+			return nil, models.Error{Message: "invalid upper_limit."}
 		}
 
 		lowerLimit, ok := value["lowerLimit"].(float64)
 		if !ok {
 			o.Rollback()
-			return nil, models.LogicError{Type: "Resolver", Field: "LowerLimit", Message: "value invalid."}
+			return nil, models.Error{Message: "invalid lower_limit."}
 		}
 
 		detectItem := &models.DetectItem{
@@ -66,9 +62,10 @@ func CreateProduct(params graphql.ResolveParams) (interface{}, error) {
 			LowerLimit: lowerLimit,
 			Product:    &product,
 		}
+
 		if _, err := o.Insert(detectItem); err != nil {
 			o.Rollback()
-			return nil, models.LogicError{Type: "Model", Message: "Insert product failed.", OriErr: err}
+			return nil, models.Error{Message: "insert detect_item failed.", OriErr: err}
 		}
 	}
 
@@ -78,11 +75,12 @@ func CreateProduct(params graphql.ResolveParams) (interface{}, error) {
 
 // DeleteProduct _
 func DeleteProduct(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	id := params.Args["id"].(int)
 
 	product := &models.Product{ID: id}
-	if err := product.Delete(); err != nil {
-		return nil, err
+	if _, err := o.Delete(product); err != nil {
+		return nil, models.Error{Message: "delete product failed.", OriErr: err}
 	}
 
 	return id, nil
@@ -90,11 +88,12 @@ func DeleteProduct(params graphql.ResolveParams) (interface{}, error) {
 
 // GetProduct _
 func GetProduct(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	id := params.Args["id"].(int)
 
 	product := &models.Product{ID: id}
-	if err := product.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(product, "id"); err != nil {
+		return nil, models.Error{Message: "get product failed.", OriErr: err}
 	}
 
 	return product, nil
@@ -105,7 +104,7 @@ func ListProduct(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
 	if err := o.Begin(); err != nil {
 		o.Rollback()
-		return nil, models.LogicError{Type: "Model", Message: "begin transaction failed.", OriErr: err}
+		return nil, models.Error{Message: "begin transaction failed.", OriErr: err}
 	}
 
 	qs := o.QueryTable("product").OrderBy("-created_at")
@@ -116,7 +115,7 @@ func ListProduct(params graphql.ResolveParams) (interface{}, error) {
 	cnt, err := qs.Count()
 	if err != nil {
 		o.Rollback()
-		return nil, models.LogicError{Type: "Model", Message: "count product list failed."}
+		return nil, models.Error{Message: "count product failed.", OriErr: err}
 	}
 
 	if limit := params.Args["limit"]; limit != nil {
@@ -130,7 +129,7 @@ func ListProduct(params graphql.ResolveParams) (interface{}, error) {
 	var products []*models.Product
 	if _, err := qs.All(&products); err != nil {
 		o.Rollback()
-		return nil, models.LogicError{Type: "Model", Message: "get list of product failed."}
+		return nil, models.Error{Message: "list product failed.", OriErr: err}
 	}
 
 	o.Commit()

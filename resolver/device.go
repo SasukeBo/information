@@ -2,18 +2,19 @@ package resolver
 
 import (
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
+	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
 )
 
 // GetDevice 获取设备
 func GetDevice(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	id := params.Args["id"].(int)
 
 	device := models.Device{ID: id}
-	if err := device.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(&device, "id"); err != nil {
+		return nil, models.Error{Message: "get device failed.", OriErr: err}
 	}
 
 	return device, nil
@@ -21,11 +22,12 @@ func GetDevice(params graphql.ResolveParams) (interface{}, error) {
 
 // GetDeviceByToken 获取设备
 func GetDeviceByToken(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	token := params.Args["token"].(string)
 
 	device := models.Device{Token: token}
-	if err := device.GetBy("token"); err != nil {
-		return nil, err
+	if err := o.Read(&device, "token"); err != nil {
+		return nil, models.Error{Message: "get device failed.", OriErr: err}
 	}
 
 	return device, nil
@@ -33,10 +35,11 @@ func GetDeviceByToken(params graphql.ResolveParams) (interface{}, error) {
 
 // ListDevice 获取设备列表
 func ListDevice(params graphql.ResolveParams) (interface{}, error) {
-	cond := models.NewCond()
+	cond := orm.NewCondition()
+	o := orm.NewOrm()
 
 	if pattern := params.Args["search"]; pattern != nil {
-		subCond := models.NewCond()
+		subCond := orm.NewCondition()
 		cond = cond.AndCond(subCond.Or("type__icontains", pattern).Or("name__icontains", pattern).Or("address__icontains", pattern).Or("number__icontains", pattern))
 	}
 
@@ -50,7 +53,7 @@ func ListDevice(params graphql.ResolveParams) (interface{}, error) {
 			cond = cond.And("user_id", user.ID)
 		}
 	}
-	qs := models.Repo.QueryTable("device").SetCond(cond).OrderBy("-created_at")
+	qs := o.QueryTable("device").SetCond(cond).OrderBy("-created_at")
 
 	cnt, err := qs.Count()
 	if err != nil {
@@ -67,11 +70,7 @@ func ListDevice(params graphql.ResolveParams) (interface{}, error) {
 
 	var devices []*models.Device
 	if _, err := qs.All(&devices); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "get device list error.",
-			OriErr:  err,
-		}
+		return nil, models.Error{Message: "list device failed.", OriErr: err}
 	}
 
 	return struct {
@@ -82,6 +81,7 @@ func ListDevice(params graphql.ResolveParams) (interface{}, error) {
 
 // CreateDevice 创建设备
 func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	// 验证用户是否有创建设备的权限
 	if err := utils.ValidateAccess(&params, "device_c", models.PrivType.Default); err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
 		devices = append(devices, device)
 	}
 
-	successNums, err := models.Repo.InsertMulti(count, devices)
+	successNums, err := o.InsertMulti(count, devices)
 	if err != nil {
 		return nil, err
 	}
@@ -128,10 +128,11 @@ func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
 
 // UpdateDevice 更新设备
 func UpdateDevice(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	device := models.Device{ID: params.Args["id"].(int)}
-	if err := device.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(&device, "id"); err != nil {
+		return nil, models.Error{Message: "get device failed.", OriErr: err}
 	}
 
 	if err := device.ValidateAccess(&user); err != nil {
@@ -160,8 +161,8 @@ func UpdateDevice(params graphql.ResolveParams) (interface{}, error) {
 		device.Description = description.(string)
 	}
 
-	if err := device.Update("type", "name", "status", "description"); err != nil {
-		return nil, err
+	if _, err := o.Update(&device, "type", "name", "status", "description"); err != nil {
+		return nil, models.Error{Message: "update device failed.", OriErr: err}
 	}
 
 	return device, nil
@@ -169,21 +170,22 @@ func UpdateDevice(params graphql.ResolveParams) (interface{}, error) {
 
 // DeleteDevice 更新设备
 func DeleteDevice(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	device := models.Device{ID: params.Args["id"].(int)}
-	if err := device.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(&device, "id"); err != nil {
+		return nil, models.Error{Message: "get device failed.", OriErr: err}
 	}
 
 	if err := device.ValidateAccess(&user); err != nil {
 		return nil, err
 	}
 
-	if err := device.Delete(); err != nil {
-		return nil, err
+	if _, err := o.Delete(&device); err != nil {
+		return nil, models.Error{Message: "delete device failed.", OriErr: err}
 	}
 
-	return "ok", nil
+	return device.ID, nil
 }
 
 // LoadDevice _
@@ -198,10 +200,7 @@ func LoadDevice(params graphql.ResolveParams) (interface{}, error) {
 	case *models.DeviceStatusLog:
 		return v.LoadDevice()
 	default:
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Message: "load related source type unmatched error.",
-		}
+		return nil, models.Error{Message: "load related device_charger failed."}
 	}
 }
 

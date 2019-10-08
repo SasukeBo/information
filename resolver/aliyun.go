@@ -3,12 +3,11 @@ package resolver
 import (
 	"encoding/json"
 
-	"github.com/astaxie/beego"
-	"github.com/graphql-go/graphql"
-
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/models/errors"
 	"github.com/SasukeBo/information/utils"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+	"github.com/graphql-go/graphql"
 )
 
 type sendSmsCodeResponse struct {
@@ -21,16 +20,13 @@ type sendSmsCodeResponse struct {
 // SendSmsCode is a gql resolver, send message code by aliyun service
 func SendSmsCode(p graphql.ResolveParams) (interface{}, error) {
 	rootValue := p.Info.RootValue.(map[string]interface{})
+	o := orm.NewOrm()
 	var response sendSmsCodeResponse
 
 	phone := p.Args["phone"].(string)
-	user := models.User{Phone: phone}
-	if err := user.GetBy("phone"); err == nil {
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "phone",
-			Message: "phone has already been registered.",
-		}
+	user := &models.User{Phone: phone}
+	if err := o.Read(user, "phone"); err == nil {
+		return nil, models.Error{Message: "phone has already been registered."}
 	}
 
 	// validate phone
@@ -67,19 +63,12 @@ func SendSmsCode(p graphql.ResolveParams) (interface{}, error) {
 // 仅在测试环境下有效
 func GetSmsCode(p graphql.ResolveParams) (interface{}, error) {
 	if beego.AppConfig.String("runmode") != "dev" {
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Message: "this api only work on dev environment.",
-		}
+		return nil, models.Error{Message: "this api only work on dev environment."}
 	}
 	rootValue := p.Info.RootValue.(map[string]interface{})
 	smsCode := rootValue["smsCode"]
 	if smsCode == nil {
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "smsCode",
-			Message: "smsCode not found.",
-		}
+		return nil, models.Error{Message: "smsCode not found."}
 	}
 
 	return smsCode.(string), nil

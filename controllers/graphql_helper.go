@@ -2,17 +2,14 @@ package controllers
 
 import (
 	"encoding/json"
-	"regexp"
-	"strings"
-
+	"github.com/SasukeBo/information/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/logs"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
-
-	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/models/errors"
+	"regexp"
+	"strings"
 )
 
 // graphiqlData is the page data structure of the rendered GraphiQL page
@@ -100,13 +97,7 @@ func HandleGraphql(ctx *context.Context) {
 	ctx.Input.SetData("need_auth", true)
 
 	if params.RootFieldName == "" && params.OperationName != "IntrospectionQuery" {
-		ctx.Input.SetData(
-			"gql_error",
-			errors.LogicError{
-				Type:    "Controller",
-				Message: "query root field name missing",
-			},
-		)
+		ctx.Input.SetData("gql_error", models.Error{Message: "query root field name missing"})
 	}
 
 	if params.OperationName == "IntrospectionQuery" {
@@ -137,11 +128,7 @@ func HandleAdminGraphql(ctx *context.Context) {
 		}
 
 		if !role.IsAdmin {
-			ctx.Input.SetData("gql_error", errors.LogicError{
-				Type:    "Validate",
-				Field:   "is_admin",
-				Message: "user role is not a admin role",
-			})
+			ctx.Input.SetData("gql_error", models.Error{Message: "user is not admin."})
 		}
 	}
 

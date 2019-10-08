@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/astaxie/beego/orm"
 	"time"
 )
 
@@ -22,68 +23,12 @@ func (di *DetectItem) TableUnique() [][]string {
 	}
 }
 
-// GetBy _
-func (di *DetectItem) GetBy(col string) error {
-	if err := Repo.Read(di, col); err != nil {
-		return LogicError{
-			Type:    "Model",
-			Field:   col,
-			Message: "get detect_item failed.",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// Insert _
-func (di *DetectItem) Insert() error {
-	if _, err := Repo.Insert(di); err != nil {
-		return LogicError{
-			Type:    "Model",
-			Message: "Insert detect_item failed.",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
 // LoadProduct _
 func (di *DetectItem) LoadProduct() (*Product, error) {
-	if _, err := Repo.LoadRelated(di, "Product"); err != nil {
-		return nil, LogicError{
-			Type:    "Model",
-			Message: "Load related product failed.",
-			OriErr:  err,
-		}
+	o := orm.NewOrm()
+	if _, err := o.LoadRelated(di, "Product"); err != nil {
+		return nil, Error{Message: "load related product failed.", OriErr: err}
 	}
 
 	return di.Product, nil
-}
-
-// Update _
-func (di *DetectItem) Update(cols ...string) error {
-	if _, err := Repo.Update(di, cols...); err != nil {
-		return LogicError{
-			Type:    "Model",
-			Message: "Update detect_item failed.",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// Delete _
-func (di *DetectItem) Delete() error {
-	if _, err := Repo.Delete(di); err != nil {
-		return LogicError{
-			Type:    "Model",
-			Message: "Delete detect_item failed.",
-			OriErr:  err,
-		}
-	}
-
-	return nil
 }

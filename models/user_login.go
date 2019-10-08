@@ -1,10 +1,8 @@
 package models
 
 import (
-	"fmt"
+	"github.com/astaxie/beego/orm"
 	"time"
-
-	"github.com/SasukeBo/information/models/errors"
 )
 
 // UserLogin 用户登录模型
@@ -29,54 +27,11 @@ func (ul *UserLogin) TableUnique() [][]string {
 	}
 }
 
-// GetBy _
-func (ul *UserLogin) GetBy(col string) error {
-	if err := Repo.Read(ul, col); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Field:   col,
-			Message: fmt.Sprintf("get user_login by %s error", col),
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// Insert _
-func (ul *UserLogin) Insert() error {
-	if _, err := Repo.Insert(ul); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "insert user_login error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// Update _
-func (ul *UserLogin) Update(cols ...string) error {
-	if _, err := Repo.Update(ul, cols...); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "update user_login error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
 // LoadUser _
 func (ul *UserLogin) LoadUser() (*User, error) {
-	if _, err := Repo.LoadRelated(ul, "User"); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "user_login load user error",
-			OriErr:  err,
-		}
+	o := orm.NewOrm()
+	if _, err := o.LoadRelated(ul, "User"); err != nil {
+		return nil, Error{Message: "load related user failed", OriErr: err}
 	}
 
 	return ul.User, nil

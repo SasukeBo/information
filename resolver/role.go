@@ -1,10 +1,8 @@
 package resolver
 
 import (
-	"github.com/graphql-go/graphql"
-
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/models/errors"
+	"github.com/graphql-go/graphql"
 )
 
 // LoadRole _
@@ -19,9 +17,6 @@ func LoadRole(params graphql.ResolveParams) (interface{}, error) {
 	case *models.User:
 		return v.LoadRole()
 	default:
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Message: "load related source type unmatched error.",
-		}
+		return nil, models.Error{Message: "load related role failed."}
 	}
 }

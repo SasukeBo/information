@@ -1,18 +1,18 @@
 package resolver
 
 import (
-	"github.com/graphql-go/graphql"
-
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/models/errors"
+	"github.com/astaxie/beego/orm"
+	"github.com/graphql-go/graphql"
 )
 
 // CreateDeviceCharger 增加设备负责人
 func CreateDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	device := models.Device{ID: params.Args["deviceID"].(int)}
-	if err := device.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(&device, "id"); err != nil {
+		return nil, models.Error{Message: "get device failed.", OriErr: err}
 	}
 
 	if err := device.ValidateAccess(&currentUser); err != nil {
@@ -37,8 +37,8 @@ func CreateDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
 		charger.JobNumber = jobNumber.(string)
 	}
 
-	if err := charger.Insert(); err != nil {
-		return nil, err
+	if _, err := o.Insert(&charger); err != nil {
+		return nil, models.Error{Message: "insert device_charger failed.", OriErr: err}
 	}
 
 	return charger, nil
@@ -46,12 +46,13 @@ func CreateDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
 
 // DeleteDeviceCharger 删除设备负责人
 func DeleteDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	id := params.Args["id"].(int)
 
 	charger := models.DeviceCharger{ID: id}
-	if err := charger.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(&charger, "id"); err != nil {
+		return nil, models.Error{Message: "get device_charger failed.", OriErr: err}
 	}
 
 	device, err := charger.LoadDevice()
@@ -63,8 +64,8 @@ func DeleteDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	if err := charger.Delete(); err != nil {
-		return nil, err
+	if _, err := o.Delete(&charger); err != nil {
+		return nil, models.Error{Message: "delete device_charger failed.", OriErr: err}
 	}
 
 	return charger.ID, nil
@@ -72,10 +73,11 @@ func DeleteDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
 
 // UpdateDeviceCharger 更新设备负责人
 func UpdateDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	currentUser := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	charger := models.DeviceCharger{ID: params.Args["id"].(int)}
-	if err := charger.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(&charger, "id"); err != nil {
+		return nil, models.Error{Message: "get device_charger failed.", OriErr: err}
 	}
 
 	device, err := charger.LoadDevice()
@@ -100,8 +102,8 @@ func UpdateDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
 		charger.JobNumber = jobNumber.(string)
 	}
 
-	if err := charger.Update("name", "phone", "department", "job_number"); err != nil {
-		return nil, err
+	if _, err := o.Update(&charger, "name", "phone", "department", "job_number"); err != nil {
+		return nil, models.Error{Message: "update device_charger failed.", OriErr: err}
 	}
 
 	return charger, nil
@@ -109,10 +111,11 @@ func UpdateDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
 
 // GetDeviceCharger ID查询设备负责人
 func GetDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	charger := models.DeviceCharger{ID: params.Args["id"].(int)}
 
-	if err := charger.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(&charger, "id"); err != nil {
+		return nil, models.Error{Message: "get device_charger failed.", OriErr: err}
 	}
 
 	return charger, nil
@@ -120,21 +123,18 @@ func GetDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
 
 // ListDeviceCharger 条件查询设备负责关系列表
 func ListDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
-	qs := models.Repo.QueryTable("device_charger")
+	o := orm.NewOrm()
+	qs := o.QueryTable("device_charger")
 	deviceID := params.Args["deviceID"].(int)
 	device := models.Device{ID: deviceID}
-	if err := device.GetBy("uuid"); err != nil {
-		return nil, err
+	if err := o.Read(&device, "uuid"); err != nil {
+		return nil, models.Error{Message: "get device failed.", OriErr: err}
 	}
 
 	qs.Filter("device_id", device.ID)
 	var chargers []*models.DeviceCharger
 	if _, err := qs.All(&chargers); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Models",
-			Message: "get device_chargers error",
-			OriErr:  err,
-		}
+		return nil, models.Error{Message: "list device_charger failed.", OriErr: err}
 	}
 
 	return chargers, nil
@@ -148,9 +148,6 @@ func LoadDeviceCharger(params graphql.ResolveParams) (interface{}, error) {
 	case *models.Device:
 		return v.LoadDeviceCharge()
 	default:
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Message: "load related source type unmatched error.",
-		}
+		return nil, models.Error{Message: "load related device_charger failed."}
 	}
 }

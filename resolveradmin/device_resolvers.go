@@ -67,7 +67,7 @@ func ListDevice(params graphql.ResolveParams) (interface{}, error) {
 
 	var devices []*models.Device
 	if _, err := qs.All(&devices); err != nil {
-		return nil, errors.LogicError{
+		return nil, errors.Error{
 			Type:    "Model",
 			Message: "get device list error",
 			OriErr:  err,

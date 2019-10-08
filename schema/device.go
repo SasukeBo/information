@@ -151,7 +151,7 @@ var deviceUpdate = &graphql.Field{
 }
 
 var deviceDelete = &graphql.Field{
-	Type: graphql.String,
+	Type: graphql.Int,
 	Args: graphql.FieldConfigArgument{
 		"uuid": GenArg(graphql.String, "设备UUID", false),
 	},

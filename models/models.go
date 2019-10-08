@@ -2,39 +2,12 @@ package models
 
 import (
 	"fmt"
-
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	// postgres driver
 	_ "github.com/lib/pq"
 )
-
-// Repo is Ormer
-var Repo orm.Ormer
-
-// LogicError Error with logic type
-type LogicError struct {
-	Type    string
-	Field   string
-	Message string
-	OriErr  error
-}
-
-func (e LogicError) Error() string {
-	var oriMsg = ""
-	if e.OriErr != nil {
-		oriMsg = e.OriErr.Error()
-	}
-
-	return fmt.Sprintf(
-		`{"type": "%s Error", "field": "%s", "message": "%s", "originMessage": "%s"}`,
-		e.Type,
-		e.Field,
-		e.Message,
-		oriMsg,
-	)
-}
 
 // BaseStatus 基础状态类型
 var BaseStatus = struct {
@@ -81,13 +54,6 @@ func init() {
 	if err := orm.RunSyncdb("default", false, true); err != nil {
 		logs.Error("Create table failed!", err)
 	}
-
-	Repo = orm.NewOrm()
-}
-
-// NewCond return a orm.Condition
-func NewCond() *orm.Condition {
-	return orm.NewCondition()
 }
 
 func handleError(err error) {

@@ -1,12 +1,11 @@
 package resolver
 
 import (
+	"github.com/SasukeBo/information/models"
+	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
 	// "strings"
 	// "time"
-
-	"github.com/SasukeBo/information/models"
-	// "github.com/astaxie/beego/logs"
 )
 
 // ListDeviceStatusLog 设备状态列表查询
@@ -53,9 +52,10 @@ func ListDeviceStatusLog(params graphql.ResolveParams) (interface{}, error) {
 
 // RefreshDeviceStatus _
 func RefreshDeviceStatus(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
 	device := models.Device{ID: params.Args["deviceID"].(int)}
-	if err := device.GetBy("id"); err != nil {
-		return nil, err
+	if err := o.Read(&device, "id"); err != nil {
+		return nil, models.Error{Message: "get device failed.", OriErr: err}
 	}
 
 	return device, nil
