@@ -66,27 +66,28 @@ func authenticate(ctx *context.Context) error {
 
 	// 当前session ID
 	sessionID = ctx.Input.CruSession.SessionID()
+	if userLogin.SessionID != sessionID {
+		userLogin.Logout = true
+		if _, err := o.Update(&userLogin, "logout"); err != nil {
+			return models.Error{Message: "update user_login failed.", OriErr: err}
+		}
+		userLogin.ID = 0
 
-	userLogin.Logout = true
-	if _, err := o.Update(&userLogin, "logout"); err != nil {
-		return models.Error{Message: "update user_login failed.", OriErr: err}
-	}
-	userLogin.ID = 0
+		newUserLogin := models.UserLogin{
+			EncryptedPasswd: userLogin.EncryptedPasswd,
+			UserAgent:       userLogin.UserAgent,
+			User:            userLogin.User,
+			RemoteIP:        userLogin.RemoteIP,
+			SessionID:       sessionID,
+			Remembered:      userLogin.Remembered,
+		}
 
-	newUserLogin := models.UserLogin{
-		EncryptedPasswd: userLogin.EncryptedPasswd,
-		UserAgent:       userLogin.UserAgent,
-		User:            userLogin.User,
-		RemoteIP:        userLogin.RemoteIP,
-		SessionID:       sessionID,
-		Remembered:      userLogin.Remembered,
+		if _, err := o.Insert(&newUserLogin); err != nil {
+			return models.Error{Message: "insert user_login failed.", OriErr: err}
+		}
 	}
 
 	ctx.Output.Session("currentUser", *currentUser)
-	if _, err := o.Insert(&newUserLogin); err != nil {
-		return models.Error{Message: "insert user_login failed.", OriErr: err}
-	}
-
 	expires, err := beego.AppConfig.Int("SessionCookieLifeTime")
 	if err != nil {
 		// 默认刷新为存活时间 7 天

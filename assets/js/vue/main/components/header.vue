@@ -83,11 +83,11 @@ export default {
           `
         })
         .then(() => {
+          this.$store.dispatch('user/logout');
           this.$router.push({
             name: 'login',
             query: { return_to: this.$route.name, ...this.$route.params }
           });
-          this.$store.dispatch('user/logout', () => null);
         });
     }
   }

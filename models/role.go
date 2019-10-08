@@ -12,19 +12,28 @@ type Role struct {
 	RoleName  string      `orm:"unique"`         // 角色名称
 	Status    int         `orm:"default(0)"`     // 基础状态
 	IsAdmin   bool        `orm:"default(false)"` // 是否为管理员角色
-	RolePriv  []*RolePriv `orm:"reverse(many)"`  // 角色权限关联关系
+	RolePrivs []*RolePriv `orm:"reverse(many)"`  // 角色权限关联关系
 	CreatedAt time.Time   `orm:"auto_now_add;type(datetime)"`
 	UpdatedAt time.Time   `orm:"auto_now;type(datetime)"`
 }
 
-// LoadRolePriv _
-func (r *Role) LoadRolePriv() ([]*RolePriv, error) {
+// LoadPrivilege _
+func (r *Role) LoadPrivilege() ([]*Privilege, error) {
 	o := orm.NewOrm()
-	if _, err := o.LoadRelated(r, "RolePriv"); err != nil {
+	if _, err := o.LoadRelated(r, "RolePrivs"); err != nil {
 		return nil, Error{Message: "load related role_priv failed.", OriErr: err}
 	}
 
-	return r.RolePriv, nil
+	rolePrivs := r.RolePrivs
+	privs := []*Privilege{}
+	for _, p := range rolePrivs {
+		if _, err := o.LoadRelated(p, "Privilege"); err != nil {
+			return nil, Error{Message: "load related privilege failed.", OriErr: err}
+		}
+		privs = append(privs, p.Privilege)
+	}
+
+	return privs, nil
 }
 
 // Validate _

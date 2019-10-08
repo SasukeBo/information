@@ -1,6 +1,7 @@
 package resolver
 
 import (
+	// "fmt"
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego/orm"
@@ -82,8 +83,13 @@ func ListDevice(params graphql.ResolveParams) (interface{}, error) {
 // CreateDevice 创建设备
 func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
+	if err := o.Begin(); err != nil {
+		return nil, models.Error{Message: "begin transaction failed.", OriErr: err}
+	}
+
 	// 验证用户是否有创建设备的权限
 	if err := utils.ValidateAccess(&params, "device_c", models.PrivType.Default); err != nil {
+		o.Rollback()
 		return nil, err
 	}
 	rootValue := params.Info.RootValue.(map[string]interface{})
@@ -94,12 +100,14 @@ func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
 
 	dType := params.Args["type"].(string)
 	if err := utils.ValidateStringEmpty(dType, "type"); err != nil {
+		o.Rollback()
 		return nil, err
 	}
 	device.Type = dType
 
 	dName := params.Args["name"].(string)
 	if err := utils.ValidateStringEmpty(dName, "name"); err != nil {
+		o.Rollback()
 		return nil, err
 	}
 	device.Name = dName
@@ -111,19 +119,37 @@ func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
 		device.Address = address.(string)
 	}
 
+	ids := []interface{}{}
+	if productIDs := params.Args["productIDs"]; productIDs != nil {
+		ids = append(ids, productIDs.([]interface{})...)
+	}
+	ships := []models.DeviceProductShip{}
+
 	count := params.Args["count"].(int)
-	devices := []models.Device{}
 	for i := 0; i < count; i++ {
+		device.ID = 0
 		device.Token = utils.GenRandomToken(8)
-		devices = append(devices, device)
+		dID, err := o.Insert(&device)
+		if err != nil {
+			o.Rollback()
+			return nil, models.Error{Message: "created device failed.", OriErr: err}
+		}
+
+		for _, id := range ids {
+			ships = append(ships, models.DeviceProductShip{
+				Device:  &models.Device{ID: int(dID)},
+				Product: &models.Product{ID: id.(int)},
+			})
+		}
 	}
 
-	successNums, err := o.InsertMulti(count, devices)
-	if err != nil {
-		return nil, err
+	if _, err := o.InsertMulti(len(ships), ships); err != nil {
+		o.Rollback()
+		return nil, models.Error{Message: "created device failed.", OriErr: err}
 	}
 
-	return successNums, nil
+	o.Commit()
+	return count, nil
 }
 
 // UpdateDevice 更新设备

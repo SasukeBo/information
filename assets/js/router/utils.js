@@ -15,7 +15,7 @@ function denyIfLoggedIn() {
     // 如果用户未登录，继续访问
     // 否则返回原页面
 
-    if (app.$store.state.user.uuid) {
+    if (app.$store.state.user.phone) {
       next(from);
     } else {
       app.$store.dispatch('user/clearUserData');

@@ -15,10 +15,7 @@ export default {
     SET_NAME: (state, payload) => state.name = payload,
     SET_EMAIL: (state, payload) => state.email = payload,
     SET_STATUS: (state, payload) => state.status = payload,
-    LOGOUT: (state, callback) => {
-      state.uuid = null;
-      callback()
-    }
+    LOGOUT: (state) => state.phone = null
   },
   actions: {
     setUserData({ commit }, payload) {
@@ -37,8 +34,8 @@ export default {
       commit('SET_EMAIL', null)
       commit('SET_STATUS', null)
     },
-    logout({ commit }, callback) {
-      commit('LOGOUT', callback)
+    logout({ commit }) {
+      commit('LOGOUT')
     }
   }
 };

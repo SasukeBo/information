@@ -159,7 +159,7 @@ func fetchParams(ctx *context.Context) queryParams {
 	}
 
 	env := beego.AppConfig.String
-	if env("runmode") == "dev" {
+	if env("runmode") == "dev" && false {
 		logs.Info(params.Query)
 	}
 

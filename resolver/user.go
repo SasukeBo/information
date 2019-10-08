@@ -10,33 +10,34 @@ import (
 // SignUp _
 func SignUp(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
-	phoneStr := params.Args["phone"].(string)
-	msgCodeStr := params.Args["smsCode"].(string)
-	passwordStr := params.Args["password"].(string)
+	phone := params.Args["phone"].(string)
+	user := &models.User{Phone: phone}
+	if err := o.Read(user, "phone"); err == nil {
+		return nil, models.Error{Message: "phone has already been registered."}
+	}
+
+	msgCode := params.Args["smsCode"].(string)
+	password := params.Args["password"].(string)
 	name := params.Args["name"].(string)
+	user.Name = name
 
 	rootValue := params.Info.RootValue.(map[string]interface{})
 
 	sessPhone := rootValue["phone"]
 	sessMsgCode := rootValue["smsCode"]
 
-	user := models.User{Name: name}
-
-	// validate phone
-	if err := utils.ValidatePhone(phoneStr); err != nil {
-		return nil, err
-	}
-	if sessPhone == nil || sessMsgCode == nil || phoneStr != sessPhone || msgCodeStr != sessMsgCode {
+	// 接口类型是可以和具体类型直接比较的
+	if sessPhone == nil || sessMsgCode == nil || phone != sessPhone || msgCode != sessMsgCode {
 		// 用户发送验证码的手机号与提交注册时的手机号不匹配，按照验证码不正确处理
 		return nil, models.Error{Message: "smsCode incorrect."}
 	}
-	user.Phone = phoneStr
+	user.Phone = phone
 
 	// validate password
-	if err := utils.ValidatePassword(passwordStr); err != nil {
+	if err := utils.ValidatePassword(password); err != nil {
 		return nil, err
 	}
-	user.Password = utils.Encrypt(passwordStr)
+	user.Password = utils.Encrypt(password)
 
 	// 事务处理
 	role := models.Role{RoleName: "default"}
@@ -45,7 +46,7 @@ func SignUp(params graphql.ResolveParams) (interface{}, error) {
 	}
 	user.Role = &role
 
-	if _, err := o.Insert(&user); err != nil {
+	if _, err := o.Insert(user); err != nil {
 		return nil, models.Error{Message: "insert user failed.", OriErr: err}
 	}
 
@@ -67,14 +68,11 @@ func ResetPassword(params graphql.ResolveParams) (interface{}, error) {
 	sessPhone := rootValue["phone"]
 	sessMsgCode := rootValue["smsCode"]
 
-	// validate phone
-	if err := utils.ValidatePhone(phoneStr); err != nil {
-		return nil, err
-	}
 	if sessPhone == nil || sessMsgCode == nil || phoneStr != sessPhone || msgCodeStr != sessMsgCode {
 		// 用户发送验证码的手机号与提交注册时的手机号不匹配，按照验证码不正确处理
 		return nil, models.Error{Message: "smsCode incorrect."}
 	}
+
 	if err := utils.ValidatePassword(passwordStr); err != nil {
 		return nil, err
 	}
@@ -142,88 +140,53 @@ func ListUser(params graphql.ResolveParams) (interface{}, error) {
 // UpdateUser _
 func UpdateUser(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
-	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
-	avatarURL := params.Args["avatarURL"].(string)
-
-	if err := utils.ValidateStringEmpty(avatarURL, "avatarURL"); err != nil {
-		return nil, err
-	}
-
-	user.AvatarURL = avatarURL
-	if _, err := o.Update(&user, "avatar_url"); err != nil {
-		return nil, models.Error{Message: "update user avatar_url failed.", OriErr: err}
-	}
-
-	return user, nil
-}
-
-/*
-// UpdatePassword _
-func UpdatePassword(params graphql.ResolveParams) (interface{}, error) {
-	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
-	oldPassword := params.Args["oldPassword"].(string)
-
-	if user.Password != utils.Encrypt(oldPassword) {
-		return nil, errors.Error{
-			Type:    "Resolver",
-			Field:   "password",
-			Message: "password incorrect.",
-		}
-	}
-
-	newPassword := params.Args["newPassword"].(string)
-	if err := utils.ValidatePassword(newPassword); err != nil {
-		return nil, err
-	}
-
-	user.Password = utils.Encrypt(newPassword)
-	if err := user.Update("password"); err != nil {
-		return nil, err
-	}
-
-	return user, nil
-}
-
-// UpdatePhone update user phone
-func UpdatePhone(params graphql.ResolveParams) (interface{}, error) {
 	rootValue := params.Info.RootValue.(map[string]interface{})
 	user := rootValue["currentUser"].(models.User)
-	password := params.Args["password"].(string)
+	newPhone := params.Args["newPhone"]
+	smsCode := params.Args["smsCode"]
+	updates := []string{}
 
-	if user.Password != utils.Encrypt(password) {
-		return nil, errors.Error{
-			Type:    "Resolver",
-			Field:   "password",
-			Message: "password incorrect.",
+	if avatarURL := params.Args["avatarURL"]; avatarURL != nil {
+		user.AvatarURL = avatarURL.(string)
+		updates = append(updates, "avatar_url")
+	}
+
+	newPassword := params.Args["newPassword"]
+	password := params.Args["password"]
+	if newPassword != nil {
+		if password == nil || user.Password != utils.Encrypt(password.(string)) {
+			return nil, models.Error{Message: "password incorrect."}
 		}
+
+		user.Password = utils.Encrypt(newPassword.(string))
+		updates = append(updates, "password")
 	}
 
-	newPhone := params.Args["newPhone"].(string)
-	if err := utils.ValidatePhone(newPhone); err != nil {
-		return nil, err
-	}
-
-	smsCode := params.Args["smsCode"].(string)
-	sessPhone := rootValue["phone"]
-	sessSmsCode := rootValue["smsCode"]
-
-	if sessPhone == nil || sessSmsCode == nil || newPhone != sessPhone || smsCode != sessSmsCode {
-		// 用户发送验证码的手机号与提交注册时的手机号不匹配，按照验证码不正确处理
-		return nil, errors.Error{
-			Type:    "Resolver",
-			Field:   "smsCode",
-			Message: "smsCode incorrect.",
+	if newPhone != nil {
+		if password == nil || user.Password != utils.Encrypt(password.(string)) {
+			return nil, models.Error{Message: "password incorrect."}
 		}
+
+		sessPhone := rootValue["phone"]
+		sessMsgCode := rootValue["smsCode"]
+		if sessPhone == nil || sessMsgCode == nil || sessPhone != newPhone || sessMsgCode != smsCode {
+			return nil, models.Error{Message: "smsCode incorrect."}
+		}
+
+		user.Phone = newPhone.(string)
+		updates = append(updates, "phone")
 	}
 
-	user.Phone = newPhone
-	if err := user.Update("phone"); err != nil {
-		return nil, err
+	if len(updates) == 0 {
+		return user, nil
+	}
+
+	if _, err := o.Update(&user, updates...); err != nil {
+		return nil, models.Error{Message: "update user failed.", OriErr: err}
 	}
 
 	return user, nil
 }
-*/
 
 // LoadUser _
 func LoadUser(params graphql.ResolveParams) (interface{}, error) {

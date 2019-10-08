@@ -34,6 +34,10 @@ func LoadPrivilege(params graphql.ResolveParams) (interface{}, error) {
 		return v.LoadPrivilege()
 	case *models.RolePriv:
 		return v.LoadPrivilege()
+	case models.Role:
+		return v.LoadPrivilege()
+	case *models.Role:
+		return v.LoadPrivilege()
 	default:
 		return nil, models.Error{Message: "load related privilege failed."}
 	}

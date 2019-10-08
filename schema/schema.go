@@ -43,7 +43,7 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		"signIn":              signIn,
 		"signOut":             signOut,
 		"resetPassword":       resetPassword,
-		"updateUser":          userUpdate,
+		"userUpdate":          userUpdate,
 		"sendSmsCode":         sendSmsCode,
 		"deviceCreate":        deviceCreate,
 		"deviceUpdate":        deviceUpdate,

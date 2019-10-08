@@ -98,6 +98,7 @@ export default {
             })
             .catch(e => {
               this.message = parseGQLError(e).message;
+              console.error(this.message);
             });
         }
       });

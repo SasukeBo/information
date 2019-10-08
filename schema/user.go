@@ -31,10 +31,10 @@ var userType = graphql.NewObject(graphql.ObjectConfig{
 var userGet = &graphql.Field{
 	Type: userType,
 	Args: graphql.FieldConfigArgument{
-		"uuid": GenArg(graphql.String, "用户UUID", false),
+		"id": GenArg(graphql.Int, "用户ID", false),
 	},
 	Resolve:     resolver.GetUser,
-	Description: "使用UUID获取用户",
+	Description: "获取用户",
 }
 
 var userList = &graphql.Field{
@@ -90,6 +90,7 @@ var userUpdate = &graphql.Field{
 登录状态下修改用户账号信息。
 **注意**
 - 修改密码和修改手机号需要提供当前密码
-- 修改手机号需要提供短信验证码`,
+- 修改手机号需要提供短信验证码
+- 需要提供operationName`,
 	Resolve: resolver.UpdateUser,
 }

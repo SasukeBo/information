@@ -2,11 +2,9 @@ package resolver
 
 import (
 	"encoding/json"
-
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
 )
 
@@ -20,15 +18,9 @@ type sendSmsCodeResponse struct {
 // SendSmsCode is a gql resolver, send message code by aliyun service
 func SendSmsCode(p graphql.ResolveParams) (interface{}, error) {
 	rootValue := p.Info.RootValue.(map[string]interface{})
-	o := orm.NewOrm()
 	var response sendSmsCodeResponse
 
 	phone := p.Args["phone"].(string)
-	user := &models.User{Phone: phone}
-	if err := o.Read(user, "phone"); err == nil {
-		return nil, models.Error{Message: "phone has already been registered."}
-	}
-
 	// validate phone
 	if err := utils.ValidatePhone(phone); err != nil {
 		return nil, err

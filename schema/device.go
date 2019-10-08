@@ -134,6 +134,7 @@ var deviceCreate = &graphql.Field{
 		"name":        GenArg(graphql.String, "设备名称", false),
 		"address":     GenArg(graphql.String, "设备地址", false),
 		"description": GenArg(graphql.String, "描述"),
+		"productIDs":  GenArg(graphql.NewList(graphql.Int), "产品ID列表"),
 	},
 	Resolve: resolver.CreateDevice,
 }
