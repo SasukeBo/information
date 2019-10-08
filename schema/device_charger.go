@@ -8,8 +8,7 @@ import (
 /*							   types
 ------------------------------------------ */
 
-// DeviceCharger 设备负责人类型
-var DeviceCharger = graphql.NewObject(graphql.ObjectConfig{
+var deviceChargerType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "DeviceCharger",
 	Description: "设备负责人类型",
 	Fields: graphql.Fields{
@@ -25,14 +24,18 @@ var DeviceCharger = graphql.NewObject(graphql.ObjectConfig{
 
 func init() {
 	// circular references fixed by dynamically adding inside init(), see https://github.com/graphql-go/graphql/issues/164
-	DeviceCharger.AddFieldConfig("device", &graphql.Field{Type: deviceType, Description: "设备", Resolve: resolver.LoadDevice})
+	deviceChargerType.AddFieldConfig("device", &graphql.Field{
+		Type:        deviceType,
+		Description: "设备",
+		Resolve:     resolver.LoadDevice,
+	})
 }
 
 /*							query
 ------------------------------------ */
 
 var deviceChargerGet = &graphql.Field{
-	Type: DeviceCharger,
+	Type: deviceChargerType,
 	Args: graphql.FieldConfigArgument{
 		"id": GenArg(graphql.Int, "设备负责人ID", false),
 	},
@@ -41,7 +44,7 @@ var deviceChargerGet = &graphql.Field{
 }
 
 var deviceChargerList = &graphql.Field{
-	Type: graphql.NewList(DeviceCharger),
+	Type: graphql.NewList(deviceChargerType),
 	Args: graphql.FieldConfigArgument{
 		"deviceUUID": GenArg(graphql.String, "设备uuid", false),
 	},
@@ -54,7 +57,7 @@ var deviceChargerList = &graphql.Field{
 ------------------------------------ */
 
 var deviceChargerCreate = &graphql.Field{
-	Type: DeviceCharger,
+	Type: deviceChargerType,
 	Args: graphql.FieldConfigArgument{
 		"deivceUUID": GenArg(graphql.String, "设备UUID", false),
 		"name":       GenArg(graphql.String, "负责人姓名", false),
@@ -79,7 +82,7 @@ var deviceChargerDelete = &graphql.Field{
 }
 
 var deviceChargerUpdate = &graphql.Field{
-	Type: DeviceCharger,
+	Type: deviceChargerType,
 	Args: graphql.FieldConfigArgument{
 		"id":         GenArg(graphql.Int, "设备负责人ID", false),
 		"name":       GenArg(graphql.String, "负责人姓名", false),

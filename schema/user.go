@@ -9,9 +9,9 @@ import (
 /* 					 types
 ------------------------------ */
 
-// User 用户类型
-var User = graphql.NewObject(graphql.ObjectConfig{
-	Name: "User",
+var userType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "User",
+	Description: "用户",
 	Fields: graphql.Fields{
 		"avatarURL": &graphql.Field{Type: graphql.String, Description: "头像链接"},
 		"createdAt": &graphql.Field{Type: graphql.DateTime},
@@ -21,7 +21,7 @@ var User = graphql.NewObject(graphql.ObjectConfig{
 		"phone":     &graphql.Field{Type: graphql.String, Description: "手机号"},
 		"status":    &graphql.Field{Type: BaseStatus, Description: "基础状态"},
 		"updatedAt": &graphql.Field{Type: graphql.DateTime},
-		"role":      &graphql.Field{Type: Role, Description: "用户角色", Resolve: resolver.LoadRole},
+		"role":      &graphql.Field{Type: roleType, Description: "用户角色", Resolve: resolver.LoadRole},
 	},
 })
 
@@ -29,7 +29,7 @@ var User = graphql.NewObject(graphql.ObjectConfig{
 ------------------------------ */
 
 var userGet = &graphql.Field{
-	Type: User,
+	Type: userType,
 	Args: graphql.FieldConfigArgument{
 		"uuid": GenArg(graphql.String, "用户UUID", false),
 	},
@@ -38,7 +38,7 @@ var userGet = &graphql.Field{
 }
 
 var userList = &graphql.Field{
-	Type: graphql.NewList(User),
+	Type: graphql.NewList(userType),
 	Args: graphql.FieldConfigArgument{
 		"namePattern": GenArg(graphql.String, "用户名称模糊匹配"),
 		"phone":       GenArg(graphql.String, "用户手机号"),
@@ -52,7 +52,7 @@ var userList = &graphql.Field{
 ------------------------------ */
 
 var signUp = &graphql.Field{
-	Type: User,
+	Type: userType,
 	Args: graphql.FieldConfigArgument{
 		"phone":    GenArg(graphql.String, "手机号", false),
 		"name":     GenArg(graphql.String, "姓名", false),
@@ -65,7 +65,7 @@ var signUp = &graphql.Field{
 }
 
 var resetPassword = &graphql.Field{
-	Type: User,
+	Type: userType,
 	Args: graphql.FieldConfigArgument{
 		"phone":    GenArg(graphql.String, "手机号", false),
 		"password": GenArg(graphql.String, "密码", false),
@@ -78,7 +78,7 @@ var resetPassword = &graphql.Field{
 }
 
 var userUpdate = &graphql.Field{
-	Type: User,
+	Type: userType,
 	Args: graphql.FieldConfigArgument{
 		"avatarURL":   GenArg(graphql.String, "头像链接"),
 		"password":    GenArg(graphql.String, "当前密码"),

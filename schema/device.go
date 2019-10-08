@@ -39,9 +39,23 @@ var deviceType = graphql.NewObject(graphql.ObjectConfig{
 })
 
 func init() {
-	deviceType.AddFieldConfig("user", &graphql.Field{Type: User, Description: "注册人用户", Resolve: resolver.LoadUser})
-	// deviceType.AddFieldConfig("params", &graphql.Field{Type: graphql.NewList(DeviceParam), Description: "设备参数", Resolve: resolver.LoadDeviceParam})
-	deviceType.AddFieldConfig("deviceChargers", &graphql.Field{Type: graphql.NewList(DeviceCharger), Description: "设备负责人", Resolve: resolver.LoadDeviceCharger})
+	deviceType.AddFieldConfig("user", &graphql.Field{
+		Type:        userType,
+		Description: "注册人用户",
+		Resolve:     resolver.LoadUser,
+	})
+
+	deviceType.AddFieldConfig("product", &graphql.Field{
+		Type:        productType,
+		Description: "生产产品",
+		Resolve:     resolver.LoadProduct,
+	})
+
+	deviceType.AddFieldConfig("deviceChargers", &graphql.Field{
+		Type:        graphql.NewList(deviceChargerType),
+		Description: "设备负责人",
+		Resolve:     resolver.LoadDeviceCharger,
+	})
 }
 
 /* 					response

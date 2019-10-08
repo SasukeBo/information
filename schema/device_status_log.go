@@ -8,9 +8,9 @@ import (
 /*							   types
 ------------------------------------------ */
 
-// DeviceStatusLog 设备状态变更记录类型
-var DeviceStatusLog = graphql.NewObject(graphql.ObjectConfig{
-	Name: "DeviceStatusLog",
+var deviceStatusLogType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "DeviceStatusLog",
+	Description: "设备状态变更记录类型",
 	Fields: graphql.Fields{
 		"id":        &graphql.Field{Type: graphql.Int},
 		"status":    &graphql.Field{Type: DeviceStatus, Description: "设备运行状态"},
@@ -20,14 +20,18 @@ var DeviceStatusLog = graphql.NewObject(graphql.ObjectConfig{
 })
 
 func init() {
-	DeviceStatusLog.AddFieldConfig("device", &graphql.Field{Type: deviceType, Description: "设备", Resolve: resolver.LoadDevice})
+	deviceStatusLogType.AddFieldConfig("device", &graphql.Field{
+		Type:        deviceType,
+		Description: "设备",
+		Resolve:     resolver.LoadDevice,
+	})
 }
 
 /*							query
 ----------------------------------- */
 
 var deviceStatusLogList = &graphql.Field{
-	Type: graphql.NewList(DeviceStatusLog),
+	Type: graphql.NewList(deviceStatusLogType),
 	Args: graphql.FieldConfigArgument{
 		"deviceUUID": GenArg(graphql.String, "设备UUID", false),
 		"status":     GenArg(DeviceStatus, "运行状态"),
