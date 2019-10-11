@@ -1,0 +1,11 @@
+mutation (
+  $detectItems: [DetectItemInput]!
+  $name: String!
+) {
+  productCreate(
+    detectItems: $detectItems
+    name: $name
+  ) {
+    id
+  }
+}

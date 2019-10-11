@@ -11,65 +11,88 @@ function defaultRoutes() {
         {
           path: 'home',
           name: 'home',
-          component: load('main/pages/home')
+          component: load('main/home')
         },
         {
-          path: 'products',
-          name: 'product-list',
-          component: load('main/pages/products')
+          path: 'product',
+          component: load('main/product'),
+          children: [
+            {
+              path: 'new',
+              name: 'product-new',
+              component: load('main/product/form')
+            },
+            {
+              path: ':id/show',
+              name: 'product-show',
+              props: true,
+              component: load('main/product/show')
+            },
+            {
+              path: ':id/edit',
+              name: 'product-edit',
+              props: true,
+              component: load('main/product/form')
+            },
+            {
+              path: 'list',
+              name: 'product-list',
+              component: load('main/product/list')
+            }
+          ]
         },
         {
           path: 'devices',
           name: 'device-list',
-          component: load('main/pages/devices')
+          component: load('main/devices')
         },
         {
           path: 'device/new',
           name: 'device-new',
-          component: load('main/pages/device/new')
+          component: load('main/device/new')
         },
         {
           path: 'device/:uuid',
           name: 'device-show',
           props: true,
-          component: load('main/pages/device'),
+          component: load('main/device'),
           redirect: { name: 'device-details' },
           children: [
             {
               path: 'realtime',
               name: 'device-realtime',
               props: true,
-              component: load('main/pages/device/realtime')
+              component: load('main/device/realtime')
             },
             {
               path: 'charges',
               name: 'device-charges',
               props: true,
-              component: load('main/pages/device/charge')
+              component: load('main/device/charge')
             },
             {
               path: 'params',
               name: 'device-params',
               props: true,
-              component: load('main/pages/device/params')
+              component: load('main/device/params')
             },
             {
               path: 'details',
               name: 'device-details',
               props: true,
-              component: load('main/pages/device/details')
+              component: load('main/device/details')
             },
             {
               path: 'status-log',
               name: 'device-status-log',
               props: true,
-              component: load('main/pages/device/status-log')
+              component: load('main/device/status-log')
             },
             {
               path: 'config',
               name: 'device-config',
               props: true,
-              component: load('main/pages/device/_config')
+              component: load('main/device/_config')
             }
           ]
         },
@@ -77,19 +100,19 @@ function defaultRoutes() {
           path: 'device/:uuid/charge',
           name: 'device-charge',
           props: true,
-          component: load('main/pages/charge'),
+          component: load('main/charge'),
           children: [
             {
               path: ':id/show',
               name: 'charge-show',
               props: true,
-              component: load('main/pages/charge/_show.vue')
+              component: load('main/charge/_show.vue')
             },
             {
               path: 'new',
               name: 'charge-new',
               props: true,
-              component: load('main/pages/charge/_new.vue')
+              component: load('main/charge/_new.vue')
             }
           ]
         }
@@ -119,6 +142,11 @@ function defaultRoutes() {
           component: load('authenticate/reset')
         }
       ]
+    },
+    {
+      path: '/*',
+      name: 'error-page',
+      component: load('errors/404.vue')
     }
   ]
 }

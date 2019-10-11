@@ -20,6 +20,7 @@ func LoadProduct(params graphql.ResolveParams) (interface{}, error) {
 
 // CreateProduct 创建产品信息
 func CreateProduct(params graphql.ResolveParams) (interface{}, error) {
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 	o := orm.NewOrm()
 	if err := o.Begin(); err != nil {
 		o.Rollback()
@@ -27,7 +28,7 @@ func CreateProduct(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	name := params.Args["name"].(string)
-	product := models.Product{Name: name}
+	product := models.Product{Name: name, Register: &user}
 
 	if _, err := o.Insert(&product); err != nil {
 		o.Rollback()

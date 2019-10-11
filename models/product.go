@@ -8,8 +8,9 @@ import (
 // Product 产品模型
 type Product struct {
 	ID          int           `orm:"auto;pk;column(id)"`
-	Name        string        `orm:"unique"`        // 产品名称
-	DetectItems []*DetectItem `orm:"reverse(many)"` // 产品检测项
+	Name        string        `orm:"unique"`                           // 产品名称
+	Register    *User         `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
+	DetectItems []*DetectItem `orm:"reverse(many)"`                    // 产品检测项
 	CreatedAt   time.Time     `orm:"auto_now_add;type(datetime)"`
 	UpdatedAt   time.Time     `orm:"auto_now;type(datetime)"`
 }

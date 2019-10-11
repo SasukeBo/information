@@ -1,11 +1,11 @@
 <template>
-  <div>产品列表</div>
+  <div>404</div>
 </template>
 <script>
 export default {
-  name: 'product-list',
+  name: 'error-page',
   mounted() {
-    NProgress.done();
+    NProgress.done()
   }
-};
+}
 </script>
