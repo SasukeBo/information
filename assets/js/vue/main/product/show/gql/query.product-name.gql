@@ -1,0 +1,6 @@
+query ($id: Int!) {
+  product: productGet(id: $id) {
+    id
+    name
+  }
+}

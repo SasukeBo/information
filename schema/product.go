@@ -12,10 +12,17 @@ var productType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "Product",
 	Description: "产品类型",
 	Fields: graphql.Fields{
-		"id":        &graphql.Field{Type: graphql.Int},
-		"name":      &graphql.Field{Type: graphql.String, Description: "产品名称"},
-		"createdAt": &graphql.Field{Type: graphql.DateTime},
-		"updatedAt": &graphql.Field{Type: graphql.DateTime},
+		"id":               &graphql.Field{Type: graphql.Int},
+		"name":             &graphql.Field{Type: graphql.String, Description: "产品名称"},
+		"productor":        &graphql.Field{Type: graphql.String, Description: "生产负责人"},
+		"productorContact": &graphql.Field{Type: graphql.String, Description: "生产负责人联系方式"},
+		"customer":         &graphql.Field{Type: graphql.String, Description: "订货方"},
+		"customerContact":  &graphql.Field{Type: graphql.String, Description: "订货方联系方式"},
+		"total":            &graphql.Field{Type: graphql.Int, Description: "指标总量"},
+		"orderNum":         &graphql.Field{Type: graphql.String, Description: "订单编号"},
+		"createdAt":        &graphql.Field{Type: graphql.DateTime},
+		"updatedAt":        &graphql.Field{Type: graphql.DateTime},
+		"finishTime":       &graphql.Field{Type: graphql.DateTime},
 	},
 })
 
@@ -31,10 +38,17 @@ func init() {
 		Description: "产品实例",
 		Resolve:     resolver.LoadProductIns,
 	})
+
 	productType.AddFieldConfig("devices", &graphql.Field{
 		Type:        graphql.NewList(deviceType),
 		Description: "生产设备",
 		Resolve:     resolver.LoadDevice,
+	})
+
+	productType.AddFieldConfig("register", &graphql.Field{
+		Type:        userType,
+		Description: "注册人",
+		Resolve:     resolver.LoadUser,
 	})
 }
 
@@ -77,8 +91,15 @@ var productList = &graphql.Field{
 var productCreate = &graphql.Field{
 	Type: productType,
 	Args: graphql.FieldConfigArgument{
-		"name":        GenArg(graphql.String, "产品名称", false),
-		"detectItems": GenArg(graphql.NewList(detectItemInputType), "产品检测值", false),
+		"name":             GenArg(graphql.String, "产品名称", false),
+		"detectItems":      GenArg(graphql.NewList(detectItemInputType), "产品检测值", false),
+		"productor":        GenArg(graphql.String, "生产负责人"),
+		"productorContact": GenArg(graphql.String, "生产负责人联系方式"),
+		"finishTime":       GenArg(graphql.DateTime, "预计完成订单时间"),
+		"total":            GenArg(graphql.Int, "计划生产产品总量"),
+		"orderNum":         GenArg(graphql.String, "订单编号"),
+		"customer":         GenArg(graphql.String, "订货方"),
+		"customerContact":  GenArg(graphql.String, "订货方联系方式"),
 	},
 	Description: `注册产品信息`,
 	Resolve:     resolver.CreateProduct,
@@ -87,6 +108,23 @@ var productCreate = &graphql.Field{
 var productDelete = &graphql.Field{
 	Type:        graphql.Int,
 	Args:        graphql.FieldConfigArgument{"id": GenArg(graphql.Int, "产品ID", false)},
-	Description: `产品ID`,
+	Description: `删除产品`,
 	Resolve:     resolver.DeleteProduct,
+}
+
+var productUpdate = &graphql.Field{
+	Type: productType,
+	Args: graphql.FieldConfigArgument{
+		"id":               GenArg(graphql.Int, "产品ID", false),
+		"name":             GenArg(graphql.String, "产品名称"),
+		"productor":        GenArg(graphql.String, "生产负责人"),
+		"productorContact": GenArg(graphql.String, "生产负责人联系方式"),
+		"finishTime":       GenArg(graphql.DateTime, "预计完成订单时间"),
+		"total":            GenArg(graphql.Int, "计划生产产品总量"),
+		"orderNum":         GenArg(graphql.String, "订单编号"),
+		"customer":         GenArg(graphql.String, "订货方"),
+		"customerContact":  GenArg(graphql.String, "订货方联系方式"),
+	},
+	Description: `修改产品`,
+	Resolve:     resolver.UpdateProduct,
 }

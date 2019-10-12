@@ -197,6 +197,12 @@ func LoadUser(params graphql.ResolveParams) (interface{}, error) {
 		return v.LoadUser()
 	case *models.UserLogin:
 		return v.LoadUser()
+	case models.UserLogin:
+		return v.LoadUser()
+	case *models.Product:
+		return v.LoadUser()
+	case models.Product:
+		return v.LoadUser()
 	default:
 		return nil, models.Error{Message: "load related user failed."}
 	}

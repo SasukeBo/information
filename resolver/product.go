@@ -4,6 +4,7 @@ import (
 	"github.com/SasukeBo/information/models"
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
+	"time"
 )
 
 // LoadProduct _
@@ -139,4 +140,51 @@ func ListProduct(params graphql.ResolveParams) (interface{}, error) {
 		Count    int64
 		Products []*models.Product
 	}{cnt, products}, nil
+}
+
+func UpdateProduct(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
+	id := params.Args["id"].(int)
+	product := models.Product{ID: id}
+	if err := o.Read(&product); err != nil {
+		return nil, models.Error{Message: "read product failed.", OriErr: err}
+	}
+
+	if name := params.Args["name"]; name != nil {
+		product.Name = name.(string)
+	}
+
+	if productorContact := params.Args["productorContact"]; productorContact != nil {
+		product.ProductorContact = productorContact.(string)
+	}
+
+	if productor := params.Args["productor"]; productor != nil {
+		product.Productor = productor.(string)
+	}
+
+	if finishTime := params.Args["finishTime"]; finishTime != nil {
+		product.FinishTime = finishTime.(time.Time)
+	}
+
+	if total := params.Args["total"]; total != nil {
+		product.Total = total.(int)
+	}
+
+	if orderNum := params.Args["orderNum"]; orderNum != nil {
+		product.OrderNum = orderNum.(string)
+	}
+
+	if customer := params.Args["customer"]; customer != nil {
+		product.Customer = customer.(string)
+	}
+
+	if customerContact := params.Args["customerContact"]; customerContact != nil {
+		product.CustomerContact = customerContact.(string)
+	}
+
+	if _, err := o.Update(&product); err != nil {
+		return nil, models.Error{Message: "update product failed.", OriErr: err}
+	}
+
+	return product, nil
 }

@@ -1,0 +1,25 @@
+mutation (
+  $id: Int!
+  $name: String
+  $total: Int
+  $customerContact: String
+  $orderNum: String
+  $customer: String
+  $productorContact: String
+  $finishTime: DateTime
+  $productor: String
+){
+  productUpdate(
+    id: $id
+    name: $name
+    total: $total
+    customerContact: $customerContact
+    orderNum: $orderNum
+    customer: $customer
+    productorContact: $productorContact
+    finishTime: $finishTime
+    productor: $productor
+  ) {
+    id
+  }
+}

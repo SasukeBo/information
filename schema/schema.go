@@ -54,6 +54,7 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 		// "deviceProductShipCreate": deviceProductShipCreate,
 		"productCreate":    productCreate,
 		"productDelete":    productDelete,
+		"productUpdate":    productUpdate,
 		"detectItemCreate": detectItemCreate,
 		"detectItemUpdate": detectItemUpdate,
 		"detectItemDelete": detectItemDelete,

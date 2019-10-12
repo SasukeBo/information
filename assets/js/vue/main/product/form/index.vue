@@ -109,9 +109,6 @@ export default {
 @import 'css/vars.scss';
 
 .product-form {
-  width: 1000px;
-  margin: auto;
-
   .header {
     font-size: 36px;
     padding: 16px 0 32px;

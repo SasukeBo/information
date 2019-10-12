@@ -1,5 +1,0 @@
-query ($id: Int!) {
-  productGet(id: $id) {
-
-  }
-}

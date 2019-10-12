@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 )
@@ -15,9 +16,10 @@ type Error struct {
 
 // Error _
 func (e Error) Error() string {
+	message := fmt.Sprintf(`{"message": %s, "originError": %v}`, e.Message, e.OriErr)
 	if env("runmode") == "dev" {
-		logs.Error("%s %v", e.Message, e.OriErr)
+		logs.Error(message)
 	}
 
-	return e.Message
+	return message
 }
