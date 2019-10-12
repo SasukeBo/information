@@ -142,6 +142,7 @@ func ListProduct(params graphql.ResolveParams) (interface{}, error) {
 	}{cnt, products}, nil
 }
 
+// UpdateProduct _
 func UpdateProduct(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
 	id := params.Args["id"].(int)

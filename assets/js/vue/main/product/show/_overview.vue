@@ -141,7 +141,15 @@
               v-slot:text
             >{{ product.finishTime ? timeFormatter(product.finishTime) : '[点击填写]' }}</template>
             <template v-slot:form>
-              <el-input v-model="product.finishTime" size="mini"></el-input>
+              <el-date-picker
+                v-model="product.finishTime"
+                size="mini"
+                type="date"
+                placeholder="选择日期"
+                prefix-icon="none"
+                :editable="false"
+                :clearable="false"
+              ></el-date-picker>
             </template>
           </click-to-edit>
         </div>
@@ -205,10 +213,10 @@ export default {
   },
   methods: {
     timeFormatter(str) {
-      return timeFormatter(str);
+      return timeFormatter(str, '%y年%m月%d日');
     },
     save(field) {
-      var variables = {id: this.id};
+      var variables = { id: this.id };
       variables[field] = this.product[field];
       this.$apollo
         .mutate({
@@ -318,6 +326,11 @@ export default {
     .value.click-to-edit .el-input {
       width: 100px;
     }
+  }
+
+  .detail-row .click-to-edit .el-date-editor .el-input__inner {
+    padding: 0 0.8rem;
+    text-align: center;
   }
 
   .detail-row .detect-items {
