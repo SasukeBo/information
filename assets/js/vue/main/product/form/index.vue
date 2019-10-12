@@ -8,7 +8,14 @@
     </div>
     <div class="form">
       <form class="flex-layout-form">
-        <float-label-input v-model="name" placeholder="产品名称"></float-label-input>
+        <float-label-input v-model="form.name" placeholder="产品名称"></float-label-input>
+        <float-label-input v-model="form.orderNum" placeholder="订单号"></float-label-input>
+        <float-label-input v-model="form.customer" placeholder="需求方"></float-label-input>
+        <float-label-input v-model="form.customerContact" placeholder="需求方联系电话"></float-label-input>
+        <float-label-input v-model="form.total" placeholder="计划生产总数"></float-label-input>
+        <float-label-input v-model="form.productor" placeholder="生产负责人"></float-label-input>
+        <float-label-input v-model="form.productorContact" placeholder="生产负责人联系电话"></float-label-input>
+        <el-date-picker v-model="form.finishTime" style="width: 100%; margin-bottom: 1rem;" placeholder="计划完成时间"></el-date-picker>
 
         <div class="detect-items">
           <span class="title">检测项</span>
@@ -44,6 +51,9 @@ export default {
   },
   data() {
     return {
+      form: {
+        name: '',
+      },
       name: '',
       message: '',
       detectItems: [],
@@ -66,7 +76,7 @@ export default {
     },
     submit() {
       this.loading = true;
-      if (!this.name) {
+      if (!this.form.name) {
         this.message = '请填写产品名称！';
         this.loading = false;
         return;
@@ -84,11 +94,11 @@ export default {
         .mutate({
           mutation: productCreateMutate,
           variables: {
-            name: this.name,
+            ...this.form,
             detectItems: this.detectItems
           }
         })
-        .then(({data}) =>
+        .then(({ data }) =>
           this.$router.push({
             name: 'product-show',
             params: { id: data.productCreate.id }

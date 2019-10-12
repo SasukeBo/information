@@ -31,6 +31,34 @@ func CreateProduct(params graphql.ResolveParams) (interface{}, error) {
 	name := params.Args["name"].(string)
 	product := models.Product{Name: name, Register: &user}
 
+	if total := params.Args["total"]; total != nil {
+		product.Total = total.(int)
+	}
+
+	if productorContact := params.Args["productorContact"]; productorContact != nil {
+		product.ProductorContact = productorContact.(string)
+	}
+
+	if productor := params.Args["productor"]; productor != nil {
+		product.Productor = productor.(string)
+	}
+
+	if finishTime := params.Args["finishTime"]; finishTime != nil {
+		product.FinishTime = finishTime.(time.Time)
+	}
+
+	if orderNum := params.Args["orderNum"]; orderNum != nil {
+		product.OrderNum = orderNum.(string)
+	}
+
+	if customer := params.Args["customer"]; customer != nil {
+		product.Customer = customer.(string)
+	}
+
+	if customerContact := params.Args["customerContact"]; customerContact != nil {
+		product.CustomerContact = customerContact.(string)
+	}
+
 	if _, err := o.Insert(&product); err != nil {
 		o.Rollback()
 		return nil, models.Error{Message: "insert product failed.", OriErr: err}
@@ -45,27 +73,27 @@ func CreateProduct(params graphql.ResolveParams) (interface{}, error) {
 			o.Rollback()
 			return nil, models.Error{Message: "invalid sign."}
 		}
+		detectItem := models.DetectItem{Sign: sign, Product: &product}
 
-		upperLimit, ok := value["upperLimit"].(float64)
-		if !ok {
-			o.Rollback()
-			return nil, models.Error{Message: "invalid upper_limit."}
+		if upperLimit := value["upperLimit"]; upperLimit != nil {
+			value, ok := upperLimit.(float64)
+			if !ok {
+				o.Rollback()
+				return nil, models.Error{Message: "invalid upper_limit."}
+			}
+			detectItem.UpperLimit = value
 		}
 
-		lowerLimit, ok := value["lowerLimit"].(float64)
-		if !ok {
-			o.Rollback()
-			return nil, models.Error{Message: "invalid lower_limit."}
+		if lowerLimit := value["lowerLimit"]; lowerLimit != nil {
+			value, ok := lowerLimit.(float64)
+			if !ok {
+				o.Rollback()
+				return nil, models.Error{Message: "invalid lower_limit."}
+			}
+			detectItem.LowerLimit = value
 		}
 
-		detectItem := &models.DetectItem{
-			Sign:       sign,
-			UpperLimit: upperLimit,
-			LowerLimit: lowerLimit,
-			Product:    &product,
-		}
-
-		if _, err := o.Insert(detectItem); err != nil {
+		if _, err := o.Insert(&detectItem); err != nil {
 			o.Rollback()
 			return nil, models.Error{Message: "insert detect_item failed.", OriErr: err}
 		}

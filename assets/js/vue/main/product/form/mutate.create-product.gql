@@ -1,10 +1,24 @@
 mutation (
   $detectItems: [DetectItemInput]!
   $name: String!
+  $total: Int
+  $customerContact: String
+  $orderNum: String
+  $customer: String
+  $productorContact: String
+  $finishTime: DateTime
+  $productor: String
 ) {
   productCreate(
     detectItems: $detectItems
     name: $name
+    total: $total
+    customerContact: $customerContact
+    orderNum: $orderNum
+    customer: $customer
+    productorContact: $productorContact
+    finishTime: $finishTime
+    productor: $productor
   ) {
     id
   }
