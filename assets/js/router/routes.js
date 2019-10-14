@@ -29,12 +29,6 @@ function defaultRoutes() {
               component: load('main/product/show')
             },
             {
-              path: ':id/edit',
-              name: 'product-edit',
-              props: true,
-              component: load('main/product/form')
-            },
-            {
               path: 'list',
               name: 'product-list',
               component: load('main/product/list')

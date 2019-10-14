@@ -15,7 +15,7 @@
         <float-label-input v-model="form.total" placeholder="计划生产总数"></float-label-input>
         <float-label-input v-model="form.productor" placeholder="生产负责人"></float-label-input>
         <float-label-input v-model="form.productorContact" placeholder="生产负责人联系电话"></float-label-input>
-        <el-date-picker v-model="form.finishTime" style="width: 100%; margin-bottom: 1rem;" placeholder="计划完成时间"></el-date-picker>
+        <float-label-input type="date" v-model="form.finishTime" placeholder="计划完成时间"></float-label-input>
 
         <div class="detect-items">
           <span class="title">检测项</span>
@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       form: {
-        name: '',
+        name: ''
       },
       name: '',
       message: '',

@@ -1,24 +1,81 @@
 <template>
-  <div class="floating-label">
+  <div class="floating-label" @click="clickable && $refs.datepicker.handleClickIcon()">
     <span :style="{display: value ? 'inline-block' : 'none'}">{{ placeholder || ''}}</span>
     <input
       class="global-input"
+      :class="{disabled: !editable}"
       type="text"
-      :value="value"
-      @input="$emit('input', $event.target.value)"
+      @keyup.enter="enter"
+      :value="inputValue"
+      :disabled="!editable || type === 'date'"
+      @input="editable && $emit('input', $event.target.value)"
       :placeholder="placeholder"
-      :style="{paddingTop: value ? '14px': '0'}"
+      :style="{paddingTop: value ? '14px': '0', cursor}"
     />
+
+    <el-date-picker ref="datepicker" v-if="type === 'date' " v-model="dateValue" type="date"></el-date-picker>
   </div>
 </template>
 <script>
+import { timeFormatter } from 'js/utils';
+
 export default {
+  name: 'float-label-input',
   model: {
     prop: 'value',
     event: 'input'
   },
-  props: ['value', 'placeholder'],
-  name: 'float-label-input'
+  props: {
+    value: [String, Number, Boolean],
+    type: {
+      type: String,
+      default: 'text'
+    },
+    placeholder: String,
+    enter: Function,
+    editable: {
+      type: Boolean,
+      default: true
+    }
+  },
+  computed: {
+    cursor() {
+      if (this.type === 'date') {
+        return 'pointer';
+      } else if (!this.editable) {
+        return 'not-allowed';
+      }
+    },
+    clickable() {
+      return this.type === 'date' ? true : false;
+    }
+  },
+  data() {
+    return {
+      inputValue: '',
+      dateValue: ''
+    };
+  },
+  watch: {
+    dateValue(newVal) {
+      if (this.type === 'date')
+        this.inputValue = timeFormatter(newVal, '%y年%m月%d日');
+    },
+    value(newVal) {
+      if (this.type === 'date') {
+        this.inputValue = timeFormatter(newVal, '%y年%m月%d日');
+        this.dateValue = newVal;
+      } else {
+        this.inputValue = newVal;
+      }
+    },
+    dateValue(newVal) {
+      if (newVal && newVal !== this.value) {
+        var date = new Date(newVal);
+        this.$emit('input', date.toISOString());
+      }
+    }
+  }
 };
 </script>
 <style lang="scss">
@@ -59,6 +116,18 @@ export default {
     &:focus {
       border-color: $--color-theme__main;
     }
+
+    &.disabled {
+      background-color: #f5f7fa;
+      border-color: #e4e7ed;
+      color: #c0c4cc;
+    }
+  }
+
+  .el-date-editor {
+    position: absolute;
+    left: 0;
+    z-index: -1;
   }
 }
 </style>

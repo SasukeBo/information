@@ -178,7 +178,7 @@
         <a
           class="edit-detect-items"
           :href="'/product/' + id + '/edit'"
-          @click.prevent="$router.push({name: 'product-edit', params: {id}})"
+          @click.prevent="$router.push({name: 'product-show', query: {tab: 'setting'}, hash: '#detect-items'})"
         >修改检测项</a>
       </div>
     </div>

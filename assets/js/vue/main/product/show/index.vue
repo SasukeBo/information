@@ -7,12 +7,12 @@
     <div class="header">
       <i class="iconfont icon-chanpin"></i>
       <div class="header-content">
-        <div>{{ product.name }}</div>
+        <div style="height: 50px;">{{ product.name || '[请填写名称]' }}</div>
         <div class="header-content__name">产品信息</div>
         <a
           class="to-product-edit"
           :href="'/product/' + id + '/edit'"
-          @click.prevent="$router.push({name: 'product-edit', params: {id}})"
+          @click.prevent="$router.push({name: 'product-show', query: {tab: 'setting'}})"
         >编辑</a>
       </div>
     </div>
@@ -28,6 +28,9 @@
           </li>
           <li>
             <a :class="{active: currentTab === 'instances'}" @click="updateTab('instances')">产品实例</a>
+          </li>
+          <li>
+            <a :class="{active: currentTab === 'setting'}" @click="updateTab('setting')">设置</a>
           </li>
         </ul>
       </div>
@@ -54,6 +57,7 @@ import productGetQuery from './gql/query.product-name.gql';
 import overview from './_overview.vue';
 import instances from './_instance.vue';
 import devices from './_devices.vue';
+import setting from './_setting.vue';
 
 export default {
   name: 'product-show',
@@ -61,7 +65,8 @@ export default {
   components: {
     overview,
     instances,
-    devices
+    devices,
+    setting
   },
   apollo: {
     product: {
