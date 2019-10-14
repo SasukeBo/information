@@ -131,6 +131,8 @@ func GetProduct(params graphql.ResolveParams) (interface{}, error) {
 
 // ListProduct _
 func ListProduct(params graphql.ResolveParams) (interface{}, error) {
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
+
 	o := orm.NewOrm()
 	if err := o.Begin(); err != nil {
 		o.Rollback()
@@ -140,6 +142,12 @@ func ListProduct(params graphql.ResolveParams) (interface{}, error) {
 	qs := o.QueryTable("product").OrderBy("-created_at")
 	if namePattern := params.Args["namePattern"]; namePattern != nil {
 		qs = qs.Filter("name__icontains", namePattern)
+	}
+
+	if self := params.Args["self"]; self != nil {
+		if self.(bool) {
+			qs = qs.Filter("register_id", user.ID)
+		}
 	}
 
 	cnt, err := qs.Count()

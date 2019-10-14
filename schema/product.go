@@ -23,6 +23,8 @@ var productType = graphql.NewObject(graphql.ObjectConfig{
 		"createdAt":        &graphql.Field{Type: graphql.DateTime},
 		"updatedAt":        &graphql.Field{Type: graphql.DateTime},
 		"finishTime":       &graphql.Field{Type: graphql.DateTime},
+		"currentCount":     &graphql.Field{Type: graphql.Int, Description: "当前产量"}, // TODO: resolver
+		"detectItemsCount": &graphql.Field{Type: graphql.Int, Description: "检测项数"}, // TODO: resolver
 	},
 })
 
@@ -78,6 +80,7 @@ var productList = &graphql.Field{
 	Type: productListResponse,
 	Args: graphql.FieldConfigArgument{
 		"namePattern": GenArg(graphql.String, "产品名称模糊匹配"),
+		"self":        GenArg(graphql.Boolean, "只看自己", true, false),
 		"offset":      GenArg(graphql.Int, "列表偏移量"),
 		"limit":       GenArg(graphql.Int, "列表最大值"),
 	},

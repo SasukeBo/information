@@ -1,0 +1,29 @@
+query (
+  $namePattern: String
+  $self: Boolean
+  $offset: Int
+  $limit: Int
+) {
+  productList(
+    namePattern: $namePattern
+    self: $self
+    offset: $offset
+    limit: $limit
+  ) {
+    count
+    products {
+      id
+      name
+      currentCount
+      customer
+      detectItemsCount
+      finishTime
+      orderNum
+      register {
+        name
+      }
+      total
+      productor
+    }
+  }
+}

@@ -61,7 +61,7 @@ export default {
       immediate: true,
       handler: function(newVal) {
         if (this.type === 'date') {
-          this.inputValue = timeFormatter(newVal, '%y年%m月%d日');
+          if (newVal) this.inputValue = timeFormatter(newVal, '%y年%m月%d日');
           this.dateValue = newVal;
         } else {
           this.inputValue = newVal;

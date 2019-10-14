@@ -1,6 +1,6 @@
 <template>
   <div class="product-form">
-    <div class="header">{{ action === 'new' ? '创建产品' : '修改产品'}}</div>
+    <div class="header">创建产品</div>
     <div class="header_hr"></div>
     <div class="error-message" :style="{height: message ? '52px' : '0'}">
       <div class="message">{{ message }}</div>
@@ -29,12 +29,7 @@
           <el-button type="danger" icon="el-icon-delete" @click="detectItems.splice(i, 1)">删除</el-button>
         </div>
 
-        <el-button
-          :loading="loading"
-          class="submit-btn"
-          type="primary"
-          @click="submit"
-        >{{ action === 'new' ? '注册产品' : '保存修改'}}</el-button>
+        <el-button :loading="loading" class="submit-btn" type="primary" @click="submit">注册产品</el-button>
       </form>
     </div>
   </div>
@@ -59,12 +54,6 @@ export default {
       detectItems: [],
       loading: false
     };
-  },
-  computed: {
-    action() {
-      if (this.$route.name === 'product-edit') return 'edit';
-      else return 'new';
-    }
   },
   methods: {
     addNewItem() {
@@ -179,7 +168,6 @@ export default {
     display: flex;
     justify-content: space-between;
     position: relative;
-
 
     .floating-label {
       width: 30%;
