@@ -57,22 +57,25 @@ export default {
     };
   },
   watch: {
-    dateValue(newVal) {
-      if (this.type === 'date')
-        this.inputValue = timeFormatter(newVal, '%y年%m月%d日');
-    },
-    value(newVal) {
-      if (this.type === 'date') {
-        this.inputValue = timeFormatter(newVal, '%y年%m月%d日');
-        this.dateValue = newVal;
-      } else {
-        this.inputValue = newVal;
+    value: {
+      immediate: true,
+      handler: function(newVal) {
+        if (this.type === 'date') {
+          this.inputValue = timeFormatter(newVal, '%y年%m月%d日');
+          this.dateValue = newVal;
+        } else {
+          this.inputValue = newVal;
+        }
       }
     },
-    dateValue(newVal) {
-      if (newVal && newVal !== this.value) {
-        var date = new Date(newVal);
-        this.$emit('input', date.toISOString());
+    dateValue: {
+      immediate: true,
+      handler: function(newVal) {
+        if (newVal) this.inputValue = timeFormatter(newVal, '%y年%m月%d日');
+        if (newVal && newVal !== this.value) {
+          var date = new Date(newVal);
+          this.$emit('input', date.toISOString());
+        }
       }
     }
   }

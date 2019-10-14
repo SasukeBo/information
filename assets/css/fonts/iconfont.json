@@ -41,6 +41,13 @@
       "unicode_decimal": 59464
     },
     {
+      "icon_id": "1471595",
+      "name": "save",
+      "font_class": "save",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
       "icon_id": "2269862",
       "name": "设备管理",
       "font_class": "shebeiguanli",

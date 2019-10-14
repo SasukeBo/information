@@ -82,7 +82,7 @@ func DeleteDetectItem(params graphql.ResolveParams) (interface{}, error) {
 	id := params.Args["id"].(int)
 	detectItem := models.DetectItem{ID: id}
 
-	if _, err := o.Delete(detectItem); err != nil {
+	if _, err := o.Delete(&detectItem); err != nil {
 		return nil, models.Error{Message: "delete detect_item failed.", OriErr: err}
 	}
 

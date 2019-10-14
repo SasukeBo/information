@@ -3,7 +3,7 @@
     <div class="field-title">订货方</div>
     <float-label-input v-model="product.customer" :enter="submit" placeholder="填写姓名"></float-label-input>
     <float-label-input v-model="product.customerContact" :enter="submit" placeholder="填写手机号"></float-label-input>
-    <el-button type="primary" :loading="loading" @click="submit">保存修改</el-button>
+    <el-button class="submit" type="primary" :loading="loading" @click="submit">保存修改</el-button>
   </div>
 </template>
 <script>

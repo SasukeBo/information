@@ -154,14 +154,21 @@ export default {
     }
 
     .field-title {
+      position: relative;
       font-size: 24px;
       line-height: 24px;
       margin: 0px 0px 25px 0px;
       color: $--color-font__white;
       font-weight: 400;
+
+      .el-button {
+        position: absolute;
+        right: 0;
+        width: 80px;
+      }
     }
 
-    .el-button {
+    .el-button.submit {
       width: 100%;
     }
   }

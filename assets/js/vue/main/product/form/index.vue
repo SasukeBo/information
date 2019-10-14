@@ -180,6 +180,7 @@ export default {
     justify-content: space-between;
     position: relative;
 
+
     .floating-label {
       width: 30%;
     }

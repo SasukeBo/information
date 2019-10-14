@@ -2,7 +2,7 @@
   <div class="product-setting-name content-block">
     <div class="field-title">产品名称</div>
     <float-label-input :enter="submit" v-model="product.name" placeholder="请填写产品名称"></float-label-input>
-    <el-button type="primary" :loading="loading" @click="submit">保存修改</el-button>
+    <el-button class="submit" type="primary" :loading="loading" @click="submit">保存修改</el-button>
   </div>
 </template>
 <script>

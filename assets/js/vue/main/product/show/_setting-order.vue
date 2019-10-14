@@ -9,7 +9,7 @@
       v-model="product.finishTime"
       placeholder="预计完成日期"
     ></float-label-input>
-    <el-button type="primary" :loading="loading" @click="submit">保存修改</el-button>
+    <el-button class="submit" type="primary" :loading="loading" @click="submit">保存修改</el-button>
   </div>
 </template>
 <script>
