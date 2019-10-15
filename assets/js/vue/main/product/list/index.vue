@@ -1,7 +1,17 @@
 <template>
   <div class="product-list">
     <div class="header">产品列表</div>
-    <div class="header_hr"></div>
+    <div class="header-hr">
+      <div class="create-product-btn">
+        <el-button
+          icon="el-icon-plus"
+          circle
+          type="primary"
+          @click="$router.push({name: 'product-new'})"
+        ></el-button>
+      </div>
+    </div>
+
     <div class="search-bar">
       <el-input
         placeholder="搜索你的产品"
@@ -122,11 +132,26 @@ export default {
     margin-top: 27px;
   }
 
-  .header_hr {
+  .header-hr {
     position: relative;
     width: 100%;
     height: 1px;
     background: $--color-theme__light;
+  }
+
+  .header-hr .create-product-btn {
+    position: absolute;
+    right: 11px;
+    top: -25px;
+
+    .el-button {
+      box-shadow: 0 0 14px 0px #000;
+      transition: background ease 0.3s;
+    }
+
+    .el-button i {
+      font-size: 1.5rem;
+    }
   }
 
   .search-bar {

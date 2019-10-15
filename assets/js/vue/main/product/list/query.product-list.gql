@@ -19,6 +19,7 @@ query (
       detectItemsCount
       orderNum
       register {
+        id
         name
         avatarURL
       }

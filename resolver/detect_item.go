@@ -134,3 +134,22 @@ func ListDetectItem(params graphql.ResolveParams) (interface{}, error) {
 		DetectItems []*models.DetectItem
 	}{cnt, detectItems}, nil
 }
+
+// ProductDetectItemsCount 项目检测项数统计
+func ProductDetectItemsCount(params graphql.ResolveParams) (interface{}, error) {
+	product, ok := params.Source.(*models.Product)
+	if !ok {
+		return nil, nil
+	}
+
+	o := orm.NewOrm()
+	var r orm.RawSeter
+	r = o.Raw("SELECT COUNT(*) FROM detect_item AS di WHERE di.product_id = ?", product.ID)
+	var res []orm.Params
+	_, err := r.Values(&res)
+	if err != nil {
+		return nil, nil
+	}
+
+	return res[0]["count"], nil
+}

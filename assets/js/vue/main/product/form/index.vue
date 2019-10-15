@@ -68,6 +68,7 @@ export default {
       if (!this.form.name) {
         this.message = '请填写产品名称！';
         this.loading = false;
+        document.getElementById('app').scrollTo(0, 0);
         return;
       }
 
@@ -75,6 +76,7 @@ export default {
         if (!this.detectItems[i].sign) {
           this.message = '信息有误，请正确填写检测项名称！';
           this.loading = false;
+          document.getElementById('app').scrollTo(0, 0);
           return;
         }
       }
