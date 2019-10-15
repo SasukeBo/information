@@ -48,7 +48,7 @@ func ListDevice(params graphql.ResolveParams) (interface{}, error) {
 		cond = cond.And("status", status)
 	}
 
-	if isRegister := params.Args["filter"]; isRegister != nil {
+	if isRegister := params.Args["self"]; isRegister != nil {
 		if isRegister.(bool) {
 			user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
 			cond = cond.And("user_id", user.ID)

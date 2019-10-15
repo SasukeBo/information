@@ -17,7 +17,7 @@
         placeholder="搜索你的产品"
         prefix-icon="el-icon-search"
         v-model="search"
-        @keyup.native.enter="searchList"
+        @keyup.native.enter="namePattern = search"
       ></el-input>
       <el-checkbox v-model="self" class="custom-checkbox-vertical">只看我自己</el-checkbox>
     </div>
@@ -135,11 +135,6 @@ export default {
         products: []
       }
     };
-  },
-  methods: {
-    searchList() {
-      this.namePattern = this.search;
-    }
   },
   mounted() {
     NProgress.done();

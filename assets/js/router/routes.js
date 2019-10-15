@@ -20,7 +20,7 @@ function defaultRoutes() {
             {
               path: 'new',
               name: 'product-new',
-              component: load('main/product/form')
+              component: load('main/product/new')
             },
             {
               path: ':id/show',
@@ -35,6 +35,23 @@ function defaultRoutes() {
             }
           ]
         },
+        {
+          path: 'device',
+          component: load('main/device'),
+          children: [
+            {
+              path: 'list',
+              name: 'device-list',
+              component: load('main/device/list')
+            },
+            {
+              path: 'new',
+              name: 'device-new',
+              component: load('main/device/new')
+            }
+          ]
+        }
+        /*
         {
           path: 'devices',
           name: 'device-list',
@@ -110,6 +127,7 @@ function defaultRoutes() {
             }
           ]
         }
+        */
       ]
     },
     {

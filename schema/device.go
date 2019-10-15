@@ -28,13 +28,13 @@ var deviceType = graphql.NewObject(graphql.ObjectConfig{
 		"status":         &graphql.Field{Type: DeviceStatus, Description: "基础状态"},
 		"address":        &graphql.Field{Type: graphql.String, Description: "设备地址"},
 		"number":         &graphql.Field{Type: graphql.String, Description: "设备编号"},
-		"uuid":           &graphql.Field{Type: graphql.String, Description: "设备UUID"},
 		"statusChangeAt": &graphql.Field{Type: graphql.DateTime, Description: "设备状态变更时间"},
 		"description":    &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
 		"createdAt":      &graphql.Field{Type: graphql.DateTime},
 		"updatedAt":      &graphql.Field{Type: graphql.DateTime},
 		"remoteIP":       &graphql.Field{Type: graphql.String},
 		"statistics":     &graphql.Field{Type: DeviceStatisticsType, Description: "设备统计数据"},
+		"chargerCount":   &graphql.Field{Type: graphql.Int, Description: "设备负责人数量统计"}, // TODO: resolver
 	},
 })
 
@@ -117,7 +117,7 @@ var deviceList = &graphql.Field{
 		"offset": GenArg(graphql.Int, "数据偏移量"),
 		"search": GenArg(graphql.String, "设备类型/设备名称/地址/设备编号模糊搜索"),
 		"status": GenArg(DeviceStatus, "设备状态 prod/stop/offline"),
-		"filter": GenArg(graphql.Boolean, "仅显示本人创建"),
+		"self":   GenArg(graphql.Boolean, "仅显示本人创建"),
 	},
 	Description: "获取device列表",
 	Resolve:     resolver.ListDevice,
