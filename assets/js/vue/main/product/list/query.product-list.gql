@@ -17,10 +17,10 @@ query (
       currentCount
       customer
       detectItemsCount
-      finishTime
       orderNum
       register {
         name
+        avatarURL
       }
       total
       productor

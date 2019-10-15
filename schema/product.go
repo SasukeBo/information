@@ -23,7 +23,7 @@ var productType = graphql.NewObject(graphql.ObjectConfig{
 		"createdAt":        &graphql.Field{Type: graphql.DateTime},
 		"updatedAt":        &graphql.Field{Type: graphql.DateTime},
 		"finishTime":       &graphql.Field{Type: graphql.DateTime},
-		"currentCount":     &graphql.Field{Type: graphql.Int, Description: "当前产量"}, // TODO: resolver
+		"currentCount":     &graphql.Field{Type: graphql.Int, Description: "当前产量", Resolve: resolver.CurrentProductInsCount},
 		"detectItemsCount": &graphql.Field{Type: graphql.Int, Description: "检测项数"}, // TODO: resolver
 	},
 })

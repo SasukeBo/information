@@ -139,7 +139,7 @@ func ListProduct(params graphql.ResolveParams) (interface{}, error) {
 		return nil, models.Error{Message: "begin transaction failed.", OriErr: err}
 	}
 
-	qs := o.QueryTable("product").OrderBy("-created_at")
+	qs := o.QueryTable("product").OrderBy("created_at")
 	if namePattern := params.Args["namePattern"]; namePattern != nil {
 		qs = qs.Filter("name__icontains", namePattern)
 	}
