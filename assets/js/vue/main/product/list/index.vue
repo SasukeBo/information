@@ -40,11 +40,19 @@
       >
         <span class="table-cell p-id">{{product.id}}</span>
         <span class="table-cell">
-          <a :href="'/product/'+product.id + '/show'" class="name">{{ product.name }}</a>
+          <a
+            @click.prevent="$router.push({name: 'product-show', params: {id: product.id}})"
+            :href="'/product/'+product.id + '/show'"
+            class="name"
+          >{{ product.name }}</a>
           <span class="order-num">订单号: {{ product.orderNum ? product.orderNum : '-' }}</span>
         </span>
 
-        <a :href="'/product/'+product.id + '/show'" class="table-cell">
+        <a
+          :href="'/product/'+product.id + '/show'"
+          @click.prevent="$router.push({name: 'product-show', params: {id: product.id}})"
+          class="table-cell"
+        >
           <div v-if="product.register && product.register.name" class="first">
             <img
               class="avatar"
@@ -55,17 +63,29 @@
           <span v-else>-</span>
         </a>
 
-        <a :href="'/product/'+product.id + '/show'" class="table-cell">
+        <a
+          @click.prevent="$router.push({name: 'product-show', params: {id: product.id}})"
+          :href="'/product/'+product.id + '/show'"
+          class="table-cell"
+        >
           <div class="first" v-if="product.customer">{{ product.customer }}</div>
           <span v-else>-</span>
         </a>
 
-        <a :href="'/product/'+product.id + '/show'" class="table-cell">
+        <a
+          @click.prevent="$router.push({name: 'product-show', params: {id: product.id}})"
+          :href="'/product/'+product.id + '/show'"
+          class="table-cell"
+        >
           <div class="first" v-if="product.productor">{{ product.productor }}</div>
           <span v-else>-</span>
         </a>
 
-        <a :href="'/product/'+product.id + '/show'" class="table-cell">
+        <a
+          @click.prevent="$router.push({name: 'product-show', params: {id: product.id}})"
+          :href="'/product/'+product.id + '/show'"
+          class="table-cell"
+        >
           <div class="first">
             <span style="color: #03a9f4">{{ product.total ? product.total : '0' }}</span>
             <span>/</span>
@@ -73,7 +93,11 @@
           </div>
         </a>
 
-        <a :href="'/product/'+product.id + '/show?tab=setting#detect-items'" class="table-cell">
+        <a
+          @click.prevent="$router.push({name: 'product-show', params: {id: product.id}, query: {tab: 'setting'}, hash: '#detect-items'})"
+          :href="'/product/'+product.id + '/show?tab=setting#detect-items'"
+          class="table-cell"
+        >
           <div
             class="first"
             style="color: #03a9f4"

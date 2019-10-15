@@ -26,6 +26,14 @@
       <i class="iconfont icon-chanpin"></i>
       <span>产品</span>
     </a>
+
+    <a href="https://github.com/SasukeBo/information/tree/develop" target="_blank" class="menu-item">
+      <span>Github 仓库</span>
+    </a>
+
+    <a href="https://github.com/SasukeBo/information/issues/5" target="_blank" class="menu-item">
+      <span>Github Issues</span>
+    </a>
   </div>
 </template>
 <script>
