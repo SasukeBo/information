@@ -16,7 +16,7 @@ type Error struct {
 
 // Error _
 func (e Error) Error() string {
-	message := fmt.Sprintf(`{"message": %s, "originError": %v}`, e.Message, e.OriErr)
+	message := fmt.Sprintf(`{"message": "%s", "originError": "%v"}`, e.Message, e.OriErr)
 	if env("runmode") == "dev" {
 		logs.Error(message)
 	}

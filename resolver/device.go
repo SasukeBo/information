@@ -165,29 +165,33 @@ func UpdateDevice(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
-	if dType := params.Args["type"]; dType != nil {
-		if err := utils.ValidateStringEmpty(dType.(string), "type"); err != nil {
+	if value := params.Args["address"]; value != nil {
+		device.Address = value.(string)
+	}
+
+	if value := params.Args["description"]; value != nil {
+		device.Description = value.(string)
+	}
+
+	if value := params.Args["name"]; value != nil {
+		if err := utils.ValidateStringEmpty(value.(string), "name"); err != nil {
 			return nil, err
 		}
-		device.Type = dType.(string)
+		device.Name = value.(string)
 	}
 
-	if name := params.Args["name"]; name != nil {
-		if err := utils.ValidateStringEmpty(name.(string), "name"); err != nil {
+	if value := params.Args["number"]; value != nil {
+		device.Number = value.(string)
+	}
+
+	if value := params.Args["type"]; value != nil {
+		if err := utils.ValidateStringEmpty(value.(string), "type"); err != nil {
 			return nil, err
 		}
-		device.Name = name.(string)
+		device.Type = value.(string)
 	}
 
-	if status := params.Args["status"]; status != nil {
-		device.Status = status.(int)
-	}
-
-	if description := params.Args["description"]; description != nil {
-		device.Description = description.(string)
-	}
-
-	if _, err := o.Update(&device, "type", "name", "status", "description"); err != nil {
+	if _, err := o.Update(&device); err != nil {
 		return nil, models.Error{Message: "update device failed.", OriErr: err}
 	}
 

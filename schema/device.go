@@ -34,7 +34,6 @@ var deviceType = graphql.NewObject(graphql.ObjectConfig{
 		"updatedAt":      &graphql.Field{Type: graphql.DateTime},
 		"remoteIP":       &graphql.Field{Type: graphql.String},
 		"statistics":     &graphql.Field{Type: DeviceStatisticsType, Description: "设备统计数据"},
-		"chargerCount":   &graphql.Field{Type: graphql.Int, Description: "设备负责人数量统计"}, // TODO: resolver
 	},
 })
 
@@ -142,11 +141,12 @@ var deviceCreate = &graphql.Field{
 var deviceUpdate = &graphql.Field{
 	Type: deviceType,
 	Args: graphql.FieldConfigArgument{
-		"uuid":        GenArg(graphql.String, "设备UUID", false),
-		"type":        GenArg(graphql.String, "设备类型"),
-		"name":        GenArg(graphql.String, "设备名称"),
-		"status":      GenArg(DeviceStatus, "设备状态 prod/stop/offline/online"),
+		"id":          GenArg(graphql.Int, "设备ID", false),
+		"address":     GenArg(graphql.String, "设备地址"),
 		"description": GenArg(graphql.String, "描述"),
+		"name":        GenArg(graphql.String, "设备名称"),
+		"number":      GenArg(graphql.String, "设备编号"),
+		"type":        GenArg(graphql.String, "设备类型"),
 	},
 	Resolve: resolver.UpdateDevice,
 }

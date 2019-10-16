@@ -187,7 +187,7 @@
 <script>
 import productDetailsQuery from './gql/query.product-details.gql';
 import productUpdateMutate from './gql/mutate.product-update.gql';
-import { timeFormatter } from 'js/utils';
+import { timeFormatter, parseGQLError } from 'js/utils';
 import defaultAvatar from 'images/default-avatar.png';
 import ClickToEdit from 'js/vue/main/components/click-to-edit';
 
@@ -223,11 +223,12 @@ export default {
           mutation: productUpdateMutate,
           variables
         })
-        .then(({ data }) => {
-          console.log('update success', data);
+        .then(() => {
+          this.$message({ type: 'success', message: '更新成功' });
         })
         .catch(e => {
-          console.log(e);
+          var err = parseGQLError(e);
+          this.$message({ type: 'error', message: err.message });
         });
     }
   },
@@ -305,8 +306,9 @@ export default {
 
   .detail-row .item {
     min-height: 40px;
+    display: flex;
     color: $--color-font__light;
-    line-height: 40px;
+    align-items: center;
 
     .label {
       display: inline-block;
@@ -320,7 +322,7 @@ export default {
     }
 
     .value {
-      display: inline-block;
+      flex: auto;
     }
 
     .value.click-to-edit .el-input {

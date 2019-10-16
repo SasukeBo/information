@@ -45,6 +45,12 @@ function defaultRoutes() {
               component: load('main/device/list')
             },
             {
+              path: ':id/show',
+              name: 'device-show',
+              props: true,
+              component: load('main/device/show')
+            },
+            {
               path: 'new',
               name: 'device-new',
               component: load('main/device/new')

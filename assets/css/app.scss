@@ -100,3 +100,8 @@ body .el-message {
     color: $--color-font__gray;
   }
 }
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}

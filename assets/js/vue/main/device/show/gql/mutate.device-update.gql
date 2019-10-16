@@ -1,0 +1,19 @@
+mutation (
+  $name: String
+  $number: String
+  $type: String
+  $id: Int!
+  $address: String
+  $description: String
+) {
+  deviceUpdate(
+    name: $name
+    number: $number
+    type: $type
+    id: $id
+    address: $address
+    description: $description
+  ) {
+    id
+  }
+}

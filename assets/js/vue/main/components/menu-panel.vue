@@ -10,7 +10,7 @@
     </a>
 
     <a
-      href="devices"
+      href="/device/list"
       :class="['menu-item', $route.name == 'device-list' ? 'is-active': '']"
       @click.prevent="directTo('device-list')"
     >
@@ -19,7 +19,7 @@
     </a>
 
     <a
-      href="products"
+      href="/product/list"
       :class="['menu-item', $route.name == 'product-list' ? 'is-active': '']"
       @click.prevent="directTo('product-list')"
     >
@@ -27,7 +27,11 @@
       <span>产品</span>
     </a>
 
-    <a href="https://github.com/SasukeBo/information/tree/develop" target="_blank" class="menu-item">
+    <a
+      href="https://github.com/SasukeBo/information/tree/develop"
+      target="_blank"
+      class="menu-item"
+    >
       <span>Github 仓库</span>
     </a>
 

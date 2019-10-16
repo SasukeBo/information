@@ -1,9 +1,9 @@
 <template>
   <div class="click-to-edit">
-    <span v-if="edit">
+    <span v-if="edit" class="content">
       <slot name="form"></slot>
     </span>
-    <span v-else @click="edit = true">
+    <span v-else @click="edit = true" class="content">
       <slot name="text"></slot>
     </span>
 
@@ -31,6 +31,8 @@ export default {
 @import 'css/vars.scss';
 .click-to-edit {
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
   color: $--color-theme__main;
 
   .el-icon-check {
@@ -42,10 +44,16 @@ export default {
   }
 
   i {
+    width: 15%;
     font-size: 1.5rem;
     font-weight: bold;
     padding: 0 0rem;
     vertical-align: middle;
+  }
+
+  .content {
+    padding-right: 15px;
+    width: 65%;
   }
 }
 </style>
