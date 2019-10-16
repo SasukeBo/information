@@ -21,11 +21,14 @@ query (
       token
       address
       status
-      chargerCount
+      statistics {
+        activation
+        yield
+      }
       user {
         id
         name
-        phone
+        avatarURL
       }
     }
   }

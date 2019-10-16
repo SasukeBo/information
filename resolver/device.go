@@ -54,7 +54,7 @@ func ListDevice(params graphql.ResolveParams) (interface{}, error) {
 			cond = cond.And("user_id", user.ID)
 		}
 	}
-	qs := o.QueryTable("device").SetCond(cond).OrderBy("-created_at")
+	qs := o.QueryTable("device").SetCond(cond).OrderBy("created_at")
 
 	cnt, err := qs.Count()
 	if err != nil {

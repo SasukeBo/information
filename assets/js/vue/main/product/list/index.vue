@@ -33,26 +33,20 @@
         <span class="table-cell">检测项数</span>
       </div>
 
-      <div
+      <a
         class="table-row data-row"
         v-for="(product, index) in productList.products"
         :key="'product_' + index"
+        @click.prevent="$router.push({name: 'product-show', params: {id: product.id}})"
+        :href="'/product/'+product.id + '/show'"
       >
         <span class="table-cell p-id">{{product.id}}</span>
         <span class="table-cell">
-          <a
-            @click.prevent="$router.push({name: 'product-show', params: {id: product.id}})"
-            :href="'/product/'+product.id + '/show'"
-            class="name"
-          >{{ product.name }}</a>
+          <span class="name">{{ product.name }}</span>
           <span class="order-num">订单号: {{ product.orderNum ? product.orderNum : '-' }}</span>
         </span>
 
-        <a
-          :href="'/product/'+product.id + '/show'"
-          @click.prevent="$router.push({name: 'product-show', params: {id: product.id}})"
-          class="table-cell"
-        >
+        <span class="table-cell">
           <div v-if="product.register && product.register.name" class="first">
             <img
               class="avatar"
@@ -61,49 +55,34 @@
             {{ product.register.name }}
           </div>
           <span v-else>-</span>
-        </a>
+        </span>
 
-        <a
-          @click.prevent="$router.push({name: 'product-show', params: {id: product.id}})"
-          :href="'/product/'+product.id + '/show'"
-          class="table-cell"
-        >
+        <span class="table-cell">
           <div class="first" v-if="product.customer">{{ product.customer }}</div>
           <span v-else>-</span>
-        </a>
+        </span>
 
-        <a
-          @click.prevent="$router.push({name: 'product-show', params: {id: product.id}})"
-          :href="'/product/'+product.id + '/show'"
-          class="table-cell"
-        >
+        <span class="table-cell">
           <div class="first" v-if="product.productor">{{ product.productor }}</div>
           <span v-else>-</span>
-        </a>
+        </span>
 
-        <a
-          @click.prevent="$router.push({name: 'product-show', params: {id: product.id}})"
-          :href="'/product/'+product.id + '/show'"
-          class="table-cell"
-        >
+        <span class="table-cell">
           <div class="first">
             <span style="color: #03a9f4">{{ product.total ? product.total : '0' }}</span>
             <span>/</span>
             <span style="color: #8fc860">{{ product.currentCount ? product.currentCount : '0' }}</span>
+            <span>个</span>
           </div>
-        </a>
+        </span>
 
-        <a
-          @click.prevent="$router.push({name: 'product-show', params: {id: product.id}, query: {tab: 'setting'}, hash: '#detect-items'})"
-          :href="'/product/'+product.id + '/show?tab=setting#detect-items'"
-          class="table-cell"
-        >
+        <span class="table-cell">
           <div
             class="first"
             style="color: #03a9f4"
-          >{{product.detectItemsCount ? product.detectItemsCount : '0'}}</div>
-        </a>
-      </div>
+          >{{product.detectItemsCount ? product.detectItemsCount : '0'}} 项</div>
+        </span>
+      </a>
     </div>
   </div>
 </template>
@@ -187,61 +166,23 @@ export default {
     }
   }
 
-  .list-table {
-    display: table;
-    width: 100%;
-    border: 1px solid $--color-theme__light;
-    border-bottom: none;
-  }
-
-  .table-row {
-    display: table-row;
-  }
-
-  .table-cell {
-    display: table-cell;
-    width: auto;
-    padding: 15px 10px;
-    border-bottom: 1px solid $--color-theme__light;
-  }
-
-  .data-row .table-cell {
-    height: 70px;
-    vertical-align: middle;
-    padding: 10px;
-    cursor: pointer;
-  }
-
   .table-cell.p-id {
     text-align: center;
     color: $--color-font__light;
-  }
-
-  .data-row {
-    color: $--color-font__gray;
-  }
-
-  .table-cell a {
-    display: block;
   }
 
   .table-cell .name {
     font-weight: bold;
     color: $--color-font__white;
     line-height: 1.5rem;
+    display: block;
   }
 
   .table-cell .order-num {
     font-size: 13px;
   }
 
-  a.table-cell {
-    color: $--color-font__gray;
-
-    &:hover {
-      color: $--color-font__gray;
-    }
-
+  .table-cell {
     .first {
       line-height: 1.5rem;
       color: $--color-font__light;
@@ -254,10 +195,6 @@ export default {
         margin-right: 0.5rem;
       }
     }
-  }
-
-  .header-row {
-    background: linear-gradient(141deg, #aca0f2 0%, #0286c2 50%, #aca0f2 100%);
   }
 
   .custom-checkbox-vertical {

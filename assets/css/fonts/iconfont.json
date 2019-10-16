@@ -146,6 +146,20 @@
       "unicode_decimal": 58921
     },
     {
+      "icon_id": "9128918",
+      "name": "running",
+      "font_class": "running",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "9471240",
+      "name": "offline",
+      "font_class": "offline",
+      "unicode": "e6c6",
+      "unicode_decimal": 59078
+    },
+    {
       "icon_id": "9515016",
       "name": "home",
       "font_class": "xuanzhongshangcheng",
@@ -172,6 +186,13 @@
       "font_class": "off-line",
       "unicode": "e502",
       "unicode_decimal": 58626
+    },
+    {
+      "icon_id": "10862252",
+      "name": "stopping",
+      "font_class": "stopping",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
     }
   ]
 }
