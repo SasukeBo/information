@@ -29,10 +29,10 @@ var deviceType = graphql.NewObject(graphql.ObjectConfig{
 		"address":        &graphql.Field{Type: graphql.String, Description: "设备地址"},
 		"number":         &graphql.Field{Type: graphql.String, Description: "设备编号"},
 		"statusChangeAt": &graphql.Field{Type: graphql.DateTime, Description: "设备状态变更时间"},
+		"statistics":     &graphql.Field{Type: DeviceStatisticsType, Description: "设备统计数据"},
 		"createdAt":      &graphql.Field{Type: graphql.DateTime},
 		"updatedAt":      &graphql.Field{Type: graphql.DateTime},
 		"remoteIP":       &graphql.Field{Type: graphql.String},
-		"statistics":     &graphql.Field{Type: DeviceStatisticsType, Description: "设备统计数据"},
 	},
 })
 
@@ -55,7 +55,7 @@ func init() {
 	deviceType.AddFieldConfig("product", &graphql.Field{
 		Type:        productType,
 		Description: "生产产品",
-		Resolve:     resolver.LoadProduct,
+		Resolve:     resolver.DeviceLoadProduct,
 	})
 
 	deviceType.AddFieldConfig("deviceChargers", &graphql.Field{
@@ -87,8 +87,26 @@ var deviceStatusCountResponse = graphql.NewObject(graphql.ObjectConfig{
 	Description: "设备状态数量对象",
 })
 
+var deviceMonthlyStatisticsResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name: "DeviceMonthlyStatisticsResponse",
+	Fields: graphql.Fields{
+		"runningTime": &graphql.Field{Type: graphql.String, Description: "离线状态下的设备数量"},
+		"activation":  &graphql.Field{Type: graphql.Float, Description: "稼动率"},
+		"yieldRate":   &graphql.Field{Type: graphql.Float, Description: "良率"},
+		"yield":       &graphql.Field{Type: graphql.Float, Description: "产量"},
+	},
+	Description: "设备月数据统计结果对象",
+})
+
 /* 				   query
 ------------------------------ */
+
+var deviceMonthlyStatistics = &graphql.Field{
+	Type:        deviceMonthlyStatisticsResponse,
+	Args:        graphql.FieldConfigArgument{"id": GenArg(graphql.Int, "设备ID", false)},
+	Description: `设备月数据统计`,
+	Resolve:     resolver.MonthlyAnalyzeDevice,
+}
 
 var deviceStatusCount = &graphql.Field{
 	Type: deviceStatusCountResponse,

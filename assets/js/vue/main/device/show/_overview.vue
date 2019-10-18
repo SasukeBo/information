@@ -102,24 +102,26 @@
         </div>
 
         <div class="col-line">
-          <div class="label">描述</div>
-          <click-to-edit class="value" @save="save('description')">
-            <template v-slot:text>{{ device.description ? device.description : '[点击填写]' }}</template>
-            <template v-slot:form>
-              <el-input v-model="device.description" size="mini"></el-input>
-            </template>
-          </click-to-edit>
+          <div class="label">生产产品</div>
+          <div class="value" v-if="device.product">
+            <a
+              :href="'/product/' + device.product.id + '/show'"
+              target="_blank"
+            >{{device.product.name}}</a>
+          </div>
         </div>
       </div>
 
-      <div class="details__col"></div>
+      <div class="details__col">
+        这边显示负责人信息
+      </div>
     </div>
   </div>
 </template>
 <script>
 // graphql
-import deviceOverviewQuery from '../gql/query.device-overview.gql';
-import deviceUpdateMutate from '../gql/mutate.device-update.gql';
+import deviceOverviewQuery from './gql/query.device-overview.gql';
+import deviceUpdateMutate from './gql/mutate.device-update.gql';
 
 import defaultAvatar from 'images/default-avatar.png';
 import { timeFormatter, parseGQLError } from 'js/utils';

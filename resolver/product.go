@@ -3,10 +3,34 @@ package resolver
 import (
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/utils"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
 	"time"
 )
+
+// DeviceLoadProduct _
+func DeviceLoadProduct(params graphql.ResolveParams) (interface{}, error) {
+	device := params.Source.(models.Device)
+
+	o := orm.NewOrm()
+
+	var err error
+	var ship models.DeviceProductShip
+	err = o.QueryTable("DeviceProductShip").OrderBy("-id").Filter("device_id", device.ID).Limit(1).One(&ship)
+	if err != nil {
+		logs.Error(err)
+		return nil, nil
+	}
+
+	_, err = o.LoadRelated(&ship, "product")
+	if err != nil {
+		logs.Error(err)
+		return nil, nil
+	}
+
+	return ship.Product, nil
+}
 
 // LoadProduct _
 func LoadProduct(params graphql.ResolveParams) (interface{}, error) {

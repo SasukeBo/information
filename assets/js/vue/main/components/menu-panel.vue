@@ -32,11 +32,18 @@
       target="_blank"
       class="menu-item"
     >
+      <i class="iconfont icon-git"></i>
       <span>Github 仓库</span>
     </a>
 
-    <a href="https://github.com/SasukeBo/information/issues/5" target="_blank" class="menu-item">
+    <a href="https://github.com/SasukeBo/information/issues/16" target="_blank" class="menu-item">
+      <i class="iconfont icon-git"></i>
       <span>Github Issues</span>
+    </a>
+
+    <a href="https://github.com/SasukeBo/information/issues/13" target="_blank" class="menu-item">
+      <i class="iconfont icon-git"></i>
+      <span>Bug Fix</span>
     </a>
   </div>
 </template>

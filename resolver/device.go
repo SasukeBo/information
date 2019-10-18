@@ -1,12 +1,64 @@
 package resolver
 
 import (
-	// "fmt"
+	"fmt"
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
+	"regexp"
+	"strconv"
+	"time"
 )
+
+// MonthlyAnalyzeDevice 分析设备月数据
+func MonthlyAnalyzeDevice(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
+	var err error
+
+	id := params.Args["id"].(int)
+	device := models.Device{ID: id}
+	if err := o.Read(&device, "id"); err != nil {
+		return nil, models.Error{Message: "get device failed.", OriErr: err}
+	}
+	var response = struct {
+		RunningTime string
+		Activation  float64
+		YieldRate   float64
+		Yield       float64
+	}{}
+
+	var sql = `
+	SELECT SUM(duration) FROM (
+		SELECT (dsl.finish_at - dsl.begin_at) AS duration
+		FROM device_status_log AS dsl
+		WHERE status = ? AND finish_at > TIMESTAMP'0001-01-01 00:00:00+00' And device_id = ?
+	) AS duration_list ;
+	`
+	var prodDuration []orm.Params
+	_, err = o.Raw(sql, models.DeviceStatus.Prod, device.ID).Values(&prodDuration)
+	if err != nil {
+		return nil, models.Error{Message: "analyze error.", OriErr: err}
+	}
+	p, ok := prodDuration[0]["sum"].(string)
+	if ok {
+		response.RunningTime = p
+	}
+
+	var stopDuration []orm.Params
+	_, err = o.Raw(sql, models.DeviceStatus.Stop, device.ID).Values(&stopDuration)
+	if err != nil {
+		return nil, models.Error{Message: "analyze error.", OriErr: err}
+	}
+	s, ok := stopDuration[0]["sum"].(string)
+	pd, errPD := parseTimeDurationFromDB(p)
+	sd, errSD := parseTimeDurationFromDB(s)
+	if errPD == nil && errSD == nil {
+		response.Activation = float64(pd.Seconds() / (pd.Seconds() + sd.Seconds()))
+	}
+
+	return response, nil
+}
 
 // GetDevice 获取设备
 func GetDevice(params graphql.ResolveParams) (interface{}, error) {
@@ -228,4 +280,28 @@ func LoadDevice(params graphql.ResolveParams) (interface{}, error) {
 // CountDeviceStatus _
 func CountDeviceStatus(params graphql.ResolveParams) (interface{}, error) {
 	return nil, nil
+}
+
+// private functions
+
+func parseTimeDurationFromDB(dbTimeDuration string) (time.Duration, error) {
+	dbDurationPattern := `^(\d*)( day )?(\d{2}):(\d{2}):(\d{2})(\.\d*)?$`
+	reg := regexp.MustCompile(dbDurationPattern)
+	matches := reg.FindStringSubmatch(dbTimeDuration)
+
+	days := matches[1]
+	hour, _ := strconv.Atoi(matches[3])
+	minutes := matches[4]
+	seconds := matches[5]
+
+	if day, err := strconv.Atoi(days); err == nil {
+		hour = day*24 + hour
+	}
+
+	duration, err := time.ParseDuration(fmt.Sprintf("%vh%vm%vs", hour, minutes, seconds))
+	if err != nil {
+		return time.Duration(0), err
+	}
+
+	return duration, nil
 }

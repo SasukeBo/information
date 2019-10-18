@@ -66,8 +66,8 @@
         </div>
 
         <div class="item">
-          <span class="label">更新于</span>
-          <span class="value">{{ timeFormatter(product.updatedAt) }}</span>
+          <span class="label">Token</span>
+          <span class="value">{{ product.token }}</span>
         </div>
 
         <div class="item">

@@ -12,12 +12,15 @@ query ($id: Int!) {
     token
     createdAt
     address
+    product {
+      id
+      name
+    }
     user {
       id
       phone
       name
       avatarURL
     }
-    description
   }
 }

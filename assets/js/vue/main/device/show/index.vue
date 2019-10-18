@@ -27,11 +27,11 @@
 
       <div class="header_right">
         <el-tooltip effect="dark" content="修改信息" placement="top">
-          <i class="operation-btn el-icon-edit"></i>
+          <i class="operation-btn el-icon-edit" @click="updateTab('setting')"></i>
         </el-tooltip>
 
         <el-tooltip effect="dark" content="删除设备" placement="top">
-          <i class="operation-btn el-icon-delete"></i>
+          <i class="operation-btn el-icon-delete" @click="confirmDelete"></i>
         </el-tooltip>
       </div>
     </div>
@@ -43,7 +43,7 @@
             <a :class="{active: currentTab === 'overview'}" @click="updateTab('overview')">总览</a>
           </li>
           <li>
-            <a :class="{active: currentTab === 'products'}" @click="updateTab('products')">生产数据</a>
+            <a :class="{active: currentTab === 'statistics'}" @click="updateTab('statistics')">生产数据</a>
           </li>
           <li>
             <a :class="{active: currentTab === 'logs'}" @click="updateTab('logs')">生产日志</a>
@@ -75,13 +75,15 @@
 <script>
 import deviceQuery from './gql/query.device.gql';
 // components
-import overview from './overview/index';
+import overview from './_overview';
+import statistics from './statistics';
 
 export default {
   name: 'device-show',
   props: ['id'],
   components: {
-    overview
+    overview,
+    statistics
   },
   apollo: {
     device: {
@@ -102,6 +104,17 @@ export default {
     }
   },
   methods: {
+    confirmDelete() {
+      var content =
+        '确认删除该设备吗？删除该设备后，此设备生产的产品数据仍然会保留，可通过产品详情页查看保留的生产数据。';
+      this.$confirm(content, '确认删除？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {})
+        .catch(() => this.$message({ type: 'info', message: '已取消删除' }));
+    },
     updateTab(tab) {
       if (this.currentTab !== tab)
         this.$router.push({ name: this.$route.name, query: { tab } });

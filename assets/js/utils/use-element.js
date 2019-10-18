@@ -7,6 +7,7 @@ import {
   Input,
   Checkbox,
   Message,
+  MessageBox,
   Row,
   Col,
   Tag,
@@ -51,3 +52,5 @@ Vue.use(Select);
 Vue.use(Option);
 Vue.use(Loading.directive);
 Vue.prototype.$message = Message;
+Vue.prototype.$alert = MessageBox.alert;
+Vue.prototype.$confirm = MessageBox.confirm;

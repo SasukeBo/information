@@ -14,11 +14,12 @@ var DeviceStatus = struct {
 
 // DeviceStatusLog 设备运行状态变更模型
 type DeviceStatusLog struct {
-	ID        int       `orm:"auto;pk;column(id)"`
-	Status    int       // 设备运行状态
-	Reason    string    `orm:"null"` // 状态变更原因
-	Device    *Device   `orm:"rel(fk);on_delete()"`
-	CreatedAt time.Time `orm:"auto_now;type(datetime)"`
+	ID       int       `orm:"auto;pk;column(id)"`
+	Status   int       // 设备运行状态
+	Reason   string    `orm:"null"` // 状态变更原因
+	Device   *Device   `orm:"rel(fk);on_delete()"`
+	BeginAt  time.Time `orm:"auto_now;type(datetime);null"`
+	FinishAt time.Time `orm:"type(datetime);null"`
 }
 
 // LoadDevice _
