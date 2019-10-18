@@ -14,6 +14,7 @@ var productType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"id":               &graphql.Field{Type: graphql.Int},
 		"name":             &graphql.Field{Type: graphql.String, Description: "产品名称"},
+		"token":            &graphql.Field{Type: graphql.String, Description: "产品token"},
 		"productor":        &graphql.Field{Type: graphql.String, Description: "生产负责人"},
 		"productorContact": &graphql.Field{Type: graphql.String, Description: "生产负责人联系方式"},
 		"customer":         &graphql.Field{Type: graphql.String, Description: "订货方"},

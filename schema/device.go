@@ -29,11 +29,19 @@ var deviceType = graphql.NewObject(graphql.ObjectConfig{
 		"address":        &graphql.Field{Type: graphql.String, Description: "设备地址"},
 		"number":         &graphql.Field{Type: graphql.String, Description: "设备编号"},
 		"statusChangeAt": &graphql.Field{Type: graphql.DateTime, Description: "设备状态变更时间"},
-		"description":    &graphql.Field{Type: graphql.String, Description: "设备描述，备注"},
 		"createdAt":      &graphql.Field{Type: graphql.DateTime},
 		"updatedAt":      &graphql.Field{Type: graphql.DateTime},
 		"remoteIP":       &graphql.Field{Type: graphql.String},
 		"statistics":     &graphql.Field{Type: DeviceStatisticsType, Description: "设备统计数据"},
+	},
+})
+
+var devicePrivateFormInputType = graphql.NewInputObject(graphql.InputObjectConfig{
+	Name:        "DevicePrivateFormInput",
+	Description: "设备注册私有字段表单类型",
+	Fields: graphql.InputObjectConfigFieldMap{
+		"address": &graphql.InputObjectFieldConfig{Type: graphql.String, Description: "设备地址"},
+		"number":  &graphql.InputObjectFieldConfig{Type: graphql.String, Description: "设备编号"},
 	},
 })
 
@@ -128,12 +136,10 @@ var deviceList = &graphql.Field{
 var deviceCreate = &graphql.Field{
 	Type: graphql.Int,
 	Args: graphql.FieldConfigArgument{
-		"count":       GenArg(graphql.Int, "创建数量", false, 1),
-		"type":        GenArg(graphql.String, "设备类型", false),
-		"name":        GenArg(graphql.String, "设备名称", false),
-		"address":     GenArg(graphql.String, "设备地址", false),
-		"description": GenArg(graphql.String, "描述"),
-		"productIDs":  GenArg(graphql.NewList(graphql.Int), "产品ID列表"),
+		"name":         GenArg(graphql.String, "设备名称", false),
+		"type":         GenArg(graphql.String, "设备类型", false),
+		"productID":    GenArg(graphql.Int, "生产产品ID"),
+		"privateForms": GenArg(graphql.NewList(devicePrivateFormInputType), "设备私有字段", false),
 	},
 	Resolve: resolver.CreateDevice,
 }
@@ -141,12 +147,11 @@ var deviceCreate = &graphql.Field{
 var deviceUpdate = &graphql.Field{
 	Type: deviceType,
 	Args: graphql.FieldConfigArgument{
-		"id":          GenArg(graphql.Int, "设备ID", false),
-		"address":     GenArg(graphql.String, "设备地址"),
-		"description": GenArg(graphql.String, "描述"),
-		"name":        GenArg(graphql.String, "设备名称"),
-		"number":      GenArg(graphql.String, "设备编号"),
-		"type":        GenArg(graphql.String, "设备类型"),
+		"id":      GenArg(graphql.Int, "设备ID", false),
+		"address": GenArg(graphql.String, "设备地址"),
+		"name":    GenArg(graphql.String, "设备名称"),
+		"number":  GenArg(graphql.String, "设备编号"),
+		"type":    GenArg(graphql.String, "设备类型"),
 	},
 	Resolve: resolver.UpdateDevice,
 }

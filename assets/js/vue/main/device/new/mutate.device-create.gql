@@ -1,0 +1,13 @@
+mutation (
+  $name: String!
+  $type: String!
+  $productID: Int
+  $privateForms: [DevicePrivateFormInput]!
+) {
+  deviceCreate(
+    name: $name
+    type: $type
+    productID: $productID
+    privateForms: $privateForms
+  )
+}

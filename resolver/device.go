@@ -93,59 +93,54 @@ func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 	rootValue := params.Info.RootValue.(map[string]interface{})
-
-	device := models.Device{}
 	user := rootValue["currentUser"].(models.User)
-	device.User = &user
 
-	dType := params.Args["type"].(string)
-	if err := utils.ValidateStringEmpty(dType, "type"); err != nil {
+	deviceType := params.Args["type"].(string)
+	if err := utils.ValidateStringEmpty(deviceType, "type"); err != nil {
 		o.Rollback()
 		return nil, err
 	}
-	device.Type = dType
 
-	dName := params.Args["name"].(string)
-	if err := utils.ValidateStringEmpty(dName, "name"); err != nil {
+	deviceName := params.Args["name"].(string)
+	if err := utils.ValidateStringEmpty(deviceName, "name"); err != nil {
 		o.Rollback()
 		return nil, err
 	}
-	device.Name = dName
-	if description := params.Args["description"]; description != nil {
-		device.Description = description.(string)
-	}
 
-	if address := params.Args["address"]; address != nil {
-		device.Address = address.(string)
-	}
-
-	ids := []interface{}{}
-	if productIDs := params.Args["productIDs"]; productIDs != nil {
-		ids = append(ids, productIDs.([]interface{})...)
-	}
-	ships := []models.DeviceProductShip{}
-
-	count := params.Args["count"].(int)
-	for i := 0; i < count; i++ {
-		device.ID = 0
-		device.Token = utils.GenRandomToken(8)
-		dID, err := o.Insert(&device)
-		if err != nil {
-			o.Rollback()
-			return nil, models.Error{Message: "created device failed.", OriErr: err}
+	productID := params.Args["productID"].(int)
+	privateForms := params.Args["privateForms"].([]interface{})
+	count := 0
+	for _, item := range privateForms {
+		privateForm, ok := item.(map[string]interface{})
+		if !ok {
+			continue
 		}
 
-		for _, id := range ids {
-			ships = append(ships, models.DeviceProductShip{
-				Device:  &models.Device{ID: int(dID)},
-				Product: &models.Product{ID: id.(int)},
-			})
+		device := &models.Device{
+			Type:    deviceType,
+			Name:    deviceName,
+			Address: privateForm["address"].(string),
+			Number:  privateForm["number"].(string),
+			Token:   utils.GenRandomToken(8),
+			User:    &user,
 		}
+
+		if _, err := o.Insert(device); err != nil {
+			continue
+		}
+
+		ship := &models.DeviceProductShip{
+			Device:  device,
+			Product: &models.Product{ID: productID},
+		}
+		o.Insert(ship)
+
+		count++
 	}
 
-	if _, err := o.InsertMulti(len(ships), ships); err != nil {
+	if count == 0 {
 		o.Rollback()
-		return nil, models.Error{Message: "created device failed.", OriErr: err}
+		return nil, models.Error{Message: "device create failed."}
 	}
 
 	o.Commit()
@@ -167,10 +162,6 @@ func UpdateDevice(params graphql.ResolveParams) (interface{}, error) {
 
 	if value := params.Args["address"]; value != nil {
 		device.Address = value.(string)
-	}
-
-	if value := params.Args["description"]; value != nil {
-		device.Description = value.(string)
 	}
 
 	if value := params.Args["name"]; value != nil {

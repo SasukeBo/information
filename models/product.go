@@ -9,6 +9,7 @@ import (
 type Product struct {
 	ID               int           `orm:"auto;pk;column(id)"`
 	Name             string        `orm:"unique"`                           // 产品名称
+	Token            string        `orm:"unique;index"`                     // 产品Token
 	ProductorContact string        `orm:"null"`                             // 生产负责人联系方式
 	Productor        string        `orm:"null"`                             // 生产负责人
 	Register         *User         `orm:"rel(fk);null;on_delete(set_null)"` // 注册人

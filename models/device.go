@@ -19,7 +19,6 @@ type Device struct {
 	Status         int              `orm:"default(0)"`                       // 离线状态
 	User           *User            `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
 	DeviceChargers []*DeviceCharger `orm:"reverse(many)"`
-	Description    string           `orm:"null"` // 描述
 	CreatedAt      time.Time        `orm:"auto_now_add;type(datetime)"`
 	StatusChangeAt time.Time        `orm:"auto_now;type(datetime)"`
 	UpdatedAt      time.Time        `orm:"auto_now;type(datetime)"`

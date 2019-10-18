@@ -32,7 +32,10 @@ export default {
       default: 'text'
     },
     placeholder: String,
-    enter: Function,
+    enter: {
+      type: Function,
+      default: () => undefined
+    },
     editable: {
       type: Boolean,
       default: true

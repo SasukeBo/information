@@ -10,7 +10,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  NProgress.start()
+  if (to.name !== from.name) NProgress.start()
   var app = router.app
 
   if (!store.state.user.phone) { // 没有用户信息

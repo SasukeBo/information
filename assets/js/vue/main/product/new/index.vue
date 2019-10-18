@@ -40,7 +40,6 @@ import productCreateMutate from './mutate.create-product.gql';
 
 export default {
   name: 'product-form',
-  props: ['id'],
   components: {
     FloatLabelInput
   },

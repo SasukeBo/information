@@ -115,10 +115,10 @@ export default {
   data() {
     return {
       limit: 50,
-      search: '',
-      self: false,
+      search: this.$route.query.search || '',
+      self: Boolean(this.$route.query.self) || false,
       status: undefined,
-      pattern: '',
+      pattern: this.$route.query.search || '',
       currentPage: 0,
       deviceList: {
         total: 0,
@@ -141,6 +141,20 @@ export default {
   computed: {
     offset() {
       return (this.currentPage - 1) * this.limit;
+    }
+  },
+  watch: {
+    search(newVal) {
+      this.$router.push({
+        name: this.$route.name,
+        query: { ...this.$route.query, search: newVal }
+      });
+    },
+    self(newVal) {
+      this.$router.push({
+        name: this.$route.name,
+        query: { ...this.$route.query, self: newVal }
+      });
     }
   },
   methods: {

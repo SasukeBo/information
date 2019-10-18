@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
 	"time"
@@ -30,6 +31,7 @@ func CreateProduct(params graphql.ResolveParams) (interface{}, error) {
 
 	name := params.Args["name"].(string)
 	product := models.Product{Name: name, Register: &user}
+	product.Token = utils.GenRandomToken(4)
 
 	if total := params.Args["total"]; total != nil {
 		product.Total = total.(int)
