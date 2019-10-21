@@ -37,7 +37,7 @@ func GetRealTimeStatistics(params graphql.ResolveParams) (interface{}, error) {
 		SELECT id FROM product_ins pi WHERE pi.device_product_ship_id = (
 			SELECT id FROM device_product_ship WHERE device_id = ? AND product_id = ?
 		) %s ORDER BY pi.created_at DESC LIMIT ?
-	) ORDER BY sign, created_at DESC;
+	) ORDER BY sign, created_at ASC;
 	`
 
 	if v := params.Args["afterTime"]; v != nil {

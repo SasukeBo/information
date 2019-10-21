@@ -3,6 +3,11 @@ query($deviceID: Int!) {
     id
     product {
       id
+      name
+      detectItems {
+        id
+        sign
+      }
     }
   }
 }

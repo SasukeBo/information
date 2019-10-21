@@ -5,9 +5,9 @@
       <month-data :id="id"></month-data>
     </div>
 
-    <div class="block" v-if="productID">
+    <div class="block" v-if="product">
       <div class="field-title">实时数据</div>
-      <real-time :deviceID="id" :productID="productID"></real-time>
+      <real-time :deviceID="id" :product="product"></real-time>
     </div>
   </div>
 </template>
@@ -22,19 +22,19 @@ export default {
   components: { MonthData, RealTime },
   props: ['id'],
   apollo: {
-    productID: {
+    product: {
       query: productQuery,
       variables() {
         return { deviceID: this.id };
       },
       update(data) {
-        return data.device.product.id;
+        return data.device.product;
       }
     }
   },
   data() {
     return {
-      productID: 0
+      product: undefined
     };
   }
 };
