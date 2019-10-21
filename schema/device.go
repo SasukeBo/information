@@ -90,16 +90,44 @@ var deviceStatusCountResponse = graphql.NewObject(graphql.ObjectConfig{
 var deviceMonthlyStatisticsResponse = graphql.NewObject(graphql.ObjectConfig{
 	Name: "DeviceMonthlyStatisticsResponse",
 	Fields: graphql.Fields{
-		"runningTime": &graphql.Field{Type: graphql.String, Description: "离线状态下的设备数量"},
-		"activation":  &graphql.Field{Type: graphql.Float, Description: "稼动率"},
-		"yieldRate":   &graphql.Field{Type: graphql.Float, Description: "良率"},
-		"yield":       &graphql.Field{Type: graphql.Float, Description: "产量"},
+		"runningTime": &graphql.Field{
+			Type:        graphql.String,
+			Description: "运行时间",
+			Args:        graphql.FieldConfigArgument{"format": GenArg(graphql.String, "时间格式化模板")},
+			Resolve:     resolver.MonthlyAnalyzeDeviceFormatTime,
+		},
+		"activation": &graphql.Field{Type: graphql.Float, Description: "稼动率"},
+		"yieldRate":  &graphql.Field{Type: graphql.Float, Description: "良率"},
+		"yield":      &graphql.Field{Type: graphql.Int, Description: "产量"},
 	},
 	Description: "设备月数据统计结果对象",
 })
 
+var realTimeStatisticsObject = graphql.NewObject(graphql.ObjectConfig{
+	Name: "RealTimeStatisticsObject",
+	Fields: graphql.Fields{
+		"id":        &graphql.Field{Type: graphql.Int, Description: "检测值ID"},
+		"sign":      &graphql.Field{Type: graphql.String, Description: "检测项名称"},
+		"value":     &graphql.Field{Type: graphql.Float, Description: "检测值"},
+		"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
+	},
+	Description: "设备生产实时数据对象",
+})
+
 /* 				   query
 ------------------------------ */
+
+var realTimeStatistics = &graphql.Field{
+	Type: graphql.NewList(realTimeStatisticsObject),
+	Args: graphql.FieldConfigArgument{
+		"deviceID":  GenArg(graphql.Int, "设备ID", false),
+		"productID": GenArg(graphql.Int, "产品ID", false),
+		"limit":     GenArg(graphql.Int, "数量限制", false),
+		"afterTime": GenArg(graphql.DateTime, "起始时间"),
+	},
+	Description: `设备生产实时数据`,
+	Resolve:     resolver.GetRealTimeStatistics,
+}
 
 var deviceMonthlyStatistics = &graphql.Field{
 	Type:        deviceMonthlyStatisticsResponse,

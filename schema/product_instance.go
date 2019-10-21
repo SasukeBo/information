@@ -12,9 +12,13 @@ var productInsType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "ProductIns",
 	Description: "产品实例",
 	Fields: graphql.Fields{
-		"id":               &graphql.Field{Type: graphql.Int},
-		"detectItemValues": &graphql.Field{Type: graphql.NewList(detectItemValueType), Description: "各检测项对应的值"},
-		"createdAt":        &graphql.Field{Type: graphql.DateTime},
+		"id": &graphql.Field{Type: graphql.Int},
+		"detectItemValues": &graphql.Field{
+			Type:        graphql.NewList(detectItemValueType),
+			Description: "各检测项对应的值",
+			Resolve:     resolver.ProductInsLoadDetectItemValues,
+		},
+		"createdAt": &graphql.Field{Type: graphql.DateTime},
 	},
 })
 
@@ -25,3 +29,18 @@ func init() {
 		Resolve:     resolver.LoadProduct,
 	})
 }
+
+/* 				  response
+------------------------------ */
+
+var productInsListResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "ProductInsListResponse",
+	Description: "产品实例列表",
+	Fields: graphql.Fields{
+		"count":      &graphql.Field{Type: graphql.Int},
+		"productIns": &graphql.Field{Type: graphql.NewList(productInsType), Description: "产品实例列表"},
+	},
+})
+
+/* 				   query
+------------------------------ */

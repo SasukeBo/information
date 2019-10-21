@@ -1,0 +1,18 @@
+query(
+  $deviceID: Int!
+  $productID: Int!
+  $limit: Int!
+  $afterTime: DateTime
+) {
+  statistics: realTimeStatistics(
+    deviceID: $deviceID
+    productID: $productID
+    limit: $limit
+    afterTime: $afterTime
+  ) {
+    id
+    sign
+    value
+    createdAt
+  }
+}

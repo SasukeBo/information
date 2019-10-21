@@ -46,7 +46,7 @@
             <a :class="{active: currentTab === 'statistics'}" @click="updateTab('statistics')">生产数据</a>
           </li>
           <li>
-            <a :class="{active: currentTab === 'logs'}" @click="updateTab('logs')">生产日志</a>
+            <a :class="{active: currentTab === 'logs'}" @click="updateTab('logs')">状态日志</a>
           </li>
           <li>
             <a :class="{active: currentTab === 'chargers'}" @click="updateTab('chargers')">负责人信息</a>

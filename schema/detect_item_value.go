@@ -1,7 +1,7 @@
 package schema
 
 import (
-	// "github.com/SasukeBo/information/resolver"
+	"github.com/SasukeBo/information/resolver"
 	"github.com/graphql-go/graphql"
 )
 
@@ -16,3 +16,11 @@ var detectItemValueType = graphql.NewObject(graphql.ObjectConfig{
 		"value": &graphql.Field{Type: graphql.Float, Description: "检测值"},
 	},
 })
+
+func init() {
+	detectItemValueType.AddFieldConfig("detectItem", &graphql.Field{
+		Type:        detectItemType,
+		Description: "检测项",
+		Resolve:     resolver.LoadDetectItem,
+	})
+}

@@ -7,6 +7,13 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+// ProductInsLoadDetectItemValues _
+func ProductInsLoadDetectItemValues(params graphql.ResolveParams) (interface{}, error) {
+	productIns := params.Source.(*models.ProductIns)
+	values, _ := productIns.LoadDetectItemValues()
+	return values, nil
+}
+
 // LoadProductIns _
 func LoadProductIns(params graphql.ResolveParams) (interface{}, error) {
 	return nil, nil

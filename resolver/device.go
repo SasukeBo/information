@@ -8,25 +8,85 @@ import (
 	"github.com/graphql-go/graphql"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
+
+type statistics struct {
+	RunningTime string
+	Activation  float64
+	YieldRate   float64
+	Yield       int
+}
+
+// GetRealTimeStatistics 获取设备实时数据
+func GetRealTimeStatistics(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
+
+	deviceID := params.Args["deviceID"].(int)
+	productID := params.Args["productID"].(int)
+	limit := params.Args["limit"].(int)
+	variables := []interface{}{deviceID, productID}
+
+	sql := `
+	SELECT div.id AS i_d, div.value AS value,
+	(SELECT sign FROM detect_item WHERE detect_item.id = div.detect_item_id) AS sign,
+	(SELECT pi.created_at FROM product_ins pi WHERE pi.id = div.product_ins_id) AS created_at
+	FROM detect_item_value div
+	WHERE div.product_ins_id IN (
+		SELECT id FROM product_ins pi WHERE pi.device_product_ship_id = (
+			SELECT id FROM device_product_ship WHERE device_id = ? AND product_id = ?
+		) %s ORDER BY pi.created_at DESC LIMIT ?
+	) ORDER BY sign, created_at DESC;
+	`
+
+	if v := params.Args["afterTime"]; v != nil {
+		sql = fmt.Sprintf(sql, "AND pi.created_at > ?")
+		variables = append(variables, v)
+	} else {
+		sql = fmt.Sprintf(sql, "")
+	}
+
+	variables = append(variables, limit)
+
+	var results []struct {
+		ID        int64
+		Value     float64
+		Sign      string
+		CreatedAt time.Time
+	}
+
+	_, err := o.Raw(sql, variables...).QueryRows(&results)
+	if err != nil {
+		return nil, models.Error{Message: "get realtime statistics falied.", OriErr: err}
+	}
+
+	return results, nil
+}
+
+// MonthlyAnalyzeDeviceFormatTime 分析设备月数据
+func MonthlyAnalyzeDeviceFormatTime(params graphql.ResolveParams) (interface{}, error) {
+	format := "%D days %H hours %M minutes"
+	if value := params.Args["format"]; value != nil {
+		format = value.(string)
+	}
+
+	response := params.Source.(statistics)
+	return formatTime(response.RunningTime, format), nil
+}
 
 // MonthlyAnalyzeDevice 分析设备月数据
 func MonthlyAnalyzeDevice(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
 	var err error
+	response := statistics{}
 
 	id := params.Args["id"].(int)
+
 	device := models.Device{ID: id}
 	if err := o.Read(&device, "id"); err != nil {
 		return nil, models.Error{Message: "get device failed.", OriErr: err}
 	}
-	var response = struct {
-		RunningTime string
-		Activation  float64
-		YieldRate   float64
-		Yield       float64
-	}{}
 
 	var sql = `
 	SELECT SUM(duration) FROM (
@@ -51,10 +111,39 @@ func MonthlyAnalyzeDevice(params graphql.ResolveParams) (interface{}, error) {
 		return nil, models.Error{Message: "analyze error.", OriErr: err}
 	}
 	s, ok := stopDuration[0]["sum"].(string)
-	pd, errPD := parseTimeDurationFromDB(p)
-	sd, errSD := parseTimeDurationFromDB(s)
-	if errPD == nil && errSD == nil {
-		response.Activation = float64(pd.Seconds() / (pd.Seconds() + sd.Seconds()))
+	if ok {
+		pd, errPD := parseTimeDurationFromDB(p)
+		sd, errSD := parseTimeDurationFromDB(s)
+		if errPD == nil && errSD == nil {
+			response.Activation = float64(pd.Seconds() / (pd.Seconds() + sd.Seconds()))
+		}
+	}
+
+	var insSQL = `
+	SELECT COUNT(*) FROM product_ins AS pi WHERE pi.device_product_ship_id = (
+		SELECT id FROM device_product_ship WHERE device_id = ? ORDER BY id DESC LIMIT 1
+	) AND pi.qualified = ? AND pi.created_at > (SELECT CURRENT_TIMESTAMP - '30 day'::INTERVAL);
+	`
+
+	var qualifiedCount []orm.Params
+	var unqualifiedCount []orm.Params
+	_, err = o.Raw(insSQL, device.ID, true).Values(&qualifiedCount)
+	if err != nil {
+		return nil, models.Error{Message: "count qualified products failed."}
+	}
+	_, err = o.Raw(insSQL, device.ID, false).Values(&unqualifiedCount)
+	if err != nil {
+		return nil, models.Error{Message: "count unqualified products failed."}
+	}
+
+	qcStr := qualifiedCount[0]["count"].(string)
+	ucStr := unqualifiedCount[0]["count"].(string)
+	qc, _ := strconv.Atoi(qcStr)
+	uc, _ := strconv.Atoi(ucStr)
+
+	response.Yield = qc + uc
+	if response.Yield != 0 {
+		response.YieldRate = float64(qc) / float64(response.Yield)
 	}
 
 	return response, nil
@@ -284,24 +373,74 @@ func CountDeviceStatus(params graphql.ResolveParams) (interface{}, error) {
 
 // private functions
 
-func parseTimeDurationFromDB(dbTimeDuration string) (time.Duration, error) {
+func splitTime(dbTimeDuration string) map[string]string {
 	dbDurationPattern := `^(\d*)( day )?(\d{2}):(\d{2}):(\d{2})(\.\d*)?$`
 	reg := regexp.MustCompile(dbDurationPattern)
 	matches := reg.FindStringSubmatch(dbTimeDuration)
-
 	days := matches[1]
-	hour, _ := strconv.Atoi(matches[3])
+	hours := matches[3]
 	minutes := matches[4]
 	seconds := matches[5]
 
-	if day, err := strconv.Atoi(days); err == nil {
-		hour = day*24 + hour
+	return map[string]string{
+		"days":    days,
+		"hours":   hours,
+		"minutes": minutes,
+		"seconds": seconds,
+	}
+}
+
+func parseTimeDurationFromDB(dbTimeDuration string) (time.Duration, error) {
+	times := splitTime(dbTimeDuration)
+	hours, err := strconv.Atoi(times["hours"])
+	if err != nil {
+		hours = 0
 	}
 
-	duration, err := time.ParseDuration(fmt.Sprintf("%vh%vm%vs", hour, minutes, seconds))
+	if day, err := strconv.Atoi(times["days"]); err == nil {
+		hours = day*24 + hours
+	}
+
+	duration, err := time.ParseDuration(fmt.Sprintf(
+		"%vh%vm%vs",
+		hours,
+		times["minutes"],
+		times["seconds"],
+	))
+
 	if err != nil {
 		return time.Duration(0), err
 	}
 
 	return duration, nil
+}
+
+func formatTime(dbTimeDuration, format string) string {
+	times := splitTime(dbTimeDuration)
+
+	if v, e := strconv.Atoi(times["days"]); e == nil {
+		format = strings.Replace(format, "%D", strconv.FormatInt(int64(v), 10), 1)
+	} else {
+		format = strings.Replace(format, "%D", "0", 1)
+	}
+
+	if v, e := strconv.Atoi(times["hours"]); e == nil {
+		format = strings.Replace(format, "%H", strconv.FormatInt(int64(v), 10), 1)
+	} else {
+		format = strings.Replace(format, "%H", "0", 1)
+	}
+
+	if v, e := strconv.Atoi(times["minutes"]); e == nil {
+		format = strings.Replace(format, "%M", strconv.FormatInt(int64(v), 10), 1)
+	} else {
+		format = strings.Replace(format, "%M", "0", 1)
+	}
+
+	if v, e := strconv.Atoi(times["seconds"]); e == nil {
+		format = strings.Replace(format, "%S", strconv.FormatInt(int64(v), 10), 1)
+	} else {
+		format = strings.Replace(format, "%S", "0", 1)
+	}
+
+	return format
 }

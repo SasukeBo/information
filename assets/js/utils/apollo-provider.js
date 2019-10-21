@@ -3,9 +3,9 @@ import fetch from 'unfetch'
 import { ApolloClient } from 'apollo-client'
 import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
-import { split } from 'apollo-link'
-import { WebSocketLink } from 'apollo-link-ws'
-import { getMainDefinition } from 'apollo-utilities'
+// import { split } from 'apollo-link'
+// import { WebSocketLink } from 'apollo-link-ws'
+// import { getMainDefinition } from 'apollo-utilities'
 
 import VueApollo from 'vue-apollo'
 
@@ -16,24 +16,24 @@ const httpLink = new HttpLink({
 })
 
 // 创建订阅的 websocket 连接
-const wsLink = new WebSocketLink({
-  uri: `ws://${document.location.host}/websocket`,
-  options: { reconnect: true }
-})
+// const wsLink = new WebSocketLink({
+// uri: `ws://${document.location.host}/websocket`,
+// options: { reconnect: true }
+// })
 
-const link = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query)
-    return definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
-  },
-  wsLink,
-  httpLink
-)
+// const link = split(
+// ({ query }) => {
+// const definition = getMainDefinition(query)
+// return definition.kind === 'OperationDefinition' &&
+// definition.operation === 'subscription'
+// },
+// wsLink,
+// httpLink
+// )
 
 // 创建 apollo 客户端
 const defaultClient = new ApolloClient({
-  link,
+  link: httpLink,
   cache: new InMemoryCache(),
   connectToDevTools: true
 })

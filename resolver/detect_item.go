@@ -13,6 +13,8 @@ func LoadDetectItem(params graphql.ResolveParams) (interface{}, error) {
 		return v.LoadDetectItem()
 	case *models.Product:
 		return v.LoadDetectItem()
+	case *models.DetectItemValue:
+		return v.LoadDetectItem()
 	default:
 		return nil, models.Error{Message: "load related detect_item failed."}
 	}
