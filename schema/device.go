@@ -103,27 +103,26 @@ var deviceMonthlyStatisticsResponse = graphql.NewObject(graphql.ObjectConfig{
 	Description: "设备月数据统计结果对象",
 })
 
-var realTimeStatisticsObject = graphql.NewObject(graphql.ObjectConfig{
-	Name: "RealTimeStatisticsObject",
+var itemDataType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "itemDataType",
 	Fields: graphql.Fields{
-		"id":        &graphql.Field{Type: graphql.Int, Description: "检测值ID"},
-		"sign":      &graphql.Field{Type: graphql.String, Description: "检测项名称"},
-		"value":     &graphql.Field{Type: graphql.Float, Description: "检测值"},
-		"createdAt": &graphql.Field{Type: graphql.DateTime, Description: "创建时间"},
+		"sign":  &graphql.Field{Type: graphql.String, Description: "检测项标识"},
+		"time":  &graphql.Field{Type: graphql.String, Description: "创建时间"},
+		"value": &graphql.Field{Type: graphql.String, Description: "值"},
 	},
-	Description: "设备生产实时数据对象",
 })
 
 /* 				   query
 ------------------------------ */
 
 var realTimeStatistics = &graphql.Field{
-	Type: graphql.NewList(realTimeStatisticsObject),
+	Type: graphql.NewList(itemDataType),
 	Args: graphql.FieldConfigArgument{
-		"deviceID":  GenArg(graphql.Int, "设备ID", false),
-		"productID": GenArg(graphql.Int, "产品ID", false),
-		"limit":     GenArg(graphql.Int, "数量限制", false),
-		"afterTime": GenArg(graphql.DateTime, "起始时间"),
+		"deviceID":       GenArg(graphql.Int, "设备ID", false),
+		"productID":      GenArg(graphql.Int, "产品ID", false),
+		"floatPrecision": GenArg(graphql.Int, "浮点数值精度", false),
+		"afterTime":      GenArg(graphql.DateTime, "获取时间下限值", false),
+		"limit":          GenArg(graphql.Int, "数量限制", false),
 	},
 	Description: `设备生产实时数据`,
 	Resolve:     resolver.GetRealTimeStatistics,

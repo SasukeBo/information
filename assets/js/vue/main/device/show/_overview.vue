@@ -19,7 +19,7 @@
       <div class="overview__col global-card">
         <div class="col-title">稼动率</div>
         <div class="col-content">
-          <span v-if="device.statistics">{{ device.statistics.activation}}</span>
+          <span v-if="statistics">{{ (parseFloat(statistics.activation) * 100).toFixed(2) }}</span>
           <span v-else>0</span>
           %
         </div>
@@ -28,7 +28,7 @@
       <div class="overview__col global-card">
         <div class="col-title">良率</div>
         <div class="col-content">
-          <span v-if="device.statistics">{{ device.statistics.yield}}</span>
+          <span v-if="statistics">{{ (parseFloat(statistics.yieldRate) * 100).toFixed(2) }}</span>
           <span v-else>0</span>
           %
         </div>
@@ -112,16 +112,16 @@
         </div>
       </div>
 
-      <div class="details__col">
-        这边显示负责人信息
-      </div>
+      <div class="details__col">这边显示负责人信息</div>
     </div>
   </div>
 </template>
 <script>
 // graphql
 import deviceOverviewQuery from './gql/query.device-overview.gql';
+import statisticsQuery from './gql/query.device-monthly-analysis.gql';
 import deviceUpdateMutate from './gql/mutate.device-update.gql';
+import deviceStatusQuery from './gql/query.device-status-update.gql';
 
 import defaultAvatar from 'images/default-avatar.png';
 import { timeFormatter, parseGQLError } from 'js/utils';
@@ -137,17 +137,25 @@ export default {
       variables() {
         return { id: this.id };
       }
+    },
+    statistics: {
+      query: statisticsQuery,
+      variables() {
+        return { deviceID: this.id, format: '%D天 %H小时 %M分钟' };
+      }
     }
   },
   data() {
     return {
       device: {},
       defaultAvatar,
+      statistics: undefined,
       statusMap: {
         prod: { icon: 'icon-running', label: '运行中' },
         stop: { icon: 'icon-stopping', label: '停机' },
         offline: { icon: 'icon-offline', label: '离线' }
-      }
+      },
+      statusUpdater: undefined
     };
   },
   methods: {
@@ -173,6 +181,21 @@ export default {
   },
   mounted() {
     NProgress.done();
+    var _this = this;
+    _this.statusUpdater = setInterval(() => {
+      _this.$apollo
+        .query({
+          query: deviceStatusQuery,
+          variables: { id: _this.id },
+          fetchPolicy: 'network-only'
+        })
+        .then(({ data }) => {
+          _this.device.status = data.device.status;
+        });
+    }, 1000);
+  },
+  beforeDestroy() {
+    clearInterval(this.statusUpdater);
   }
 };
 </script>

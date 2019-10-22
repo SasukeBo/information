@@ -25,43 +25,46 @@ func GetRealTimeStatistics(params graphql.ResolveParams) (interface{}, error) {
 
 	deviceID := params.Args["deviceID"].(int)
 	productID := params.Args["productID"].(int)
+	floatPrecision := params.Args["floatPrecision"].(int)
+	afterTime := params.Args["afterTime"].(time.Time)
 	limit := params.Args["limit"].(int)
-	variables := []interface{}{deviceID, productID}
 
-	sql := `
-	SELECT div.id AS i_d, div.value AS value,
-	(SELECT sign FROM detect_item WHERE detect_item.id = div.detect_item_id) AS sign,
-	(SELECT pi.created_at FROM product_ins pi WHERE pi.id = div.product_ins_id) AS created_at
-	FROM detect_item_value div
-	WHERE div.product_ins_id IN (
-		SELECT id FROM product_ins pi WHERE pi.device_product_ship_id = (
-			SELECT id FROM device_product_ship WHERE device_id = ? AND product_id = ?
-		) %s ORDER BY pi.created_at DESC LIMIT ?
-	) ORDER BY sign, created_at ASC;
+	dps := models.DeviceProductShip{Device: &models.Device{ID: deviceID}, Product: &models.Product{ID: productID}}
+	if err := o.Read(&dps, "device_id", "product_id"); err != nil {
+		return nil, models.Error{Message: "product not producing on this device", OriErr: err}
+	}
+
+	var signs []string
+	sql1 := `SELECT sign FROM detect_item where detect_item.product_id = ?`
+	if _, err := o.Raw(sql1, productID).QueryRows(&signs); err != nil {
+		return nil, models.Error{Message: "get product detect_items failed.", OriErr: err}
+	}
+
+	type seriesData struct {
+		Sign  string
+		Value float64
+		Time  time.Time
+	}
+	seriesDatas := []seriesData{}
+
+	sql2 := `
+	select pi.created_at as time, round(div.value::numeric, ?) as value
+	from detect_item_value as div
+	join product_ins as pi on div.product_ins_id = pi.id
+	join device_product_ship as dps on pi.device_product_ship_id = dps.id
+	join detect_item as di on di.id = div.detect_item_id
+	where dps.id = ? and di.sign = ? and pi.created_at > ? order by time desc limit ?;
 	`
-
-	if v := params.Args["afterTime"]; v != nil {
-		sql = fmt.Sprintf(sql, "AND pi.created_at > ?")
-		variables = append(variables, v)
-	} else {
-		sql = fmt.Sprintf(sql, "")
+	for _, s := range signs {
+		var data seriesData
+		if err := o.Raw(sql2, floatPrecision, dps.ID, s, afterTime, limit).QueryRow(&data); err != nil {
+			return nil, models.Error{Message: "get seriesData failed.", OriErr: err}
+		}
+		data.Sign = s
+		seriesDatas = append(seriesDatas, data)
 	}
 
-	variables = append(variables, limit)
-
-	var results []struct {
-		ID        int64
-		Value     float64
-		Sign      string
-		CreatedAt time.Time
-	}
-
-	_, err := o.Raw(sql, variables...).QueryRows(&results)
-	if err != nil {
-		return nil, models.Error{Message: "get realtime statistics falied.", OriErr: err}
-	}
-
-	return results, nil
+	return seriesDatas, nil
 }
 
 // MonthlyAnalyzeDeviceFormatTime 分析设备月数据

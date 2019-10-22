@@ -1,10 +1,6 @@
 <template>
-  <div
-    class="realtime"
-    v-loading="$apollo.queries.statistics.loading"
-    element-loading-background="unset"
-  >
-    <div ref="chart" style="width: 100%; height: 250px"></div>
+  <div class="realtime">
+    <div ref="chart" class="chart"></div>
   </div>
 </template>
 <script>
@@ -15,29 +11,30 @@ import echarts from 'echarts';
 export default {
   name: 'realtime',
   props: ['deviceID', 'product'],
-  apollo: {
-    statistics: {
-      query: realtimeQuery,
-      variables() {
-        return {
-          deviceID: this.deviceID,
-          productID: this.product.id,
-          limit: 100,
-          afterTime: this.afterTime
-        };
-      }
-    }
-  },
   data() {
     return {
-      afterTime: undefined,
-      statistics: [],
       chart: null,
       options: {
-        title: {},
-        legend: {},
+        title: {
+          top: 20,
+          left: 20,
+          textStyle: {
+            color: '#c0c4cc'
+          }
+        },
+        legend: {
+          top: 20,
+          textStyle: {
+            color: '#03a9f4'
+          }
+        },
+        tooltip: {
+          axisPointer: {
+            animation: false
+          }
+        },
         xAxis: {
-          type: 'category',
+          type: 'time',
           boundaryGap: false,
           axisLine: {
             lineStyle: { color: '#c0c4cc' }
@@ -48,73 +45,93 @@ export default {
           axisLine: {
             lineStyle: { color: '#c0c4cc' }
           }
-        },
-        series: []
+        }
       },
-      items: {
-        datas: {},
-        times: {}
-      }
+      updater: undefined,
+      items: {}
     };
   },
-  watch: {
-    product(p) {
-      if (p) {
-        this.options.title.text = `${p.name}生产数据`;
-        this.options.legend.data = p.detectItems.map(i => i.sign);
-        this.options.series = p.detectItems.map(i => {
-          return {
-            name: i.sign,
-            type: 'line',
-            data: []
-          };
-        });
-      }
-    },
-    statistics(newVal) {
-      if (newVal.length) {
-        this.formatStatistics(newVal);
-        this.refreshChart();
-      }
-    }
-  },
   methods: {
-    refreshChart() {
-      var optionUpdate = {
-        xAxis: { data: this.items.times[this.product.detectItems[0].sign] },
-        series: []
-      };
-      this.product.detectItems.forEach(i => {
-        optionUpdate.series.push({
-          name: i.sign,
-          type: 'line',
-          data: this.items.datas[i.sign]
-        });
-      });
-      this.chart.setOption(optionUpdate);
-    },
     initChart() {
       this.chart = echarts.init(this.$refs.chart);
-      this.chart.setOption(this.options);
-    },
-    formatStatistics(items) {
-      var _this = this;
-      items.forEach(item => {
-        var seriesData = _this.items.datas[item.sign] || [];
-        var seriesTime = _this.items.times[item.sign] || [];
-        seriesData.push(item.value.toFixed(3)); // 存入数据
-        seriesTime.push(timeFormatter(item.createdAt, '%timestring')); // 存入时间
-        _this.items.datas[item.sign] = seriesData;
-        _this.items.times[item.sign] = seriesTime;
+      this.options.title.text = `${this.product.name}生产数据`;
+      this.options.legend.data = this.product.detectItems.map(i => i.sign);
+      this.product.detectItems.forEach(di => {
+        this.items[di.sign] = { name: di.sign, type: 'line', data: [] };
       });
     },
-    changeTime() {
-      this.afterTime = this.statistics[0].createdAt;
+    renderChart(options) {
+      this.chart.setOption(options);
+    },
+    fetchData() {
+      var now = new Date();
+      now.setSeconds(now.getSeconds() - 2);
+
+      this.$apollo
+        .query({
+          query: realtimeQuery,
+          variables: {
+            deviceID: this.deviceID,
+            productID: this.product.id,
+            floatPrecision: 3,
+            afterTime: now.toISOString(),
+            limit: 1
+          },
+          fetchPolicy: 'network-only'
+        })
+        .then(({ data }) => {
+          this.updateItems(data.itemsUpdate);
+          this.updateOptions();
+        })
+        .catch(e => {
+          console.log(e.message);
+        });
+    },
+    updateOptions() {
+      var series = [];
+      Object.keys(this.items).forEach(k => {
+        series.push(this.items[k]);
+      });
+      this.renderChart({ series });
+    },
+    updateItems(newItems) {
+      newItems.forEach(i => {
+        var old = this.items[i.sign];
+        if (old.data.length >= 50) {
+          old.data.shift();
+          old.data.push(this.formatData(i));
+        } else {
+          old.data.push(this.formatData(i));
+        }
+      });
+    },
+    formatData(item) {
+      return {
+        name: timeFormatter(item.time, '%timestring'),
+        value: [timeFormatter(item.time, '%y/%m/%d %timestring'), item.value]
+      };
     }
   },
   mounted() {
     this.initChart();
-    // setInterval(() => this.changeTime(), 1000);
+    this.renderChart(this.options);
+    this.updater = setInterval(() => this.fetchData(), 1000);
+  },
+  beforeDestroy() {
+    clearInterval(this.updater);
   }
 };
 </script>
+<style lang="scss">
+@import 'css/vars.scss';
+.device-statistics .realtime {
+  padding: 1rem 0;
+
+  .chart {
+    border: 1px solid $--color-border__0;
+    box-shadow: $--shadow__global-card;
+    width: 100%;
+    height: 300px;
+  }
+}
+</style>
