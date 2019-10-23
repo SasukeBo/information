@@ -67,8 +67,30 @@ var productListResponse = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+var productHistogramObject = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "ProductHistogramResponse",
+	Description: "直方图数据对象",
+	Fields: graphql.Fields{
+		"xAxisData":  &graphql.Field{Type: graphql.NewList(graphql.String), Description: "x轴数据"},
+		"seriesData": &graphql.Field{Type: graphql.NewList(graphql.Int), Description: "区间数据频度"},
+	},
+})
+
 /* 				   query
 ------------------------------ */
+
+var productHistogram = &graphql.Field{
+	Type: productHistogramObject,
+	Args: graphql.FieldConfigArgument{
+		"id":           GenArg(graphql.Int, "产品ID", false),
+		"detectItemID": GenArg(graphql.Int, "产品检测项ID", false),
+		"deviceID":     GenArg(graphql.Int, "生产设备ID"),
+		"lowerTime":    GenArg(graphql.DateTime, "时间区间下限"),
+		"upperTime":    GenArg(graphql.DateTime, "时间区间上限"),
+	},
+	Description: `获取产品某检测项检测数据直方图`,
+	Resolve:     resolver.ProductHistogram,
+}
 
 var productGet = &graphql.Field{
 	Type:        productType,

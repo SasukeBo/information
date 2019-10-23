@@ -34,6 +34,7 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		"detectItemGet":           detectItemGet,
 		"detectItemList":          detectItemList,
 		"realTimeStatistics":      realTimeStatistics,
+		"productHistogram":        productHistogram,
 	},
 })
 

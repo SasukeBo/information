@@ -1,13 +1,103 @@
 package resolver
 
 import (
+	"fmt"
 	"github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
+	"strconv"
+	"strings"
 	"time"
 )
+
+// ProductHistogram _
+func ProductHistogram(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
+	var (
+		lowerTime time.Time
+		upperTime time.Time
+	)
+	groups := 40
+	id := params.Args["id"].(int)
+	detectItemID := params.Args["detectItemID"].(int)
+	deviceID := params.Args["deviceID"]
+
+	now := time.Now()
+
+	if v := params.Args["lowerTime"]; v == nil {
+		lowerTime = now.AddDate(0, -1, 0)
+	} else {
+		lowerTime = v.(time.Time)
+	}
+
+	if v := params.Args["upperTime"]; v == nil {
+		upperTime = now
+	} else {
+		upperTime = v.(time.Time)
+	}
+
+	// 获取 最小最大值 区间长度
+	gql := `
+	SELECT MAX(value) AS max, MIN(value) AS min
+	FROM detect_item_value AS div
+	JOIN product_ins AS di ON div.product_ins_id = di.id
+	WHERE div.detect_item_id = ? AND di.created_at > ? AND di.created_at < ?;
+	`
+	var result struct {
+		Max float64
+		Min float64
+	}
+	if err := o.Raw(gql, detectItemID, lowerTime, upperTime).QueryRow(&result); err != nil {
+		return nil, models.Error{Message: "calculation error.", OriErr: err}
+	}
+	length := (result.Max - result.Min) / float64(groups)
+
+	// 生成sql
+	sql2 := `
+	SELECT %s
+	FROM detect_item_value AS div
+	JOIN product_ins AS pi ON pi.id = div.product_ins_id
+	JOIN device_product_ship AS dps ON dps.id = pi.device_product_ship_id
+	WHERE dps.product_id = ? AND div.detect_item_id = ? %s
+	`
+	selectTPL := `SUM(CASE WHEN %f <= div.value AND div.value < %f THEN 1 ELSE 0 END)`
+	selects := []string{}
+	xAxisData := []string{}
+	for i := 0; i < groups; i++ {
+		lower := result.Min + (float64(i) * length)
+		upper := result.Min + (float64(i+1) * length)
+		selects = append(selects, fmt.Sprintf(selectTPL, lower, upper))
+		xAxisData = append(xAxisData, fmt.Sprintf(`%0.3f-%5.3f`, lower, upper))
+	}
+	selectCond := strings.Join(selects, ",")
+	var deviceCond string
+	args := []interface{}{id, detectItemID}
+	if deviceID == nil {
+		deviceCond = ""
+	} else {
+		args = append(args, deviceID)
+		deviceCond = "AND dps.device_id = ?"
+	}
+	query := fmt.Sprintf(sql2, selectCond, deviceCond)
+	var result2 []orm.ParamsList
+	if _, err := o.Raw(query, args...).ValuesList(&result2); err != nil {
+		return nil, models.Error{Message: "fetch histogram results failed.", OriErr: err}
+	}
+
+	seriesData := []int{}
+	for _, v := range result2[0] {
+		s := v.(string)
+		i, _ := strconv.Atoi(s)
+		seriesData = append(seriesData, i)
+	}
+
+	return struct {
+		XAxisData  []string
+		SeriesData []int
+	}{xAxisData, seriesData}, nil
+}
 
 // DeviceLoadProduct _
 func DeviceLoadProduct(params graphql.ResolveParams) (interface{}, error) {

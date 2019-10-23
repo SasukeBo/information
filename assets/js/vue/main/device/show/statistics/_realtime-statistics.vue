@@ -17,12 +17,21 @@ export default {
       chart: null,
       options: {
         title: {
-          top: 20,
+          top: 10,
           left: 20,
           textStyle: {
-            color: '#c0c4cc'
+            color: '#fff'
           }
         },
+        color: [
+          '#03A9F4', // blue
+          '#8FC860', // green
+          '#F9A230', // orange
+          '#F06D6B', // red
+          '#ACA0F2', // purple
+          '#C0C4CC', // white
+          '#000' // black
+        ],
         grid: { show: false },
         legend: {
           top: 20,
@@ -30,7 +39,7 @@ export default {
           right: 20,
           orient: 'vertical',
           textStyle: {
-            color: '#f9a230'
+            color: '#fff'
           }
         },
         tooltip: {
@@ -50,9 +59,9 @@ export default {
           name: '生产时间',
           nameLocation: 'center',
           nameGap: 30,
-          nameTextStyle: { color: '#f9a230' },
+          nameTextStyle: { color: '#fff' },
           boundaryGap: false,
-          axisLabel: { color: '#f9a230' },
+          axisLabel: { color: '#a5bbef' },
           axisLine: {
             symbol: ['none', 'arrow'],
             symbolSize: [5, 10],
@@ -68,8 +77,8 @@ export default {
           name: '检测值',
           nameGap: 30,
           nameLocation: 'center',
-          nameTextStyle: { color: '#f9a230' },
-          axisLabel: { color: '#f9a230' },
+          nameTextStyle: { color: '#fff' },
+          axisLabel: { color: '#a5bbef' },
           axisLine: {
             symbol: ['none', 'arrow'],
             symbolSize: [5, 10],
@@ -170,7 +179,8 @@ export default {
   mounted() {
     this.initChart();
     this.renderChart(this.options);
-    this.updater = setInterval(() => this.fetchData(), 1000);
+    this.fetchData();
+    // this.updater = setInterval(() => this.fetchData(), 1000);
   },
   beforeDestroy() {
     clearInterval(this.updater);

@@ -57,6 +57,10 @@ export default {
       width: 100px;
       display: inline-block;
     }
+
+    span:last-child {
+      color: $--color-font__white;
+    }
   }
 }
 </style>
