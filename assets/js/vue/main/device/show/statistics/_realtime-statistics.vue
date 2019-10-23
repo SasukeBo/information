@@ -13,6 +13,7 @@ export default {
   props: ['deviceID', 'product'],
   data() {
     return {
+      limit: 50,
       chart: null,
       options: {
         title: {
@@ -22,28 +23,61 @@ export default {
             color: '#c0c4cc'
           }
         },
+        grid: { show: false },
         legend: {
           top: 20,
+          type: 'scroll',
+          right: 20,
+          orient: 'vertical',
           textStyle: {
-            color: '#03a9f4'
+            color: '#f9a230'
           }
         },
         tooltip: {
+          trigger: 'axis',
           axisPointer: {
+            type: 'cross',
             animation: false
+          }
+        },
+        axisPointer: {
+          label: {
+            backgroundColor: '#03a9f4'
           }
         },
         xAxis: {
           type: 'time',
+          name: '生产时间',
+          nameLocation: 'center',
+          nameGap: 30,
+          nameTextStyle: { color: '#f9a230' },
           boundaryGap: false,
+          axisLabel: { color: '#f9a230' },
           axisLine: {
-            lineStyle: { color: '#c0c4cc' }
+            symbol: ['none', 'arrow'],
+            symbolSize: [5, 10],
+            lineStyle: { color: '#909399' }
+          },
+          splitLine: {
+            show: true,
+            lineStyle: { color: '#666' }
           }
         },
         yAxis: {
           type: 'value',
+          name: '检测值',
+          nameGap: 30,
+          nameLocation: 'center',
+          nameTextStyle: { color: '#f9a230' },
+          axisLabel: { color: '#f9a230' },
           axisLine: {
-            lineStyle: { color: '#c0c4cc' }
+            symbol: ['none', 'arrow'],
+            symbolSize: [5, 10],
+            lineStyle: { color: '#909399' }
+          },
+          splitLine: {
+            show: true,
+            lineStyle: { color: '#666' }
           }
         }
       },
@@ -56,8 +90,13 @@ export default {
       this.chart = echarts.init(this.$refs.chart);
       this.options.title.text = `${this.product.name}生产数据`;
       this.options.legend.data = this.product.detectItems.map(i => i.sign);
+      var data = this.makeFakeData();
       this.product.detectItems.forEach(di => {
-        this.items[di.sign] = { name: di.sign, type: 'line', data: [] };
+        this.items[di.sign] = {
+          name: di.sign,
+          type: 'line',
+          data: data.slice()
+        };
       });
     },
     renderChart(options) {
@@ -97,12 +136,14 @@ export default {
     updateItems(newItems) {
       newItems.forEach(i => {
         var old = this.items[i.sign];
-        if (old.data.length >= 50) {
+        var data = this.formatData(i);
+        // 去除重复点
+        if (old.data.length && old.data[old.data.length - 1].name === data.name)
+          return;
+        if (old.data.length >= this.limit) {
           old.data.shift();
-          old.data.push(this.formatData(i));
-        } else {
-          old.data.push(this.formatData(i));
         }
+        old.data.push(data);
       });
     },
     formatData(item) {
@@ -110,6 +151,20 @@ export default {
         name: timeFormatter(item.time, '%timestring'),
         value: [timeFormatter(item.time, '%y/%m/%d %timestring'), item.value]
       };
+    },
+    makeFakeData() {
+      var now = new Date().toISOString();
+      var fakeData = [];
+      var value = 0;
+      for (var i = this.limit; i > 0; i--) {
+        var time = new Date(now);
+        time.setSeconds(time.getSeconds() - i);
+        fakeData.push(this.formatData({ time, value }));
+      }
+      return fakeData;
+    },
+    stopFetch() {
+      clearInterval(this.updater);
     }
   },
   mounted() {
