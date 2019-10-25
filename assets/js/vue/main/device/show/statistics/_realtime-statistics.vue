@@ -75,7 +75,7 @@ export default {
         yAxis: {
           type: 'value',
           name: '检测值',
-          nameGap: 30,
+          nameGap: 50,
           nameLocation: 'center',
           nameTextStyle: { color: '#fff' },
           axisLabel: { color: '#a5bbef' },
@@ -179,8 +179,8 @@ export default {
   mounted() {
     this.initChart();
     this.renderChart(this.options);
-    this.fetchData();
-    // this.updater = setInterval(() => this.fetchData(), 1000);
+    // this.fetchData();
+    this.updater = setInterval(() => this.fetchData(), 1000);
   },
   beforeDestroy() {
     clearInterval(this.updater);

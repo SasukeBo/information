@@ -19,7 +19,7 @@ func ProductHistogram(params graphql.ResolveParams) (interface{}, error) {
 		lowerTime time.Time
 		upperTime time.Time
 	)
-	groups := 40
+	groups := 80
 	id := params.Args["id"].(int)
 	detectItemID := params.Args["detectItemID"].(int)
 	deviceID := params.Args["deviceID"]

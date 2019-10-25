@@ -19,6 +19,149 @@ type statistics struct {
 	Yield       int
 }
 
+/*                   begin
+---------------------------------------------- */
+
+// CountStatusDailyDuration 统计设备每日每状态持续时间
+func CountStatusDailyDuration(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
+	id := params.Args["id"].(int)
+	daysCount := params.Args["daysCount"].(int)
+	begin, end := timeIntervalBeforeNow(daysCount)
+
+	duration := struct {
+		Days    []string
+		OffLine []float64
+		Prod    []float64
+		Stop    []float64
+	}{
+		generateDays(begin, daysCount),
+		make([]float64, daysCount),
+		make([]float64, daysCount),
+		make([]float64, daysCount),
+	}
+
+	query := `
+	SELECT dsl.begin_at, dsl.finish_at, status
+	FROM device_status_log AS dsl
+	WHERE dsl.device_id = ? AND
+	(dsl.finish_at > ? OR dsl.begin_at < ?)
+	`
+
+	type row struct {
+		BeginAt  time.Time
+		FinishAt time.Time
+		Status   int
+	}
+	var rows []row
+	_, err := o.Raw(query, id, begin, end).QueryRows(&rows)
+	if err != nil {
+		return nil, models.Error{Message: "获取失败", OriErr: err}
+	}
+
+	for _, row := range rows {
+		switch row.Status {
+		case models.DeviceStatus.Prod:
+			hours := utils.CalculateDurations(row.BeginAt, row.FinishAt)
+			offset := utils.DaySub(row.BeginAt, begin)
+			for i, hour := range hours {
+				index := i + offset
+				if index >= daysCount {
+					break
+				} else if index < 0 {
+					continue
+				}
+				duration.Prod[index] += hour
+			}
+
+		case models.DeviceStatus.Stop:
+			hours := utils.CalculateDurations(row.BeginAt, row.FinishAt)
+			offset := utils.DaySub(row.BeginAt, begin)
+			for i, hour := range hours {
+				index := i + offset
+				if index >= daysCount {
+					break
+				} else if index < 0 {
+					continue
+				}
+				duration.Stop[index] += hour
+			}
+
+		case models.DeviceStatus.OffLine:
+			hours := utils.CalculateDurations(row.BeginAt, row.FinishAt)
+			offset := utils.DaySub(row.BeginAt, begin)
+			for i, hour := range hours {
+				index := i + offset
+				if index >= daysCount {
+					break
+				} else if index < 0 {
+					continue
+				}
+				duration.OffLine[index] += hour
+			}
+		}
+	}
+
+	return duration, nil
+}
+
+// private funcs
+
+// 获取从当前时间开始的前 daysCount 天时间区间
+func timeIntervalBeforeNow(daysCount int) (time.Time, time.Time) {
+	endTime := time.Now()
+	beginTime := endTime.AddDate(0, 0, -daysCount)
+	y1, m1, d1 := endTime.Date()
+	end := time.Date(y1, m1, d1, 0, 0, 0, 0, time.UTC)
+	y2, m2, d2 := beginTime.Date()
+	begin := time.Date(y2, m2, d2, 0, 0, 0, 0, time.UTC)
+
+	return begin, end
+}
+
+func formatDate(t time.Time) string {
+	return fmt.Sprintf("%d/%d/%d", t.Year(), t.Month(), t.Day())
+}
+
+func generateDays(begin time.Time, daysCount int) []string {
+	days := []string{}
+	for i := 0; i < daysCount; i++ {
+		days = append(days, formatDate(begin.AddDate(0, 0, i)))
+	}
+	return days
+}
+
+/*                    end
+---------------------------------------------- */
+
+// 转换duration为int 单位（秒），注意该方法仅适用于duration不大于一天的情况
+func durationToInt(duration string) int {
+	times := splitTime(duration)
+	s := 0
+	if v := times["seconds"]; v != "" {
+		seconds, err := strconv.Atoi(v)
+		if err == nil {
+			s += seconds
+		}
+	}
+
+	if v := times["minutes"]; v != "" {
+		minutes, err := strconv.Atoi(v)
+		if err == nil {
+			s += minutes * 60
+		}
+	}
+
+	if v := times["hours"]; v != "" {
+		hours, err := strconv.Atoi(v)
+		if err == nil {
+			s += hours * 60 * 60
+		}
+	}
+
+	return s
+}
+
 // GetRealTimeStatistics 获取设备实时数据
 func GetRealTimeStatistics(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
@@ -92,18 +235,16 @@ func MonthlyAnalyzeDevice(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	var sql = `
-	SELECT SUM(duration) FROM (
-		SELECT (dsl.finish_at - dsl.begin_at) AS duration
-		FROM device_status_log AS dsl
-		WHERE status = ? AND finish_at > TIMESTAMP'0001-01-01 00:00:00+00' And device_id = ?
-	) AS duration_list ;
+	SELECT SUM(dsl.finish_at - dsl.begin_at) AS duration
+	FROM device_status_log AS dsl
+	WHERE status = ? AND finish_at > TIMESTAMP'0001-01-01 00:00:00+00' And device_id = ?
 	`
 	var prodDuration []orm.Params
 	_, err = o.Raw(sql, models.DeviceStatus.Prod, device.ID).Values(&prodDuration)
 	if err != nil {
 		return nil, models.Error{Message: "analyze error.", OriErr: err}
 	}
-	p, ok := prodDuration[0]["sum"].(string)
+	p, ok := prodDuration[0]["duration"].(string)
 	if ok {
 		response.RunningTime = p
 	}
@@ -377,7 +518,7 @@ func CountDeviceStatus(params graphql.ResolveParams) (interface{}, error) {
 // private functions
 
 func splitTime(dbTimeDuration string) map[string]string {
-	dbDurationPattern := `^(\d*)( day )?(\d{2}):(\d{2}):(\d{2})(\.\d*)?$`
+	dbDurationPattern := `^(\d*)( days? )?(\d{2}):(\d{2}):(\d{2})(\.\d*)?$`
 	reg := regexp.MustCompile(dbDurationPattern)
 	matches := reg.FindStringSubmatch(dbTimeDuration)
 	days := matches[1]

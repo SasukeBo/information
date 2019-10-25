@@ -25,16 +25,17 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		"deviceStatusLogList":     deviceStatusLogList,
 		"deviceStatusDuration":    deviceStatusDuration,
 		"deviceMonthlyStatistics": deviceMonthlyStatistics,
+		"deviceStatusStatistics":  deviceStatusStatistics,
 		"userLoginList":           userLoginList,
 		"getLastLogin":            userLoginLast,
 		"getThisLogin":            userLoginThis,
 		"privilegeList":           privilegeList,
 		"productGet":              productGet,
 		"productList":             productList,
+		"productHistogram":        productHistogram,
 		"detectItemGet":           detectItemGet,
 		"detectItemList":          detectItemList,
 		"realTimeStatistics":      realTimeStatistics,
-		"productHistogram":        productHistogram,
 	},
 })
 

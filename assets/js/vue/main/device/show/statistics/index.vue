@@ -22,8 +22,13 @@
           ></el-option>
         </el-select>
       </div>
-      <div class="description">统计产品检测项数据，生成直方图，分布区间根据检测项值上下限划分，未设置上下限的检测项不生成直方图。</div>
+      <div class="description">统计产品检测项数据，生成直方图，区间段由检测项值最大最小值区间等分40后获得</div>
       <histogram :deviceID="id" :productID="product.id" :detectItem="product.detectItems[selected]"></histogram>
+    </div>
+
+    <div class="block">
+      <div class="field-title">设备状态统计</div>
+      <device-status-chart :deviceID="id"></device-status-chart>
     </div>
   </div>
 </template>
@@ -31,6 +36,7 @@
 import MonthData from './_month-data';
 import RealTime from './_realtime-statistics';
 import Histogram from './_histogram';
+import DeviceStatusChart from './_device-status';
 
 import productQuery from '../gql/query.device-products.gql';
 
@@ -39,7 +45,8 @@ export default {
   components: {
     Histogram,
     MonthData,
-    RealTime
+    RealTime,
+    DeviceStatusChart
   },
   props: ['id'],
   apollo: {

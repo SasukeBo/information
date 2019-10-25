@@ -104,7 +104,7 @@ var deviceMonthlyStatisticsResponse = graphql.NewObject(graphql.ObjectConfig{
 })
 
 var itemDataType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "itemDataType",
+	Name: "ItemDataType",
 	Fields: graphql.Fields{
 		"sign":  &graphql.Field{Type: graphql.String, Description: "检测项标识"},
 		"time":  &graphql.Field{Type: graphql.String, Description: "创建时间"},
@@ -112,8 +112,28 @@ var itemDataType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+var deviceStatusStatisticsResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name: "DeviceStatusStatisticsResponse",
+	Fields: graphql.Fields{
+		"days":    &graphql.Field{Type: graphql.NewList(graphql.String), Description: "生产日期"},
+		"prod":    &graphql.Field{Type: graphql.NewList(graphql.Float), Description: "生产状态时间统计"},
+		"offline": &graphql.Field{Type: graphql.NewList(graphql.Float), Description: "离线状态时间统计"},
+		"stop":    &graphql.Field{Type: graphql.NewList(graphql.Float), Description: "停机状态时间统计"},
+	},
+})
+
 /* 				   query
 ------------------------------ */
+
+var deviceStatusStatistics = &graphql.Field{
+	Type: deviceStatusStatisticsResponse,
+	Args: graphql.FieldConfigArgument{
+		"id":        GenArg(graphql.Int, "设备ID", false),
+		"daysCount": GenArg(graphql.Int, "天数，多少天前至今的数据", false),
+	},
+	Description: `设备运转状态时间统计`,
+	Resolve:     resolver.CountStatusDailyDuration,
+}
 
 var realTimeStatistics = &graphql.Field{
 	Type: graphql.NewList(itemDataType),
