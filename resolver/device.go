@@ -254,7 +254,7 @@ func MonthlyAnalyzeDevice(params graphql.ResolveParams) (interface{}, error) {
 	if err != nil {
 		return nil, models.Error{Message: "analyze error.", OriErr: err}
 	}
-	s, ok := stopDuration[0]["sum"].(string)
+	s, ok := stopDuration[0]["duration"].(string)
 	if ok {
 		pd, errPD := parseTimeDurationFromDB(p)
 		sd, errSD := parseTimeDurationFromDB(s)
@@ -518,7 +518,7 @@ func CountDeviceStatus(params graphql.ResolveParams) (interface{}, error) {
 // private functions
 
 func splitTime(dbTimeDuration string) map[string]string {
-	dbDurationPattern := `^(\d*)( days? )?(\d{2}):(\d{2}):(\d{2})(\.\d*)?$`
+	dbDurationPattern := `^(\d*)( days? )?(\d+):(\d{2}):(\d{2})(\.\d*)?$`
 	reg := regexp.MustCompile(dbDurationPattern)
 	matches := reg.FindStringSubmatch(dbTimeDuration)
 	days := matches[1]
@@ -562,29 +562,35 @@ func parseTimeDurationFromDB(dbTimeDuration string) (time.Duration, error) {
 func formatTime(dbTimeDuration, format string) string {
 	times := splitTime(dbTimeDuration)
 
-	if v, e := strconv.Atoi(times["days"]); e == nil {
-		format = strings.Replace(format, "%D", strconv.FormatInt(int64(v), 10), 1)
-	} else {
-		format = strings.Replace(format, "%D", "0", 1)
-	}
+	seconds := 0
+	minutes := 0
+	hours := 0
+	days := 0
 
-	if v, e := strconv.Atoi(times["hours"]); e == nil {
-		format = strings.Replace(format, "%H", strconv.FormatInt(int64(v), 10), 1)
-	} else {
-		format = strings.Replace(format, "%H", "0", 1)
+	if v, e := strconv.Atoi(times["seconds"]); e == nil {
+		seconds = v
 	}
 
 	if v, e := strconv.Atoi(times["minutes"]); e == nil {
-		format = strings.Replace(format, "%M", strconv.FormatInt(int64(v), 10), 1)
-	} else {
-		format = strings.Replace(format, "%M", "0", 1)
+		minutes = v
 	}
 
-	if v, e := strconv.Atoi(times["seconds"]); e == nil {
-		format = strings.Replace(format, "%S", strconv.FormatInt(int64(v), 10), 1)
-	} else {
-		format = strings.Replace(format, "%S", "0", 1)
+	if v, e := strconv.Atoi(times["days"]); e == nil {
+		days = v
 	}
+
+	if v, e := strconv.Atoi(times["hours"]); e == nil {
+		if v >= 24 {
+			hours = v % 24
+		}
+
+		days += v / 24
+	}
+
+	format = strings.Replace(format, "%S", strconv.FormatInt(int64(seconds), 10), 1)
+	format = strings.Replace(format, "%M", strconv.FormatInt(int64(minutes), 10), 1)
+	format = strings.Replace(format, "%H", strconv.FormatInt(int64(hours), 10), 1)
+	format = strings.Replace(format, "%D", strconv.FormatInt(int64(days), 10), 1)
 
 	return format
 }

@@ -28,6 +28,15 @@
     </a>
 
     <a
+      href="/settings"
+      :class="['menu-item', $route.name == 'system-conf' ? 'is-active': '']"
+      @click.prevent="directTo('system-conf')"
+    >
+      <i class="el-icon-s-tools"></i>
+      <span>系统设置</span>
+    </a>
+
+    <a
       href="https://github.com/SasukeBo/information/tree/develop"
       target="_blank"
       class="menu-item"

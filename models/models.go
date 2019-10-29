@@ -43,6 +43,8 @@ func init() {
 		new(Device),
 		new(DeviceCharger),
 		new(DeviceStatusLog),
+		new(DeviceStopReason),
+		new(ReasonType),
 		new(DeviceProductShip),
 		new(Product),
 		new(ProductIns),

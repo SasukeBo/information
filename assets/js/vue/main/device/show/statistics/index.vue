@@ -22,7 +22,7 @@
           ></el-option>
         </el-select>
       </div>
-      <div class="description">统计产品检测项数据，生成直方图，区间段由检测项值最大最小值区间等分40后获得</div>
+      <div class="description">统计产品检测项数据，生成直方图，区间段由检测项值最大最小值区间等分80后获得</div>
       <histogram :deviceID="id" :productID="product.id" :detectItem="product.detectItems[selected]"></histogram>
     </div>
 

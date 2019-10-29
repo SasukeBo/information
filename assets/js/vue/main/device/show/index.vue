@@ -46,7 +46,7 @@
             <a :class="{active: currentTab === 'statistics'}" @click="updateTab('statistics')">生产数据</a>
           </li>
           <li>
-            <a :class="{active: currentTab === 'logs'}" @click="updateTab('logs')">状态日志</a>
+            <a :class="{active: currentTab === 'logs'}" @click="updateTab('logs')">停机日志</a>
           </li>
           <li>
             <a :class="{active: currentTab === 'chargers'}" @click="updateTab('chargers')">负责人信息</a>
@@ -77,11 +77,17 @@ import deviceQuery from './gql/query.device.gql';
 // components
 import overview from './_overview';
 import statistics from './statistics';
+import logs from './status-log/';
+import chargers from './_chager';
+import setting from './_setting';
 
 export default {
   name: 'device-show',
   props: ['id'],
   components: {
+    logs,
+    chargers,
+    setting,
     overview,
     statistics
   },

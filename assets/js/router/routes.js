@@ -57,107 +57,41 @@ function defaultRoutes() {
             }
           ]
         }
-        /*
-        {
-          path: 'devices',
-          name: 'device-list',
-          component: load('main/devices')
-        },
-        {
-          path: 'device/new',
-          name: 'device-new',
-          component: load('main/device/new')
-        },
-        {
-          path: 'device/:uuid',
-          name: 'device-show',
-          props: true,
-          component: load('main/device'),
-          redirect: { name: 'device-details' },
-          children: [
-            {
-              path: 'realtime',
-              name: 'device-realtime',
-              props: true,
-              component: load('main/device/realtime')
-            },
-            {
-              path: 'charges',
-              name: 'device-charges',
-              props: true,
-              component: load('main/device/charge')
-            },
-            {
-              path: 'params',
-              name: 'device-params',
-              props: true,
-              component: load('main/device/params')
-            },
-            {
-              path: 'details',
-              name: 'device-details',
-              props: true,
-              component: load('main/device/details')
-            },
-            {
-              path: 'status-log',
-              name: 'device-status-log',
-              props: true,
-              component: load('main/device/status-log')
-            },
-            {
-              path: 'config',
-              name: 'device-config',
-              props: true,
-              component: load('main/device/_config')
-            }
-          ]
-        },
-        {
-          path: 'device/:uuid/charge',
-          name: 'device-charge',
-          props: true,
-          component: load('main/charge'),
-          children: [
-            {
-              path: ':id/show',
-              name: 'charge-show',
-              props: true,
-              component: load('main/charge/_show.vue')
-            },
-            {
-              path: 'new',
-              name: 'charge-new',
-              props: true,
-              component: load('main/charge/_new.vue')
-            }
-          ]
-        }
-        */
       ]
     },
     {
       path: '/auth',
-      component: load('authenticate'),
+      component: load('auth'),
       beforeEnter: denyIfLoggedIn(),
       children: [
         {
           path: 'register',
           alias: '/register',
           name: 'register',
-          component: load('authenticate/register')
+          component: load('auth/register')
         },
         {
           path: 'login',
           alias: '/login',
           name: 'login',
-          component: load('authenticate/login')
+          component: load('auth/login')
         },
         {
           path: 'reset_password',
           alias: '/reset_password',
           name: 'reset_password',
-          component: load('authenticate/reset')
+          component: load('auth/reset')
+        }
+      ]
+    },
+    {
+      path: '/admin',
+      component: load('admin'),
+      children: [
+        {
+          path: 'settings',
+          name: 'system-conf',
+          component: load('admin/settings')
         }
       ]
     },

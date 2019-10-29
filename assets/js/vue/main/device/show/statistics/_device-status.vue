@@ -42,7 +42,6 @@ export default {
         },
         tooltip: {
           trigger: 'axis',
-          position: ['90%', 40],
           axisPointer: {
             type: 'shadow'
           }
@@ -67,7 +66,7 @@ export default {
             nameTextStyle: { color: '#fff' },
             type: 'category',
             data: [],
-            axisLabel: { color: '#a5bbef', rotate: -45 },
+            axisLabel: { color: '#a5bbef' },
             axisLine: { lineStyle: { color: '#c0c4cc' } }
           }
         ],
