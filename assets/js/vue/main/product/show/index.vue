@@ -24,10 +24,10 @@
             <a :class="{active: currentTab === 'overview'}" @click="updateTab('overview')">总览</a>
           </li>
           <li>
-            <a :class="{active: currentTab === 'devices'}" @click="updateTab('devices')">生产设备</a>
+            <a :class="{active: currentTab === 'statistics'}" @click="updateTab('statistics')">数据分析</a>
           </li>
           <li>
-            <a :class="{active: currentTab === 'instances'}" @click="updateTab('instances')">产品实例</a>
+            <a :class="{active: currentTab === 'devices'}" @click="updateTab('devices')">生产设备</a>
           </li>
           <li>
             <a :class="{active: currentTab === 'setting'}" @click="updateTab('setting')">设置</a>
@@ -55,7 +55,7 @@
 import productGetQuery from './gql/query.product-name.gql';
 // components
 import overview from './_overview.vue';
-import instances from './_instance.vue';
+import statistics from './_statistics.vue';
 import devices from './_devices.vue';
 import setting from './_setting.vue';
 
@@ -64,7 +64,7 @@ export default {
   props: ['id'],
   components: {
     overview,
-    instances,
+    statistics,
     devices,
     setting
   },

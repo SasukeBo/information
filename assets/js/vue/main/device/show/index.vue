@@ -48,12 +48,6 @@
           <li>
             <a :class="{active: currentTab === 'logs'}" @click="updateTab('logs')">停机日志</a>
           </li>
-          <li>
-            <a :class="{active: currentTab === 'chargers'}" @click="updateTab('chargers')">负责人信息</a>
-          </li>
-          <li>
-            <a :class="{active: currentTab === 'setting'}" @click="updateTab('setting')">设置</a>
-          </li>
         </ul>
       </div>
     </div>
@@ -78,16 +72,12 @@ import deviceQuery from './gql/query.device.gql';
 import overview from './_overview';
 import statistics from './statistics';
 import logs from './status-log/';
-import chargers from './_chager';
-import setting from './_setting';
 
 export default {
   name: 'device-show',
   props: ['id'],
   components: {
     logs,
-    chargers,
-    setting,
     overview,
     statistics
   },

@@ -1,7 +1,0 @@
-fragment param on DeviceParam {
-  id
-  name
-  sign
-  type
-  createdAt
-}

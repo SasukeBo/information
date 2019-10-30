@@ -1,7 +1,0 @@
-#import './fragment.device-charger.gql'
-
-query($uuid: String) {
-  chargers: deviceChargerList(deviceUUID: $uuid) {
-    ...deviceCharger
-  }
-}

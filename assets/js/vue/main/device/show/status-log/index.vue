@@ -7,16 +7,18 @@
 
     <div class="block">
       <div class="field-title">日志列表</div>
+      <log-list :id="id"></log-list>
     </div>
   </div>
 </template>
 <script>
 import typeChart from './stop-type-count-chart';
+import logList from './log-list';
 
 export default {
   name: 'device-status-log',
   props: ['id'],
-  components: { typeChart }
+  components: { typeChart, logList }
 };
 </script>
 <style lang="scss">

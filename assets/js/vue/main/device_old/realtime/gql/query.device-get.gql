@@ -1,7 +1,0 @@
-#import './fragment.device.gql'
-
-query ($uuid: String!){
-  device: deviceGet(uuid: $uuid) {
-    ...device
-  }
-}
