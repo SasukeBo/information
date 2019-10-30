@@ -57,12 +57,6 @@ func init() {
 		Description: "生产产品",
 		Resolve:     resolver.DeviceLoadProduct,
 	})
-
-	deviceType.AddFieldConfig("deviceChargers", &graphql.Field{
-		Type:        graphql.NewList(deviceChargerType),
-		Description: "设备负责人",
-		Resolve:     resolver.LoadDeviceCharger,
-	})
 }
 
 /* 					response

@@ -497,16 +497,14 @@ func DeleteDevice(params graphql.ResolveParams) (interface{}, error) {
 // LoadDevice _
 func LoadDevice(params graphql.ResolveParams) (interface{}, error) {
 	switch v := params.Source.(type) {
-	case models.DeviceCharger:
-		return v.LoadDevice()
-	case *models.DeviceCharger:
-		return v.LoadDevice()
 	case models.DeviceStatusLog:
 		return v.LoadDevice()
 	case *models.DeviceStatusLog:
 		return v.LoadDevice()
+	case models.StopReason:
+		return v.LoadDevice()
 	default:
-		return nil, models.Error{Message: "load related device_charger failed."}
+		return nil, models.Error{Message: "load related device failed."}
 	}
 }
 

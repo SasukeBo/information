@@ -1,5 +1,7 @@
 <template>
-  <div class="log-list">停机日志列表</div>
+  <div class="log-list">
+
+  </div>
 </template>
 <script>
 export default {

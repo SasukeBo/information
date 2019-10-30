@@ -10,6 +10,23 @@ import (
 	// "strings"
 )
 
+// LogLoadStopReason 停机日志Load停机原因
+func LogLoadStopReason(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
+
+	log, ok := params.Source.(*models.DeviceStatusLog)
+	if !ok {
+		fmt.Println("################## not ok")
+		return nil, nil
+	}
+
+	if _, err := o.LoadRelated(log, "Reasons"); err != nil {
+		return nil, nil
+	}
+
+	return log.Reasons, nil
+}
+
 // CountDeviceStopType 统计设备停机类型数量
 func CountDeviceStopType(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()

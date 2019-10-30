@@ -5,33 +5,42 @@ import (
 	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
-	// "fmt"
-	// "regexp"
-	// "strconv"
-	// "strings"
-	// "time"
 )
 
-// ReasonTypeLoadReasons 停机类型获取停机原因
-func ReasonTypeLoadReasons(params graphql.ResolveParams) (interface{}, error) {
-	return nil, nil
+// GetLogStopReasons 获取某条日志的停机原因
+func GetLogStopReasons(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
+
+	logID := params.Args["logID"].(int)
+	dsl := models.DeviceStatusLog{ID: logID}
+	if err := o.Read(&dsl); err != nil {
+		return nil, models.Error{Message: "log not found.", OriErr: err}
+	}
+
+	sql := `
+	SELECT sr.id, sr.bit_pos, sr.content, sr.device_id, sr.word_index FROM stop_reason sr
+	JOIN device_status_log_stop_reasons ship ON sr.id = ship.stop_reason_id
+	WHERE ship.device_status_log_id = ?
+	`
+	var reasons []*models.StopReason
+	if _, err := o.Raw(sql, logID).QueryRows(&reasons); err != nil {
+		return nil, models.Error{Message: "get log stop_reasons failed.", OriErr: err}
+	}
+
+	return reasons, nil
 }
 
-// ReasonLoadType 停机原因获取停机类型
-func ReasonLoadType(params graphql.ResolveParams) (interface{}, error) {
+// DeleteStopReason 删除停机原因
+func DeleteStopReason(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
-	parent, ok := params.Source.(models.DeviceStopReason)
-	if !ok {
-		return nil, models.Error{Message: "parent is not device_stop_reason."}
+
+	id := params.Args["id"].(int)
+	sr := models.StopReason{ID: id}
+	if _, err := o.Delete(&sr); err != nil {
+		return nil, models.Error{Message: "delete stop_reason failed.", OriErr: err}
 	}
 
-	rt := parent.Type
-
-	if err := o.Read(rt); err != nil {
-		return nil, models.Error{Message: "reason_type not found.", OriErr: err}
-	}
-
-	return rt, nil
+	return "ok", nil
 }
 
 // UpdateStopReason 更新停机原因
@@ -39,7 +48,7 @@ func UpdateStopReason(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
 
 	id := params.Args["id"].(int)
-	stopReason := models.DeviceStopReason{ID: id}
+	stopReason := models.StopReason{ID: id}
 	if err := o.Read(&stopReason); err != nil {
 		return nil, models.Error{Message: "device_stop_reason not found.", OriErr: err}
 	}
@@ -54,13 +63,14 @@ func UpdateStopReason(params graphql.ResolveParams) (interface{}, error) {
 		stopReason.Content = content
 	}
 
-	if v := params.Args["code"]; v != nil {
-		code := v.(string)
-		if err := utils.ValidateStringEmpty(code, "code"); err != nil {
-			return nil, err
-		}
-		updates = append(updates, "code")
-		stopReason.Code = code
+	if v := params.Args["wordIndex"]; v != nil {
+		updates = append(updates, "word_index")
+		stopReason.WordIndex = v.(int)
+	}
+
+	if v := params.Args["bitPos"]; v != nil {
+		updates = append(updates, "bit_pos")
+		stopReason.BitPos = v.(int)
 	}
 
 	if _, err := o.Update(&stopReason, updates...); err != nil {
@@ -74,56 +84,26 @@ func UpdateStopReason(params graphql.ResolveParams) (interface{}, error) {
 func CreateStopReason(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
 
-	content := params.Args["content"].(string)
-	code := params.Args["code"].(string)
-	typeID := params.Args["typeID"].(int)
-
-	rt := models.ReasonType{ID: typeID}
-	if err := o.Read(&rt); err != nil {
-		return nil, models.Error{Message: "reason type not found.", OriErr: err}
+	deviceID := params.Args["deviceID"].(int)
+	device := models.Device{ID: deviceID}
+	if err := o.Read(&device); err != nil {
+		return nil, models.Error{Message: "device not found.", OriErr: err}
 	}
 
-	reason := models.DeviceStopReason{Type: &rt, Content: content, Code: code}
+	content := params.Args["content"].(string)
+	wordIndex := params.Args["wordIndex"].(int)
+	bitPos := params.Args["bitPos"].(int)
+
+	reason := models.StopReason{
+		Device:    &device,
+		Content:   content,
+		WordIndex: wordIndex,
+		BitPos:    bitPos,
+	}
+
 	if _, err := o.Insert(&reason); err != nil {
-		return nil, models.Error{Message: "insert stop reason failed.", OriErr: err}
+		return nil, models.Error{Message: "insert stop_reason failed.", OriErr: err}
 	}
 
 	return reason, nil
-}
-
-// CreateReasonType 创建停机类型
-func CreateReasonType(params graphql.ResolveParams) (interface{}, error) {
-	name := params.Args["name"].(string)
-	reasonType := models.ReasonType{Name: name}
-	o := orm.NewOrm()
-	if _, err := o.Insert(&reasonType); err != nil {
-		return nil, models.Error{Message: "create reason type failed.", OriErr: err}
-	}
-
-	return reasonType, nil
-}
-
-// DeleteReasonType 删除停机类型
-func DeleteReasonType(params graphql.ResolveParams) (interface{}, error) {
-	id := params.Args["id"].(int)
-	reasonType := models.ReasonType{ID: id}
-	o := orm.NewOrm()
-	if _, err := o.Delete(&reasonType); err != nil {
-		return nil, models.Error{Message: "delete reason type failed.", OriErr: err}
-	}
-
-	return "ok", nil
-}
-
-// UpdateReasonType 更新停机类型
-func UpdateReasonType(params graphql.ResolveParams) (interface{}, error) {
-	id := params.Args["id"].(int)
-	name := params.Args["name"].(string)
-	reasonType := models.ReasonType{ID: id, Name: name}
-	o := orm.NewOrm()
-	if _, err := o.Update(&reasonType, "name"); err != nil {
-		return nil, models.Error{Message: "update reason type failed.", OriErr: err}
-	}
-
-	return reasonType, nil
 }

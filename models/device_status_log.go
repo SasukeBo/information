@@ -14,23 +14,17 @@ var DeviceStatus = struct {
 
 // DeviceStatusLog 设备运行状态变更模型
 type DeviceStatusLog struct {
-	ID       int       `orm:"auto;pk;column(id)"`
-	Status   int       // 设备运行状态
-	Code     string    `orm:"null"` // 停机代码
-	Device   *Device   `orm:"rel(fk);on_delete()"`
-	BeginAt  time.Time `orm:"auto_now;type(datetime);null"`
-	FinishAt time.Time `orm:"type(datetime);null"`
+	ID       int           `orm:"auto;pk;column(id)"`
+	Status   int           // 设备运行状态
+	Reasons  []*StopReason `orm:"null;rel(m2m)"` // 停机原因IDs
+	Device   *Device       `orm:"rel(fk);on_delete()"`
+	BeginAt  time.Time     `orm:"auto_now;type(datetime);null"`
+	FinishAt time.Time     `orm:"type(datetime);null"`
 }
 
 // LoadDevice _
 func (dsl *DeviceStatusLog) LoadDevice() (*Device, error) {
 	o := orm.NewOrm()
-	// device := Device{ID: dsl.Device.ID}
-	// if err := o.Read(&device); err != nil {
-	// return nil, Error{Message: "load related device failed.", OriErr: err}
-	// }
-	// return &device, nil
-
 	if _, err := o.LoadRelated(dsl, "Device"); err != nil {
 		return nil, Error{Message: "load related device failed.", OriErr: err}
 	}

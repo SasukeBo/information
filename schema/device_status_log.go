@@ -10,21 +10,20 @@ import (
 
 var deviceStatusLogType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "DeviceStatusLog",
-	Description: "设备状态变更记录类型",
+	Description: "设备状态变更记录类型，考虑到列表查询是Load停机原因会造成很大时间开销，不推荐直接Load",
 	Fields: graphql.Fields{
 		"id":       &graphql.Field{Type: graphql.Int},
 		"status":   &graphql.Field{Type: DeviceStatus, Description: "设备运行状态"},
-		"code":     &graphql.Field{Type: graphql.String, Description: "停机代码"},
 		"beginAt":  &graphql.Field{Type: graphql.DateTime, Description: "开始时间"},
 		"finishAt": &graphql.Field{Type: graphql.DateTime, Description: "结束时间"},
 	},
 })
 
 func init() {
-	deviceStatusLogType.AddFieldConfig("device", &graphql.Field{
-		Type:        deviceType,
-		Description: "设备",
-		Resolve:     resolver.LoadDevice,
+	deviceStatusLogType.AddFieldConfig("reasons", &graphql.Field{
+		Type:        graphql.NewList(stopReasonType),
+		Description: "停机原因",
+		Resolve:     resolver.LogLoadStopReason,
 	})
 }
 

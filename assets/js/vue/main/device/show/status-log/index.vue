@@ -1,6 +1,6 @@
 <template>
   <div class="device-status-log">
-    <div class="block">
+    <div class="block" v-if="false">
       <div class="field-title">停机原因统计</div>
       <type-chart :id="id"></type-chart>
     </div>
