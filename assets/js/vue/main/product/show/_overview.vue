@@ -5,12 +5,18 @@
         class="box-link global-card"
         href="product/5/show?tab=devices"
         @click.prevent="$router.push({name: 'product-show', query: {tab: 'devices'}})"
+        v-loading="$apollo.queries.overview.loading"
+        element-loading-background="rgba(0, 0, 0, 0.3)"
       >
         <div class="box-container">
-          <div class="box-title">生产设备总数</div>
-          <div class="box-content">
-            <span class="content">100台</span> /
-            <span class="content__append">86台再生产</span>
+          <div class="box-inline important">
+            <div class="box-title">生产中</div>
+            <div class="box-value">共{{ overview.deviceProdCount }}台</div>
+          </div>
+
+          <div class="box-inline">
+            <div class="box-title">生产设备</div>
+            <div class="box-value">共{{ overview.deviceTotalCount }}台</div>
           </div>
         </div>
       </a>
@@ -19,12 +25,18 @@
         class="box-link global-card"
         href="product/5/show?tab=instances"
         @click.prevent="$router.push({name: 'product-show', query: {tab: 'instances'}})"
+        v-loading="$apollo.queries.overview.loading"
+        element-loading-background="rgba(0, 0, 0, 0.3)"
       >
         <div class="box-container">
-          <div class="box-title">生产总数</div>
-          <div class="box-content">
-            <span class="content">65536个</span> /
-            <span class="content__append">良率90%</span>
+          <div class="box-inline important">
+            <div class="box-title">总良率</div>
+            <div class="box-value">{{ calRate(overview.instanceCount, overview.qualifiedCount) }}%</div>
+          </div>
+
+          <div class="box-inline">
+            <div class="box-title">总产出</div>
+            <div class="box-value">{{ overview.instanceCount }}个</div>
           </div>
         </div>
       </a>
@@ -33,12 +45,20 @@
         class="box-link global-card"
         href="product/5/show?tab=instances"
         @click.prevent="$router.push({name: 'product-show', query: {tab: 'instances'}})"
+        v-loading="$apollo.queries.overview.loading"
+        element-loading-background="rgba(0, 0, 0, 0.3)"
       >
         <div class="box-container">
-          <div class="box-title">今日生产总数</div>
-          <div class="box-content">
-            <span class="content">1024个</span> /
-            <span class="content__append">良率99%</span>
+          <div class="box-inline important">
+            <div class="box-title">今日良率</div>
+            <div
+              class="box-value"
+            >{{ calRate(overview.todayInstanceCount, overview.todayQualifiedCount) }}%</div>
+          </div>
+
+          <div class="box-inline">
+            <div class="box-title">今日产出</div>
+            <div class="box-value">{{ overview.todayInstanceCount }}个</div>
           </div>
         </div>
       </a>
@@ -187,6 +207,7 @@
 <script>
 import productDetailsQuery from './gql/query.product-details.gql';
 import productUpdateMutate from './gql/mutate.product-update.gql';
+import overviewQuery from './gql/query.overview.gql';
 import { timeFormatter, parseGQLError } from 'js/utils';
 import defaultAvatar from 'images/default-avatar.png';
 import ClickToEdit from 'js/vue/main/components/click-to-edit';
@@ -203,11 +224,18 @@ export default {
           id: this.id
         };
       }
+    },
+    overview: {
+      query: overviewQuery,
+      variables() {
+        return { id: this.id };
+      }
     }
   },
   data() {
     return {
       product: {},
+      overview: {},
       defaultAvatar
     };
   },
@@ -230,6 +258,19 @@ export default {
           var err = parseGQLError(e);
           this.$message({ type: 'error', message: err.message });
         });
+    },
+    calRate(total, part) {
+      if (
+        total &&
+        typeof total === 'number' &&
+        part &&
+        typeof part === 'number'
+      ) {
+        var rate = (part / total) * 100;
+        return rate.toFixed(2);
+      } else {
+        return '-';
+      }
     }
   },
   mounted() {
@@ -264,23 +305,30 @@ export default {
     height: 120px;
     padding: 24px;
     border-radius: 2px;
+    display: flex;
+
+    .box-inline {
+      display: inline-block;
+      padding: 1rem 0 0 1rem;
+      flex: 1;
+    }
+
+    .box-inline .box-value {
+      color: $--color-font__white;
+    }
+
+    .box-inline.important {
+      padding: 0;
+    }
+
+    .box-inline.important .box-value {
+      font-size: 2rem;
+      color: $--color-theme__main;
+    }
 
     .box-title {
       color: $--color-font__gray;
       margin-bottom: 8px;
-    }
-
-    .box-content .content {
-      display: inline-block;
-      font-weight: 300;
-      font-size: 36px;
-      line-height: 36px;
-      color: $--color-theme__main;
-    }
-
-    .box-content .content__append {
-      display: inline-block;
-      color: $--color-theme__success;
     }
   }
 

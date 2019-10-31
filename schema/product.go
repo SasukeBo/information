@@ -42,12 +42,6 @@ func init() {
 		Resolve:     resolver.LoadProductIns,
 	})
 
-	productType.AddFieldConfig("devices", &graphql.Field{
-		Type:        graphql.NewList(deviceType),
-		Description: "生产设备",
-		Resolve:     resolver.LoadDevice,
-	})
-
 	productType.AddFieldConfig("register", &graphql.Field{
 		Type:        userType,
 		Description: "注册人",
@@ -76,9 +70,39 @@ var productHistogramObject = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+var productOverviewResponse = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "ProductOverviewResponse",
+	Description: "产品数据总览",
+	Fields: graphql.Fields{
+		"deviceTotalCount":    &graphql.Field{Type: graphql.Int, Description: "产品生产设备总数"},
+		"deviceProdCount":     &graphql.Field{Type: graphql.Int, Description: "产品生产设备运行中总数"},
+		"instanceCount":       &graphql.Field{Type: graphql.Int, Description: "产量"},
+		"qualifiedCount":      &graphql.Field{Type: graphql.Int, Description: "良品数量"},
+		"todayInstanceCount":  &graphql.Field{Type: graphql.Int, Description: "今日产量"},
+		"todayQualifiedCount": &graphql.Field{Type: graphql.Int, Description: "今日良品数量"},
+	},
+})
+
 /* 				   query
 ------------------------------ */
 
+var productOverview = &graphql.Field{
+	Type: productOverviewResponse,
+	Args: graphql.FieldConfigArgument{
+		"id": GenArg(graphql.Int, "产品ID", false),
+	},
+	Description: "产品数据总览",
+	Resolve:     resolver.ProductOverView,
+}
+
+var productDevicesGet = &graphql.Field{
+	Type: graphql.NewList(deviceType),
+	Args: graphql.FieldConfigArgument{
+		"id": GenArg(graphql.Int, "产品ID", false),
+	},
+	Description: "获取产品的生产设备列表",
+	Resolve:     resolver.GetProductDevices,
+}
 var productHistogram = &graphql.Field{
 	Type: productHistogramObject,
 	Args: graphql.FieldConfigArgument{

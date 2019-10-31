@@ -12,6 +12,81 @@ import (
 	"time"
 )
 
+// GetProductDevices 获取产品的生产设备
+func GetProductDevices(params graphql.ResolveParams) (interface{}, error) {
+	id := params.Args["id"].(int)
+
+	product := models.Product{ID: id}
+	devices, err := product.GetDevices(orm.NewOrm())
+	if err != nil {
+		return nil, err
+	}
+
+	return devices, nil
+}
+
+// ProductOverView 产品总览页数据接口
+func ProductOverView(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
+
+	response := struct {
+		DeviceTotalCount    int
+		DeviceProdCount     int
+		InstanceCount       int
+		QualifiedCount      int
+		TodayInstanceCount  int
+		TodayQualifiedCount int
+	}{}
+
+	id := params.Args["id"].(int)
+	product := models.Product{ID: id}
+	if err := o.Read(&product); err != nil {
+		return nil, models.Error{Message: "product not found.", OriErr: err}
+	}
+
+	sql1 := `
+	SELECT COUNT(device.id) AS device_total_count
+	FROM device JOIN device_product_ship dps ON device.id = dps.device_id
+	WHERE dps.product_id = ?
+	`
+	o.Raw(sql1, id).QueryRow(&response)
+	sql2 := `
+	SELECT COUNT(device.id) AS device_prod_count
+	FROM device JOIN device_product_ship dps ON device.id = dps.device_id
+	WHERE dps.product_id = ? AND device.status = ?
+	`
+	o.Raw(sql2, id, models.DeviceStatus.Prod).QueryRow(&response)
+	sql3 := `
+	SELECT COUNT(*) AS instance_count
+	FROM product_ins JOIN device_product_ship dps ON product_ins.device_product_ship_id = dps.id
+	WHERE dps.product_id = ?
+	`
+	o.Raw(sql3, id).QueryRow(&response)
+	sql4 := `
+	SELECT COUNT(*) AS qualified_count
+	FROM product_ins JOIN device_product_ship dps ON product_ins.device_product_ship_id = dps.id
+	WHERE dps.product_id = ? AND product_ins.qualified = true
+	`
+	o.Raw(sql4, id).QueryRow(&response)
+	now := time.Now()
+	midnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	sql5 := `
+	SELECT COUNT(*) AS today_instance_count
+	FROM product_ins JOIN device_product_ship dps ON product_ins.device_product_ship_id = dps.id
+	WHERE dps.product_id = ? AND product_ins.created_at > ?
+	`
+	o.Raw(sql5, id, midnight).QueryRow(&response)
+
+	sql6 := `
+	SELECT COUNT(*) AS today_qualified_count
+	FROM product_ins JOIN device_product_ship dps ON product_ins.device_product_ship_id = dps.id
+	WHERE dps.product_id = ? AND product_ins.qualified = true AND product_ins.created_at > ?
+	`
+	o.Raw(sql6, id, midnight).QueryRow(&response)
+
+	return response, nil
+}
+
 // ProductHistogram _
 func ProductHistogram(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()

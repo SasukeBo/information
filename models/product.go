@@ -42,3 +42,21 @@ func (p *Product) LoadUser() (*User, error) {
 
 	return p.Register, nil
 }
+
+// GetDevices _
+func (p *Product) GetDevices(db orm.Ormer) ([]*Device, error) {
+	var devices []*Device
+
+	sql := `
+	SELECT d.id, d.address, d.name, d.number, d.remote_ip, d.status, d.token, d.type, d.user_id, d.created_at, d.updated_at
+	FROM device d
+	JOIN device_product_ship dps ON d.id = dps.device_id
+	WHERE dps.product_id = ?
+	`
+
+	if _, err := db.Raw(sql, p.ID).QueryRows(&devices); err != nil {
+		return devices, Error{Message: "get product devices failed.", OriErr: err}
+	}
+
+	return devices, nil
+}

@@ -12,10 +12,17 @@ var Root graphql.Schema
 var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
 	Fields: graphql.Fields{
-		"currentUser":             currentUser,
-		"userGet":                 userGet,
-		"userList":                userList,
-		"getSmsCode":              getSmsCode,
+		// user
+		"currentUser":   currentUser,
+		"userGet":       userGet,
+		"userList":      userList,
+		"getSmsCode":    getSmsCode,
+		"userLoginList": userLoginList,
+		"getLastLogin":  userLoginLast,
+		"getThisLogin":  userLoginThis,
+		"privilegeList": privilegeList, // TODO: 移除
+
+		// device
 		"deviceGet":               deviceGet,
 		"deviceList":              deviceList,
 		"deviceTokenGet":          deviceTokenGet,
@@ -25,16 +32,16 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		"deviceMonthlyStatistics": deviceMonthlyStatistics,
 		"deviceStatusStatistics":  deviceStatusStatistics,
 		"logStopReasonsGet":       logStopReasonsGet,
-		"userLoginList":           userLoginList,
-		"getLastLogin":            userLoginLast,
-		"getThisLogin":            userLoginThis,
-		"privilegeList":           privilegeList,
-		"productGet":              productGet,
-		"productList":             productList,
-		"productHistogram":        productHistogram,
-		"detectItemGet":           detectItemGet,
-		"detectItemList":          detectItemList,
-		"realTimeStatistics":      realTimeStatistics,
+
+		// product
+		"productGet":         productGet,
+		"productList":        productList,
+		"productHistogram":   productHistogram,
+		"detectItemGet":      detectItemGet,
+		"detectItemList":     detectItemList,
+		"realTimeStatistics": realTimeStatistics,
+		"productOverview":    productOverview,
+		"productDevicesGet":  productDevicesGet,
 	},
 })
 

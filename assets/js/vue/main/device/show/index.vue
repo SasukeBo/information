@@ -27,7 +27,7 @@
 
       <div class="header_right">
         <el-tooltip effect="dark" content="修改信息" placement="top">
-          <i class="operation-btn el-icon-edit" @click="updateTab('setting')"></i>
+          <i class="operation-btn el-icon-edit" @click="() => {null}"></i>
         </el-tooltip>
 
         <el-tooltip effect="dark" content="删除设备" placement="top">
