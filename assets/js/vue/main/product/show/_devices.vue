@@ -109,7 +109,10 @@ export default {
   .device-table {
     margin-bottom: 20px;
     background: $--color-theme__bg;
-    height: unset;
+
+    .el-table__empty-block {
+      height: unset;
+    }
   }
 
   .device-table .device-table-cell .avatar {

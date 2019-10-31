@@ -510,7 +510,47 @@ func LoadDevice(params graphql.ResolveParams) (interface{}, error) {
 
 // CountDeviceStatus _
 func CountDeviceStatus(params graphql.ResolveParams) (interface{}, error) {
-	return nil, nil
+	o := orm.NewOrm()
+	var sql string
+	filter := params.Args["filter"].(string)
+
+	switch filter {
+	case "all":
+		sql = `SELECT COUNT(status), status FROM device GROUP BY status`
+	case "register":
+		user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
+		sql = fmt.Sprintf("SELECT COUNT(status), status FROM device WHERE user_id = %d GROUP BY status", user.ID)
+	default:
+		return nil, nil
+	}
+
+	var results []*struct {
+		Count  int
+		Status int
+	}
+
+	if _, err := o.Raw(sql).QueryRows(&results); err != nil {
+		return nil, models.Error{Message: "count device by status failed.", OriErr: err}
+	}
+
+	var response struct {
+		Prod    int
+		Stop    int
+		Offline int
+	}
+
+	for _, r := range results {
+		switch r.Status {
+		case models.DeviceStatus.Prod:
+			response.Prod = r.Count
+		case models.DeviceStatus.Stop:
+			response.Stop = r.Count
+		case models.DeviceStatus.OffLine:
+			response.Offline = r.Count
+		}
+	}
+
+	return response, nil
 }
 
 // private functions

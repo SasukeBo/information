@@ -8,18 +8,18 @@
 
         <div style="display: flex">
           <div class="device-item">
-            <i class="iconfont icon-shebei"></i>
-            <span>共 {{ own.total }} 台</span>
+            <i class="iconfont icon-running"></i>
+            <span>{{ total && total.prod ? total.prod : '-' }} 台生产</span>
           </div>
 
           <div class="device-item">
-            <i class="iconfont icon-on-line"></i>
-            <span>在线 {{ own.online }} 台</span>
+            <i class="iconfont icon-stopping"></i>
+            <span>{{ total && total.stop ? total.stop : '-' }} 台停机</span>
           </div>
 
           <div class="device-item">
             <i class="iconfont icon-off-line"></i>
-            <span>离线 {{ own.offline }} 台</span>
+            <span>{{ total && total.offline ? total.offline : '-' }} 台离线</span>
           </div>
         </div>
       </div>
@@ -29,18 +29,18 @@
 
         <div style="display: flex">
           <div class="device-item">
-            <i class="iconfont icon-shebei"></i>
-            <span>共 {{ charge.total }} 台</span>
+            <i class="iconfont icon-running"></i>
+            <span>{{ register && register.prod ? register.prod : '-' }} 台生产</span>
           </div>
 
           <div class="device-item">
-            <i class="iconfont icon-on-line"></i>
-            <span>在线 {{ charge.online }} 台</span>
+            <i class="iconfont icon-stopping"></i>
+            <span>{{ register && register.stop ? register.stop : '-' }} 台停机</span>
           </div>
 
           <div class="device-item">
             <i class="iconfont icon-off-line"></i>
-            <span>离线 {{ charge.offline }} 台</span>
+            <span>{{ register && register.offline ? register.offline : '-' }} 台离线</span>
           </div>
         </div>
       </div>
@@ -48,20 +48,29 @@
   </div>
 </template>
 <script>
+import countQuery from './gql/query.device-status-count.gql';
+
 export default {
   name: 'device-card',
+  apollo: {
+    total: {
+      query: countQuery,
+      update(data) {
+        return data.count;
+      }
+    },
+    register: {
+      query: countQuery,
+      variables: { filter: 'register' },
+      update(data) {
+        return data.count;
+      }
+    }
+  },
   data() {
     return {
-      own: {
-        total: 10,
-        online: 8,
-        offline: 2
-      },
-      charge: {
-        total: 23,
-        online: 23,
-        offline: 0
-      }
+      total: undefined,
+      register: undefined
     };
   }
 };

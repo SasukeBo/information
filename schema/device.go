@@ -14,6 +14,7 @@ var DeviceStatisticsType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"activation": &graphql.Field{Type: graphql.Float, Description: "稼动率"},
 		"yield":      &graphql.Field{Type: graphql.Float, Description: "良率"},
+		"oee":        &graphql.Field{Type: graphql.Float, Description: "OEE"},
 	},
 })
 
@@ -29,10 +30,14 @@ var deviceType = graphql.NewObject(graphql.ObjectConfig{
 		"address":        &graphql.Field{Type: graphql.String, Description: "设备地址"},
 		"number":         &graphql.Field{Type: graphql.String, Description: "设备编号"},
 		"statusChangeAt": &graphql.Field{Type: graphql.DateTime, Description: "设备状态变更时间"},
-		"statistics":     &graphql.Field{Type: DeviceStatisticsType, Description: "设备统计数据"},
 		"createdAt":      &graphql.Field{Type: graphql.DateTime},
 		"updatedAt":      &graphql.Field{Type: graphql.DateTime},
 		"remoteIP":       &graphql.Field{Type: graphql.String},
+		"statistics": &graphql.Field{
+			Type:        DeviceStatisticsType,
+			Description: "设备统计数据",
+			// TODO: Resolve: resolver.
+		},
 	},
 })
 
