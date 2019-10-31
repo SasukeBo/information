@@ -29,7 +29,7 @@
         <span class="table-cell">注册人</span>
         <span class="table-cell">订货方</span>
         <span class="table-cell">生产负责人</span>
-        <span class="table-cell">目标/当前产量</span>
+        <span class="table-cell">当前产量/目标</span>
         <span class="table-cell">检测项数</span>
       </div>
 
@@ -69,9 +69,9 @@
 
         <span class="table-cell">
           <div class="first">
-            <span style="color: #03a9f4">{{ product.total ? product.total : '0' }}</span>
+            <span style="color: #03a9f4">{{ product.currentCount ? product.currentCount : '0' }}</span>
             <span>/</span>
-            <span style="color: #8fc860">{{ product.currentCount ? product.currentCount : '0' }}</span>
+            <span style="color: #c0c4cc">{{ product.total ? product.total : '0' }}</span>
             <span>个</span>
           </div>
         </span>

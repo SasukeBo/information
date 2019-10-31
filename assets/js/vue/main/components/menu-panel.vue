@@ -29,30 +29,12 @@
 
     <a
       href="/settings"
+      v-if="false"
       :class="['menu-item', $route.name == 'system-conf' ? 'is-active': '']"
       @click.prevent="directTo('system-conf')"
     >
       <i class="el-icon-s-tools"></i>
       <span>系统设置</span>
-    </a>
-
-    <a
-      href="https://github.com/SasukeBo/information/tree/develop"
-      target="_blank"
-      class="menu-item"
-    >
-      <i class="iconfont icon-git"></i>
-      <span>Github 仓库</span>
-    </a>
-
-    <a href="https://github.com/SasukeBo/information/issues/16" target="_blank" class="menu-item">
-      <i class="iconfont icon-git"></i>
-      <span>Github Issues</span>
-    </a>
-
-    <a href="https://github.com/SasukeBo/information/issues/13" target="_blank" class="menu-item">
-      <i class="iconfont icon-git"></i>
-      <span>Bug Fix</span>
     </a>
   </div>
 </template>
