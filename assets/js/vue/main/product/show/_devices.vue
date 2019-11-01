@@ -118,6 +118,7 @@ export default {
   .device-table .device-table-cell .avatar {
     display: inline-block;
     width: 40px;
+    height: 40px;
     margin-right: 8px;
     vertical-align: middle;
     border-radius: 50%;

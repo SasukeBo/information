@@ -41,7 +41,7 @@ func init() {
 		new(Privilege),
 		new(UserLogin),
 		new(Device),
-		// new(DeviceCharger),
+		new(SystemConf),
 		new(DeviceStatusLog),
 		new(StopReason),
 		new(DeviceProductShip),
@@ -49,6 +49,7 @@ func init() {
 		new(ProductIns),
 		new(DetectItem),
 		new(DetectItemValue),
+		// new(DeviceCharger),
 	)
 
 	// 自动建表

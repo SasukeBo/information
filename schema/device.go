@@ -36,7 +36,7 @@ var deviceType = graphql.NewObject(graphql.ObjectConfig{
 		"statistics": &graphql.Field{
 			Type:        DeviceStatisticsType,
 			Description: "设备统计数据",
-			// TODO: Resolve: resolver.
+			Resolve:     resolver.ComputeDeviceOEE,
 		},
 	},
 })

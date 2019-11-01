@@ -13,35 +13,35 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
 	Fields: graphql.Fields{
 		// user
-		"currentUser":   currentUser,
-		"userGet":       userGet,
-		"userList":      userList,
-		"getSmsCode":    getSmsCode,
-		"userLoginList": userLoginList,
-		"getLastLogin":  userLoginLast,
-		"getThisLogin":  userLoginThis,
+		"currentUser":   currentUser,   // 获取当前登录的用户
+		"userGet":       userGet,       // 获取用户
+		"userList":      userList,      // 用户列表
+		"getSmsCode":    getSmsCode,    // 获取短信验证码
+		"userLoginList": userLoginList, // 用户登录记录
+		"getLastLogin":  userLoginLast, // 用户上次登录记录
+		"getThisLogin":  userLoginThis, // 用户本次登录记录
 		"privilegeList": privilegeList, // TODO: 移除
 
 		// device
-		"deviceGet":               deviceGet,
-		"deviceList":              deviceList,
-		"deviceTokenGet":          deviceTokenGet,
-		"deviceStatusCount":       deviceStatusCount,
-		"deviceStopLogList":       deviceStopLogList,
-		"deviceStopTypeCount":     deviceStopTypeCount,
-		"deviceMonthlyStatistics": deviceMonthlyStatistics,
-		"deviceStatusStatistics":  deviceStatusStatistics,
-		"logStopReasonsGet":       logStopReasonsGet,
+		"deviceGet":               deviceGet,               // 获取设备
+		"deviceList":              deviceList,              // 获取设备列表
+		"deviceTokenGet":          deviceTokenGet,          // Token查询设备 TODO: 移除
+		"deviceStatusCount":       deviceStatusCount,       // 设备分运行状态统计数量
+		"deviceStopLogList":       deviceStopLogList,       // 设备停机日志列表
+		"deviceStopTypeCount":     deviceStopTypeCount,     // 设备停机类型次数统计
+		"deviceMonthlyStatistics": deviceMonthlyStatistics, // 设备月数据分析
+		"deviceStatusStatistics":  deviceStatusStatistics,  // 设备状态数据
+		"logStopReasonsGet":       logStopReasonsGet,       // 停机日志获取停机原因
 
 		// product
-		"productGet":         productGet,
-		"productList":        productList,
-		"productHistogram":   productHistogram,
-		"detectItemGet":      detectItemGet,
-		"detectItemList":     detectItemList,
-		"realTimeStatistics": realTimeStatistics,
-		"productOverview":    productOverview,
-		"productDevicesGet":  productDevicesGet,
+		"productGet":         productGet,         // 获取产品
+		"productList":        productList,        // 获取产品列表
+		"productHistogram":   productHistogram,   // 获取产品检测参数直方图
+		"detectItemGet":      detectItemGet,      // 产品检测项获取
+		"detectItemList":     detectItemList,     // 产品检测项列表
+		"realTimeStatistics": realTimeStatistics, // 产品实时数据
+		"productOverview":    productOverview,    // 产品总览数据
+		"productDevicesGet":  productDevicesGet,  // 产品关联设备获取
 	},
 })
 
@@ -49,24 +49,24 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
 	Fields: graphql.Fields{
-		"signUp":           signUp,
-		"signIn":           signIn,
-		"signOut":          signOut,
-		"resetPassword":    resetPassword,
-		"userUpdate":       userUpdate,
-		"sendSmsCode":      sendSmsCode,
-		"deviceCreate":     deviceCreate,
-		"deviceUpdate":     deviceUpdate,
-		"deviceDelete":     deviceDelete,
-		"productCreate":    productCreate,
-		"productDelete":    productDelete,
-		"productUpdate":    productUpdate,
-		"detectItemCreate": detectItemCreate,
-		"detectItemUpdate": detectItemUpdate,
-		"detectItemDelete": detectItemDelete,
-		"stopReasonCreate": stopReasonCreate,
-		"stopReasonUpdate": stopReasonUpdate,
-		"stopReasonDelete": stopReasonDelete,
+		"signUp":           signUp,           // 注册
+		"signIn":           signIn,           // 登录
+		"signOut":          signOut,          // 登出
+		"resetPassword":    resetPassword,    // 找回密码
+		"userUpdate":       userUpdate,       // 更新用户信息
+		"sendSmsCode":      sendSmsCode,      // 发送短信验证码
+		"deviceCreate":     deviceCreate,     // 设备创建
+		"deviceUpdate":     deviceUpdate,     // 设备更新
+		"deviceDelete":     deviceDelete,     // 设备移除
+		"productCreate":    productCreate,    // 产品创建
+		"productDelete":    productDelete,    // 产品移除
+		"productUpdate":    productUpdate,    // 产品更新
+		"detectItemCreate": detectItemCreate, // 产品检测项增加
+		"detectItemUpdate": detectItemUpdate, // 产品检测项更新
+		"detectItemDelete": detectItemDelete, // 产品检测项删除
+		"stopReasonCreate": stopReasonCreate, // 停机原因创建
+		"stopReasonUpdate": stopReasonUpdate, // 停机原因更新
+		"stopReasonDelete": stopReasonDelete, // 停机原因删除
 	},
 })
 

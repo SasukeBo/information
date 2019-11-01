@@ -47,3 +47,12 @@ func TestDuration(t *testing.T) {
 		t.Logf("OK, result is %v", hours)
 	}
 }
+
+func TestEncrypt(t *testing.T) {
+	origin := "wb1994@"
+	encrypted := Encrypt(origin)
+	t.Logf("encrypted: %s", encrypted)
+	if encrypted != origin {
+		t.Errorf("Encrypted failed.")
+	}
+}

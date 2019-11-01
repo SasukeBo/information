@@ -19,6 +19,12 @@ type statistics struct {
 	Yield       int
 }
 
+// ComputeDeviceOEE 计算设备当班OEE 稼动率 良率 等指标
+func ComputeDeviceOEE(params graphql.ResolveParams) (interface{}, error) {
+	// TODO: 计算设备OEE
+	return nil, nil
+}
+
 /*                   begin
 ---------------------------------------------- */
 
@@ -210,7 +216,7 @@ func GetRealTimeStatistics(params graphql.ResolveParams) (interface{}, error) {
 	return seriesDatas, nil
 }
 
-// MonthlyAnalyzeDeviceFormatTime 分析设备月数据
+// MonthlyAnalyzeDeviceFormatTime 格式化时间长度
 func MonthlyAnalyzeDeviceFormatTime(params graphql.ResolveParams) (interface{}, error) {
 	format := "%D days %H hours %M minutes"
 	if value := params.Args["format"]; value != nil {
@@ -559,10 +565,28 @@ func splitTime(dbTimeDuration string) map[string]string {
 	dbDurationPattern := `^(\d*)( days? )?(\d+):(\d{2}):(\d{2})(\.\d*)?$`
 	reg := regexp.MustCompile(dbDurationPattern)
 	matches := reg.FindStringSubmatch(dbTimeDuration)
-	days := matches[1]
-	hours := matches[3]
-	minutes := matches[4]
-	seconds := matches[5]
+	var (
+		days    string
+		hours   string
+		minutes string
+		seconds string
+	)
+
+	if len(matches) > 1 {
+		days = matches[1]
+	}
+
+	if len(matches) > 3 {
+		hours = matches[3]
+	}
+
+	if len(matches) > 4 {
+		minutes = matches[4]
+	}
+
+	if len(matches) > 5 {
+		seconds = matches[5]
+	}
 
 	return map[string]string{
 		"days":    days,
@@ -600,10 +624,12 @@ func parseTimeDurationFromDB(dbTimeDuration string) (time.Duration, error) {
 func formatTime(dbTimeDuration, format string) string {
 	times := splitTime(dbTimeDuration)
 
-	seconds := 0
-	minutes := 0
-	hours := 0
-	days := 0
+	var (
+		seconds int
+		minutes int
+		hours   int
+		days    int
+	)
 
 	if v, e := strconv.Atoi(times["seconds"]); e == nil {
 		seconds = v

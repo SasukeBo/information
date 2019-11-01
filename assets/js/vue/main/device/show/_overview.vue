@@ -91,13 +91,13 @@
 
         <div class="col-line">
           <div class="label">注册人</div>
-          <div class="value" v-if="device.user">
+          <div class="value register" v-if="device.user">
             <img
               class="avatar"
               :src="device.user.avatarURL ? device.user.avatarURL : defaultAvatar"
             />
-            <div>{{ device.user.name }}</div>（
-            <div style="color: #909399">{{ device.user.phone }}</div>）
+            <div>{{ device.user.name }}</div>
+            <div style="color: #909399">{{ device.user.phone }}</div>
           </div>
         </div>
 
@@ -112,7 +112,7 @@
         </div>
       </div>
 
-      <div class="details__col">这边显示负责人信息</div>
+      <div class="details__col"></div>
     </div>
   </div>
 </template>
@@ -244,7 +244,7 @@ export default {
     line-height: 50px;
   }
 
-  .device-details {
+  .device-details.row {
     margin-top: 30px;
     color: $--color-font__light;
   }
@@ -270,13 +270,17 @@ export default {
       flex: auto;
     }
 
+    .value.register {
+      position: relative;
+      display: block;
+    }
+
     .value .avatar {
-      display: inline-block;
       height: 30px;
       width: 30px;
       border-radius: 2px;
-      vertical-align: middle;
       margin-right: 0.5rem;
+      float: left;
     }
 
     .label:after {

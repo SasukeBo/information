@@ -18,11 +18,11 @@
 
     <div class="com-header__right">
       <div class="topbar-entry">
-        <img class="topbar-entry__avatar" src="~images/avatar.jpg" />
+        <img class="topbar-entry__avatar" :src="avatarURL ? avatarURL : '~images/avatar.jpg'" />
 
         <div class="topbar-body global-card">
           <div class="topbar-body__header">
-            <img src="~images/avatar.jpg" class="avatar" />
+            <img :src="avatarURL ? avatarURL : '~images/avatar.jpg'" class="avatar" />
             <span style="font-size: 1.5rem">{{ name ? name : phone }}</span>
             <el-tag
               :type="role.isAdmin ? 'warning' : 'success'"

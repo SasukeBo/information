@@ -68,14 +68,13 @@
       <div class="detail-group">
         <div class="item">
           <span class="label">注册人</span>
-          <div class="value" v-if="product.register">
+          <div class="value register" v-if="product.register">
             <img
               class="register-avatar"
               :src="product.register.avatarURL ? product.register.avatarURL : defaultAvatar"
             />
-            <span>{{ product.register.name }}</span>
-            (
-            <span style="color: #8a9099">{{product.register.phone}}</span> )
+            <div>{{ product.register.name }}</div>
+            <div style="color: #8a9099">{{product.register.phone}}</div>
           </div>
           <div class="value" v-else>未知</div>
         </div>
@@ -371,6 +370,10 @@ export default {
 
     .value {
       flex: auto;
+    }
+
+    .value .register-avatar {
+      float: left;
     }
 
     .value.click-to-edit .el-input {

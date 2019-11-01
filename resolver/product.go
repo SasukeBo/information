@@ -127,7 +127,14 @@ func ProductHistogram(params graphql.ResolveParams) (interface{}, error) {
 	if err := o.Raw(gql, detectItemID, lowerTime, upperTime).QueryRow(&result); err != nil {
 		return nil, models.Error{Message: "calculation error.", OriErr: err}
 	}
-	length := (result.Max - result.Min) / float64(groups)
+	duration := result.Max - result.Min
+	if duration == 0 {
+		return struct {
+			XAxisData  []string
+			SeriesData []int
+		}{}, nil
+	}
+	length := duration / float64(groups)
 
 	// 生成sql
 	sql2 := `
