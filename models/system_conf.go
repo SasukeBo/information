@@ -17,7 +17,7 @@ var systemConfValueType = struct {
 // SystemConf 系统配置项
 type SystemConf struct {
 	ID        int       `orm:"auto;pk;column(id)"` // PKey 主键
-	Name      string    // 配置项名称
+	Name      string    `orm:"unique;index"`       // 配置项名称
 	Value     string    // 配置项值
 	ValueType int       `orm:"default(0)"` // 配置项值类型
 	CreatedAt time.Time `orm:"auto_now_add;type(datetime)"`

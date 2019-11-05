@@ -7,6 +7,8 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+var emailRegexp = `[^\\.\\s@:](?:[^\\s@:]*[^\\s@:\\.])?@[^\\.\\s@]+(?:\\.[^\\.\\s@]+)*`
+
 // SignUp _
 func SignUp(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
@@ -34,8 +36,8 @@ func SignUp(params graphql.ResolveParams) (interface{}, error) {
 	user.Phone = phone
 
 	// validate password
-	if err := utils.ValidatePassword(password); err != nil {
-		return nil, err
+	if len(password) < 6 {
+		return nil, models.Error{Message: "password is too short."}
 	}
 	user.Password = utils.Encrypt(password)
 
@@ -73,8 +75,9 @@ func ResetPassword(params graphql.ResolveParams) (interface{}, error) {
 		return nil, models.Error{Message: "smsCode incorrect."}
 	}
 
-	if err := utils.ValidatePassword(passwordStr); err != nil {
-		return nil, err
+	// validate password
+	if len(passwordStr) < 6 {
+		return nil, models.Error{Message: "password is too short."}
 	}
 
 	user := models.User{Phone: phoneStr}

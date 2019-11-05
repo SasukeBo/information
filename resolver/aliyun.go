@@ -6,6 +6,7 @@ import (
 	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego"
 	"github.com/graphql-go/graphql"
+	"regexp"
 )
 
 type sendSmsCodeResponse struct {
@@ -20,11 +21,14 @@ func SendSmsCode(p graphql.ResolveParams) (interface{}, error) {
 	rootValue := p.Info.RootValue.(map[string]interface{})
 	var response sendSmsCodeResponse
 
-	phone := p.Args["phone"].(string)
 	// validate phone
-	if err := utils.ValidatePhone(phone); err != nil {
-		return nil, err
+	phone := p.Args["phone"].(string)
+	pattern := `^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[35678]\d{2}|4(?:0\d|1[0-2]|9\d))|9[189]\d{2}|66\d{2})\d{6}$`
+	reg := regexp.MustCompile(pattern)
+	if !reg.Match([]byte(phone)) {
+		return nil, models.Error{Message: "invalid phone number."}
 	}
+
 	smsCode := utils.GenSmsCode()
 
 	if disableSend, _ := beego.AppConfig.Bool("DisableSend"); disableSend {

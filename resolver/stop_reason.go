@@ -2,7 +2,6 @@ package resolver
 
 import (
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego/orm"
 	"github.com/graphql-go/graphql"
 )
@@ -54,13 +53,9 @@ func UpdateStopReason(params graphql.ResolveParams) (interface{}, error) {
 	}
 	updates := []string{}
 
-	if v := params.Args["content"]; v != nil {
-		content := v.(string)
-		if err := utils.ValidateStringEmpty(content, "content"); err != nil {
-			return nil, err
-		}
+	if v, ok := params.Args["content"].(string); ok && v != "" {
 		updates = append(updates, "content")
-		stopReason.Content = content
+		stopReason.Content = v
 	}
 
 	if v := params.Args["wordIndex"]; v != nil {

@@ -28,3 +28,14 @@ func (u *User) LoadRole() (*Role, error) {
 
 	return u.Role, nil
 }
+
+// HasAccess 查询用户是否具有该权限
+// privSign 权限sign
+// privType 权限类型 - see models.PrivType
+func (u *User) HasAccess(privSign string, privType int) bool {
+	if role, err := u.LoadRole(); err == nil {
+		return role.Validate(privSign, privType)
+	}
+
+	return false
+}

@@ -21,8 +21,20 @@ type statistics struct {
 
 // ComputeDeviceOEE 计算设备当班OEE 稼动率 良率 等指标
 func ComputeDeviceOEE(params graphql.ResolveParams) (interface{}, error) {
-	// TODO: 计算设备OEE
-	return nil, nil
+	var device *models.Device
+	switch v := params.Source.(type) {
+	case *models.Device:
+		device = v
+	case models.Device:
+		device = &v
+	}
+
+	response, err := device.GetCurrentClassOEE()
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 /*                   begin
@@ -374,33 +386,30 @@ func ListDevice(params graphql.ResolveParams) (interface{}, error) {
 // CreateDevice 创建设备
 func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
-	if err := o.Begin(); err != nil {
-		return nil, models.Error{Message: "begin transaction failed.", OriErr: err}
-	}
 
-	// 验证用户是否有创建设备的权限
-	if err := utils.ValidateAccess(&params, "device_c", models.PrivType.Default); err != nil {
-		o.Rollback()
-		return nil, err
+	user := params.Info.RootValue.(map[string]interface{})["currentUser"].(models.User)
+	if !user.HasAccess("device_c", models.PrivType.Default) {
+		return nil, models.Error{Message: "user can't create device without device_c ability."}
 	}
-	rootValue := params.Info.RootValue.(map[string]interface{})
-	user := rootValue["currentUser"].(models.User)
 
 	deviceType := params.Args["type"].(string)
-	if err := utils.ValidateStringEmpty(deviceType, "type"); err != nil {
-		o.Rollback()
-		return nil, err
+	if deviceType == "" {
+		return nil, models.Error{Message: "device type can't be blank"}
 	}
 
 	deviceName := params.Args["name"].(string)
-	if err := utils.ValidateStringEmpty(deviceName, "name"); err != nil {
-		o.Rollback()
-		return nil, err
+	if deviceName == "" {
+		return nil, models.Error{Message: "device name can't be blank"}
 	}
 
 	productID := params.Args["productID"].(int)
 	privateForms := params.Args["privateForms"].([]interface{})
 	count := 0
+
+	if err := o.Begin(); err != nil {
+		return nil, models.Error{Message: "begin transaction failed.", OriErr: err}
+	}
+
 	for _, item := range privateForms {
 		privateForm, ok := item.(map[string]interface{})
 		if !ok {
@@ -451,26 +460,20 @@ func UpdateDevice(params graphql.ResolveParams) (interface{}, error) {
 		return nil, err
 	}
 
+	if value, ok := params.Args["name"].(string); ok && value != "" {
+		device.Name = value
+	}
+
+	if value, ok := params.Args["type"].(string); ok && value != "" {
+		device.Type = value
+	}
+
 	if value := params.Args["address"]; value != nil {
 		device.Address = value.(string)
 	}
 
-	if value := params.Args["name"]; value != nil {
-		if err := utils.ValidateStringEmpty(value.(string), "name"); err != nil {
-			return nil, err
-		}
-		device.Name = value.(string)
-	}
-
 	if value := params.Args["number"]; value != nil {
 		device.Number = value.(string)
-	}
-
-	if value := params.Args["type"]; value != nil {
-		if err := utils.ValidateStringEmpty(value.(string), "type"); err != nil {
-			return nil, err
-		}
-		device.Type = value.(string)
 	}
 
 	if _, err := o.Update(&device); err != nil {

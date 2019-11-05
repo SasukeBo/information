@@ -14,6 +14,16 @@ func TruncateDay(t time.Time) time.Time {
 	return truncated
 }
 
+// TruncateTime 将时间戳截取为时间，输出时间为UTC时间
+func TruncateTime(t time.Time) time.Time {
+	now := time.Now()
+	h := t.Hour()
+	m := t.Minute()
+	s := t.Second()
+	ns := t.Nanosecond()
+	return time.Date(now.Year(), now.Month(), now.Day(), h, m, s, ns, time.UTC)
+}
+
 // DaySub 计算时间t1与t2之间日期差
 func DaySub(t1, t2 time.Time) int {
 	t1Date := TruncateDay(t1)

@@ -68,9 +68,13 @@
 
         <span class="table-cell">{{device.address}}</span>
 
-        <span class="table-cell">{{device.statistics ? device.statistics.yield + '%' : '-'}}</span>
+        <span
+          class="table-cell"
+        >{{device.statistics ? (device.statistics.yield * 100).toFixed(2) + '%' : '-'}}</span>
 
-        <span class="table-cell">{{device.statistics ? device.statistics.activation + '%': '-'}}</span>
+        <span
+          class="table-cell"
+        >{{device.statistics ? (device.statistics.activation * 100).toFixed(2) + '%': '-'}}</span>
 
         <span class="table-cell">
           <i :class="['iconfont', statusMap[device.status].icon]"></i>

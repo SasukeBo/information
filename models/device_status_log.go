@@ -18,8 +18,8 @@ type DeviceStatusLog struct {
 	Status   int           // 设备运行状态
 	Reasons  []*StopReason `orm:"null;rel(m2m)"` // 停机原因IDs
 	Device   *Device       `orm:"rel(fk);on_delete()"`
-	BeginAt  time.Time     `orm:"auto_now;type(datetime);null"`
-	FinishAt time.Time     `orm:"type(datetime);null"`
+	BeginAt  time.Time     `orm:"type(datetime)"`
+	FinishAt time.Time     `orm:"type(datetime)"`
 }
 
 // LoadDevice _

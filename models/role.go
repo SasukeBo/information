@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
@@ -36,15 +35,17 @@ func (r *Role) LoadPrivilege() ([]*Privilege, error) {
 	return privs, nil
 }
 
-// Validate _
-func (r *Role) Validate(sign string, privType int) error {
+// Validate 校验角色是否具备权限
+// sign - 权限sign
+// privType - 权限类型 see models.PrivType
+func (r *Role) Validate(sign string, privType int) bool {
 	o := orm.NewOrm()
 	qs := o.QueryTable("role_priv").Filter("role_id", r.ID).Filter("privilege__sign", sign).Filter("privilege__priv_type", privType)
 
 	var rp RolePriv
 	if err := qs.One(&rp, "id"); err != nil {
-		return Error{Message: fmt.Sprintf("can't access without %s ability", sign), OriErr: err}
+		return false
 	}
 
-	return nil
+	return true
 }
