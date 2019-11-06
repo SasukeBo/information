@@ -3,16 +3,16 @@ mutation (
   $number: String
   $type: String
   $id: Int!
+  $prodSpeed: Float
   $address: String
-  $description: String
 ) {
   deviceUpdate(
+    id: $id
+    type: $type
     name: $name
     number: $number
-    type: $type
-    id: $id
     address: $address
-    description: $description
+    prodSpeed: $prodSpeed
   ) {
     id
   }

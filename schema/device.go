@@ -12,9 +12,9 @@ import (
 var DeviceStatisticsType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "DeviceStatistics",
 	Fields: graphql.Fields{
-		"activation": &graphql.Field{Type: graphql.Float, Description: "稼动率"},
-		"yield":      &graphql.Field{Type: graphql.Float, Description: "良率"},
-		"oee":        &graphql.Field{Type: graphql.Float, Description: "OEE"},
+		"availability": &graphql.Field{Type: graphql.Float, Description: "稼动率"},
+		"quality":      &graphql.Field{Type: graphql.Float, Description: "良率"},
+		"oee":          &graphql.Field{Type: graphql.Float, Description: "OEE"},
 	},
 })
 
@@ -28,6 +28,7 @@ var deviceType = graphql.NewObject(graphql.ObjectConfig{
 		"token":          &graphql.Field{Type: graphql.String, Description: "设备token，用于数据加密"},
 		"status":         &graphql.Field{Type: DeviceStatus, Description: "基础状态"},
 		"address":        &graphql.Field{Type: graphql.String, Description: "设备地址"},
+		"prodSpeed":      &graphql.Field{Type: graphql.Float, Description: "设备理论最大生产效率"},
 		"number":         &graphql.Field{Type: graphql.String, Description: "设备编号"},
 		"statusChangeAt": &graphql.Field{Type: graphql.DateTime, Description: "设备状态变更时间"},
 		"createdAt":      &graphql.Field{Type: graphql.DateTime},
@@ -202,6 +203,7 @@ var deviceCreate = &graphql.Field{
 	Args: graphql.FieldConfigArgument{
 		"name":         GenArg(graphql.String, "设备名称", false),
 		"type":         GenArg(graphql.String, "设备类型", false),
+		"prodSpeed":    GenArg(graphql.Float, "设备理论最大生产速率", false),
 		"productID":    GenArg(graphql.Int, "生产产品ID"),
 		"privateForms": GenArg(graphql.NewList(devicePrivateFormInputType), "设备私有字段", false),
 	},
@@ -211,11 +213,12 @@ var deviceCreate = &graphql.Field{
 var deviceUpdate = &graphql.Field{
 	Type: deviceType,
 	Args: graphql.FieldConfigArgument{
-		"id":      GenArg(graphql.Int, "设备ID", false),
-		"address": GenArg(graphql.String, "设备地址"),
-		"name":    GenArg(graphql.String, "设备名称"),
-		"number":  GenArg(graphql.String, "设备编号"),
-		"type":    GenArg(graphql.String, "设备类型"),
+		"id":        GenArg(graphql.Int, "设备ID", false),
+		"address":   GenArg(graphql.String, "设备地址"),
+		"prodSpeed": GenArg(graphql.Float, "设备理论最大生产速率"),
+		"name":      GenArg(graphql.String, "设备名称"),
+		"number":    GenArg(graphql.String, "设备编号"),
+		"type":      GenArg(graphql.String, "设备类型"),
 	},
 	Resolve: resolver.UpdateDevice,
 }

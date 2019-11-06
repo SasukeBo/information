@@ -26,12 +26,21 @@
       </div>
 
       <div class="header_right">
+        <el-tooltip
+          effect="dark"
+          v-if="device.status"
+          :content="'运行状态：' + statusMap[device.status].label"
+          placement="top"
+        >
+          <i v-if="device.status" :class="['iconfont', statusMap[device.status].icon]"></i>
+        </el-tooltip>
+
         <el-tooltip effect="dark" content="修改信息" placement="top">
-          <i class="operation-btn el-icon-edit" @click="() => {null}"></i>
+          <i class="el-icon-edit" @click="() => {null}"></i>
         </el-tooltip>
 
         <el-tooltip effect="dark" content="删除设备" placement="top">
-          <i class="operation-btn el-icon-delete" @click="confirmDelete"></i>
+          <i class="el-icon-delete" @click="confirmDelete"></i>
         </el-tooltip>
       </div>
     </div>
@@ -68,6 +77,7 @@
 </template>
 <script>
 import deviceQuery from './gql/query.device.gql';
+import deviceStatusQuery from './gql/query.device-status-update.gql';
 // components
 import overview from './_overview';
 import statistics from './statistics';
@@ -91,7 +101,12 @@ export default {
   },
   data() {
     return {
-      device: {}
+      device: {},
+      statusMap: {
+        prod: { icon: 'icon-running', label: '运行中' },
+        stop: { icon: 'icon-stopping', label: '停机' },
+        offline: { icon: 'icon-offline', label: '离线' }
+      }
     };
   },
   computed: {
@@ -118,6 +133,18 @@ export default {
   },
   mounted() {
     NProgress.done();
+    var _this = this;
+    _this.statusUpdater = setInterval(() => {
+      _this.$apollo
+        .query({
+          query: deviceStatusQuery,
+          variables: { id: _this.id },
+          fetchPolicy: 'network-only'
+        })
+        .then(({ data }) => {
+          _this.device.status = data.device.status;
+        });
+    }, 1000);
   }
 };
 </script>
@@ -163,9 +190,21 @@ export default {
   .header_right {
     display: flex;
     margin-top: 18px;
+
+    .icon-running {
+      color: $--color-theme__success;
+    }
+
+    .icon-stopping {
+      color: $--color-theme__danger;
+    }
+
+    .icon-offline {
+      color: $--color-theme__gray;
+    }
   }
 
-  .header_right .operation-btn {
+  .header_right i {
     color: $--color-font__silver;
     display: block;
     cursor: pointer;
@@ -177,11 +216,11 @@ export default {
     padding: 1px 7px 2px;
   }
 
-  .header_right .operation-btn.el-icon-edit:hover {
+  .header_right i.el-icon-edit:hover {
     color: $--color-theme__main;
   }
 
-  .header_right .operation-btn.el-icon-delete:hover {
+  .header_right i.el-icon-delete:hover {
     color: $--color-theme__danger;
   }
 

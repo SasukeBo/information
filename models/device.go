@@ -13,15 +13,16 @@ var accErr = Error{Message: "only device register can make this operation!"}
 
 // Device 设备模型
 type Device struct {
-	ID       int    `orm:"auto;pk;column(id)"` // PKey 主键
-	Type     string // 类型
-	Name     string // 设备名称
-	Address  string `orm:"null"`                             // 设备地址
-	Number   string `orm:"null"`                             // 设备编号
-	RemoteIP string `orm:"null;column(remote_ip)"`           // 接入IP
-	Token    string `orm:"unique;index"`                     // 设备Token，用于数据加密
-	Status   int    `orm:"default(0)"`                       // 离线状态
-	User     *User  `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
+	ID        int     `orm:"auto;pk;column(id)"` // PKey 主键
+	Type      string  // 类型
+	Name      string  // 设备名称
+	ProdSpeed float64 // 理论最大生产速率
+	Address   string  `orm:"null"`                             // 设备地址
+	Number    string  `orm:"null"`                             // 设备编号
+	RemoteIP  string  `orm:"null;column(remote_ip)"`           // 接入IP
+	Token     string  `orm:"unique;index"`                     // 设备Token，用于数据加密
+	Status    int     `orm:"default(0)"`                       // 离线状态
+	User      *User   `orm:"rel(fk);null;on_delete(set_null)"` // 注册人
 	// DeviceChargers []*DeviceCharger `orm:"reverse(many)"`
 	CreatedAt      time.Time `orm:"auto_now_add;type(datetime)"`
 	StatusChangeAt time.Time `orm:"auto_now;type(datetime)"`
@@ -49,14 +50,16 @@ func (d *Device) ValidateAccess(u *User) error {
 
 // DeviceClassOEE 设备班次生产指标
 type DeviceClassOEE struct {
-	Activation float64
-	Yield      float64
-	OEE        float64
+	Availability float64 // 可用性
+	Quality      float64 // 质量指数
+	OEE          float64 // 设备综合效率
 }
 
 // GetCurrentClassOEE 获取设备当班生产指标数据
 func (d *Device) GetCurrentClassOEE() (interface{}, error) {
 	o := orm.NewOrm()
+	o.Read(d)
+
 	var (
 		response   DeviceClassOEE
 		dayBegin   time.Time
@@ -141,7 +144,7 @@ func (d *Device) GetCurrentClassOEE() (interface{}, error) {
 		}
 	}
 
-	response.Activation = prodSeconds / (prodSeconds + stopSeconds)
+	response.Availability = prodSeconds / (prodSeconds + stopSeconds)
 
 	var piCount struct {
 		Count int
@@ -161,7 +164,12 @@ func (d *Device) GetCurrentClassOEE() (interface{}, error) {
 		bad = piCount.Count
 	}
 
-	response.Yield = float64(good) / float64(good+bad)
+	response.Quality = float64(good) / float64(good+bad)
+
+	if d.ProdSpeed > 0 {
+		performance := float64(good+bad) / (prodSeconds * d.ProdSpeed)
+		response.OEE = response.Quality * response.Availability * performance
+	}
 
 	return &response, nil
 }

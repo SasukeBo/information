@@ -2,11 +2,13 @@ mutation (
   $name: String!
   $type: String!
   $productID: Int
+  $prodSpeed: Float!
   $privateForms: [DevicePrivateFormInput]!
 ) {
   deviceCreate(
     name: $name
     type: $type
+    prodSpeed: $prodSpeed
     productID: $productID
     privateForms: $privateForms
   )

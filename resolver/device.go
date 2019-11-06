@@ -402,6 +402,7 @@ func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
 		return nil, models.Error{Message: "device name can't be blank"}
 	}
 
+	prodSpeed := params.Args["prodSpeed"].(float64)
 	productID := params.Args["productID"].(int)
 	privateForms := params.Args["privateForms"].([]interface{})
 	count := 0
@@ -417,12 +418,13 @@ func CreateDevice(params graphql.ResolveParams) (interface{}, error) {
 		}
 
 		device := &models.Device{
-			Type:    deviceType,
-			Name:    deviceName,
-			Address: privateForm["address"].(string),
-			Number:  privateForm["number"].(string),
-			Token:   utils.GenRandomToken(8),
-			User:    &user,
+			Type:      deviceType,
+			Name:      deviceName,
+			ProdSpeed: prodSpeed,
+			Address:   privateForm["address"].(string),
+			Number:    privateForm["number"].(string),
+			Token:     utils.GenRandomToken(8),
+			User:      &user,
 		}
 
 		if _, err := o.Insert(device); err != nil {
@@ -466,6 +468,10 @@ func UpdateDevice(params graphql.ResolveParams) (interface{}, error) {
 
 	if value, ok := params.Args["type"].(string); ok && value != "" {
 		device.Type = value
+	}
+
+	if value := params.Args["prodSpeed"]; value != nil {
+		device.ProdSpeed = value.(float64)
 	}
 
 	if value := params.Args["address"]; value != nil {

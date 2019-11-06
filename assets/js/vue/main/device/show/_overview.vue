@@ -6,20 +6,22 @@
   >
     <div class="overview__row row">
       <div class="overview__col global-card">
-        <div style="float: left; width: 50%">
-          <div class="col-title">运行状态</div>
-          <div class="col-content">
-            <span class="label" v-if="device.status">{{statusMap[device.status].label}}</span>
-          </div>
+        <div class="col-title">OEE</div>
+        <div class="col-content">
+          <span
+            v-if="device.statistics && device.statistics.oee"
+          >{{ (device.statistics.oee * 100).toFixed(2) }}</span>
+          <span v-else>0</span>
+          %
         </div>
-
-        <i :class="['iconfont', statusMap[device.status].icon]" v-if="device.status"></i>
       </div>
 
       <div class="overview__col global-card">
         <div class="col-title">稼动率</div>
         <div class="col-content">
-          <span v-if="statistics">{{ (parseFloat(statistics.activation) * 100).toFixed(2) }}</span>
+          <span
+            v-if="device.statistics && device.statistics.availability"
+          >{{ (device.statistics.availability * 100).toFixed(2) }}</span>
           <span v-else>0</span>
           %
         </div>
@@ -28,7 +30,9 @@
       <div class="overview__col global-card">
         <div class="col-title">良率</div>
         <div class="col-content">
-          <span v-if="statistics">{{ (parseFloat(statistics.yieldRate) * 100).toFixed(2) }}</span>
+          <span
+            v-if="device.statistics && device.statistics.quality"
+          >{{ (device.statistics.quality * 100).toFixed(2) }}</span>
           <span v-else>0</span>
           %
         </div>
@@ -112,16 +116,24 @@
         </div>
       </div>
 
-      <div class="details__col"></div>
+      <div class="details__col">
+        <div class="col-line">
+          <div class="label" style="width: 110px;">最大生产速率</div>
+          <click-to-edit class="value" @save="save('prodSpeed')">
+            <template v-slot:text>{{ device.prodSpeed ? device.prodSpeed : '[点击填写]' }}</template>
+            <template v-slot:form>
+              <el-input-number v-model="device.prodSpeed" :precision="2" :step="1" size="mini"></el-input-number>
+            </template>
+          </click-to-edit>
+        </div>
+      </div>
     </div>
   </div>
 </template>
-<script>
+  <script>
 // graphql
 import deviceOverviewQuery from './gql/query.device-overview.gql';
-import statisticsQuery from './gql/query.device-monthly-analysis.gql';
 import deviceUpdateMutate from './gql/mutate.device-update.gql';
-import deviceStatusQuery from './gql/query.device-status-update.gql';
 
 import defaultAvatar from 'images/default-avatar.png';
 import { timeFormatter, parseGQLError } from 'js/utils';
@@ -137,24 +149,12 @@ export default {
       variables() {
         return { id: this.id };
       }
-    },
-    statistics: {
-      query: statisticsQuery,
-      variables() {
-        return { deviceID: this.id, format: '%D天 %H小时 %M分钟' };
-      }
     }
   },
   data() {
     return {
       device: {},
       defaultAvatar,
-      statistics: undefined,
-      statusMap: {
-        prod: { icon: 'icon-running', label: '运行中' },
-        stop: { icon: 'icon-stopping', label: '停机' },
-        offline: { icon: 'icon-offline', label: '离线' }
-      },
       statusUpdater: undefined
     };
   },
@@ -181,18 +181,6 @@ export default {
   },
   mounted() {
     NProgress.done();
-    var _this = this;
-    _this.statusUpdater = setInterval(() => {
-      _this.$apollo
-        .query({
-          query: deviceStatusQuery,
-          variables: { id: _this.id },
-          fetchPolicy: 'network-only'
-        })
-        .then(({ data }) => {
-          _this.device.status = data.device.status;
-        });
-    }, 1000);
   },
   beforeDestroy() {
     clearInterval(this.statusUpdater);
@@ -217,18 +205,6 @@ export default {
       line-height: 79px;
       font-size: 4rem;
       padding-left: 1rem;
-    }
-
-    .icon-running {
-      color: $--color-theme__success;
-    }
-
-    .icon-stopping {
-      color: $--color-theme__danger;
-    }
-
-    .icon-offline {
-      color: $--color-theme__gray;
     }
   }
 

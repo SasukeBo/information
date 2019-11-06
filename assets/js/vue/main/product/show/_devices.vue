@@ -39,18 +39,22 @@
         </template>
       </el-table-column>
       <el-table-column label="物理地址" prop="address"></el-table-column>
-      <el-table-column label="生产指标">
+      <el-table-column label="生产指标" width="200px">
         <template slot-scope="scope">
-          <div>
-            <div>
-              <span>稼动率</span>
-              <span>良率</span>
-              <span>OEE</span>
+          <div class="device-statistics">
+            <div class="item">
+              <div>稼动率</div>
+              <div>{{ scope.row.statistics && scope.row.statistics.availability ? (scope.row.statistics.availability * 100).toFixed(2) + '%' : '-'}}</div>
             </div>
-            <div>
-              <span>{{ scope.row.statistics && scope.row.statistics.activation ? scope.row.statistics.activation : '-'}}</span>
-              <span>{{ scope.row.statistics && scope.row.statistics.yield ? scope.row.statistics.yield : '-'}}</span>
-              <span>开发中</span>
+
+            <div class="item">
+              <div>良率</div>
+              <div>{{ scope.row.statistics && scope.row.statistics.quality ? (scope.row.statistics.quality * 100).toFixed(2) + '%' : '-'}}</div>
+            </div>
+
+            <div class="item">
+              <div>OEE</div>
+              <div>{{ scope.row.statistics && scope.row.statistics.oee ? (scope.row.statistics.oee * 100).toFixed(2) + '%' : '-'}}</div>
             </div>
           </div>
         </template>
@@ -170,6 +174,20 @@ export default {
     &.icon-offline {
       font-size: 1.2rem;
       color: $--color-theme__gray;
+    }
+  }
+
+  .device-table .device-statistics {
+    display: flex;
+
+    .item {
+      flex: auto;
+      padding: 0 5px;
+      border-right: 1px solid;
+    }
+
+    .item:last-child {
+      border-right: none;
     }
   }
 }

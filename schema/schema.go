@@ -49,24 +49,32 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootMutation",
 	Fields: graphql.Fields{
-		"signUp":           signUp,           // 注册
-		"signIn":           signIn,           // 登录
-		"signOut":          signOut,          // 登出
-		"resetPassword":    resetPassword,    // 找回密码
-		"userUpdate":       userUpdate,       // 更新用户信息
-		"sendSmsCode":      sendSmsCode,      // 发送短信验证码
+		// User
+		"signUp":        signUp,        // 注册
+		"signIn":        signIn,        // 登录
+		"signOut":       signOut,       // 登出
+		"resetPassword": resetPassword, // 找回密码
+		"userUpdate":    userUpdate,    // 更新用户信息
+
+		// aliyun
+		"sendSmsCode": sendSmsCode, // 发送短信验证码
+
+		// device
 		"deviceCreate":     deviceCreate,     // 设备创建
 		"deviceUpdate":     deviceUpdate,     // 设备更新
 		"deviceDelete":     deviceDelete,     // 设备移除
+		"stopReasonCreate": stopReasonCreate, // 停机原因创建
+		"stopReasonUpdate": stopReasonUpdate, // 停机原因更新
+		"stopReasonDelete": stopReasonDelete, // 停机原因删除
+
+		// product
 		"productCreate":    productCreate,    // 产品创建
 		"productDelete":    productDelete,    // 产品移除
 		"productUpdate":    productUpdate,    // 产品更新
 		"detectItemCreate": detectItemCreate, // 产品检测项增加
 		"detectItemUpdate": detectItemUpdate, // 产品检测项更新
 		"detectItemDelete": detectItemDelete, // 产品检测项删除
-		"stopReasonCreate": stopReasonCreate, // 停机原因创建
-		"stopReasonUpdate": stopReasonUpdate, // 停机原因更新
-		"stopReasonDelete": stopReasonDelete, // 停机原因删除
+
 	},
 })
 

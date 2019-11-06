@@ -8,8 +8,9 @@ query ($id: Int!) {
     address
     status
     statistics {
-      activation
-      yield
+      availability
+      quality
+      oee
     }
     user {
       id

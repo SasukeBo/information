@@ -70,11 +70,11 @@
 
         <span
           class="table-cell"
-        >{{device.statistics ? (device.statistics.yield * 100).toFixed(2) + '%' : '-'}}</span>
+        >{{device.statistics ? (device.statistics.quality * 100).toFixed(2) + '%' : '-'}}</span>
 
         <span
           class="table-cell"
-        >{{device.statistics ? (device.statistics.activation * 100).toFixed(2) + '%': '-'}}</span>
+        >{{device.statistics ? (device.statistics.availability * 100).toFixed(2) + '%': '-'}}</span>
 
         <span class="table-cell">
           <i :class="['iconfont', statusMap[device.status].icon]"></i>

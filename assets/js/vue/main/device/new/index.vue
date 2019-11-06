@@ -12,6 +12,7 @@
         <div class="field-title block-title">公共字段</div>
         <float-label-input v-model="form.name" placeholder="设备名称"></float-label-input>
         <float-label-input v-model="form.type" placeholder="设备类型"></float-label-input>
+        <float-label-input v-model="form.prodSpeed" placeholder="设备理论最大生产速率"></float-label-input>
         <div class="field-title">选择设备生产的产品</div>
         <el-select
           remote
@@ -75,6 +76,7 @@ export default {
       form: {
         type: '',
         name: '',
+        prodSpeed: undefined,
         productID: undefined
       },
       privateForms: [{ address: '', number: '' }]

@@ -3,9 +3,11 @@ query ($id: Int!) {
     id
     status
     statistics {
-      activation
-      yield
+      availability
+      quality
+      oee
     }
+    prodSpeed
     name
     number
     type

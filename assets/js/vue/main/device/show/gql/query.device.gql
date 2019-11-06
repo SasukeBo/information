@@ -4,6 +4,7 @@ query ($id: Int!) {
     name
     token
     number
+    status
     type
   }
 }
