@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.devicepush";
+option java_outer_classname = "DevicePushProto";
+
+package proto;
+
+// Interface exported by the server.
+service DevicePush {
+  // A simple RPC.
+  //
+  // Push a device status change to web server when tcp server record device status change
+  rpc PushStatus(Device) returns (Response) {}
+
+  // A client-to-server streaming RPC.
+  //
+  // Push products produced by device
+  rpc PushProducts(stream Product) returns (Response) {}
+}
+
+message Product {
+  int32 instance_id = 1;
+  int32 device_id = 2;
+}
+
+message Device {
+  int32 id = 1;
+}
+
+message Response {
+  bool ok = 1;
+  string message = 2;
+}
