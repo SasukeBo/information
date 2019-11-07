@@ -18,13 +18,17 @@
 
     <div class="com-header__right">
       <div class="topbar-entry">
-        <img class="topbar-entry__avatar" src="~images/avatar.jpg" />
+        <img class="topbar-entry__avatar" :src="avatarURL ? avatarURL : '~images/avatar.jpg'" />
 
         <div class="topbar-body global-card">
           <div class="topbar-body__header">
-            <img src="~images/avatar.jpg" class="avatar" />
+            <img :src="avatarURL ? avatarURL : '~images/avatar.jpg'" class="avatar" />
             <span style="font-size: 1.5rem">{{ name ? name : phone }}</span>
-            <el-tag :type="role.isAdmin ? 'warning' : 'success'" size="mini">{{ role.roleName }}</el-tag>
+            <el-tag
+              :type="role.isAdmin ? 'warning' : 'success'"
+              size="mini"
+              v-if="role"
+            >{{ role.roleName }}</el-tag>
           </div>
 
           <div class="topbar-body__item">
@@ -73,17 +77,16 @@ export default {
       this.$apollo
         .mutate({
           mutation: gql`
-            mutation logout {
-              logout
+            mutation signOut {
+              signOut
             }
           `
         })
         .then(() => {
-          this.$store.dispatch('user/logout', () => null);
-
+          this.$store.dispatch('user/logout');
           this.$router.push({
             name: 'login',
-            query: { return_to: this.$route.name, params: this.$route.params }
+            query: { return_to: this.$route.name, ...this.$route.params }
           });
         });
     }

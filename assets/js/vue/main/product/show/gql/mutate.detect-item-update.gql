@@ -1,0 +1,15 @@
+mutation (
+  $id: Int!
+  $sign: String
+  $upperLimit: Float
+  $lowerLimit: Float
+){
+  detectItemUpdate(
+    id: $id
+    sign: $sign
+    upperLimit: $upperLimit
+    lowerLimit: $lowerLimit
+  ) {
+    id
+  }
+}

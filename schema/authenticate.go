@@ -9,7 +9,7 @@ import (
 ---------------------------------- */
 
 var currentUser = &graphql.Field{
-	Type:        User,
+	Type:        userType,
 	Resolve:     resolver.CurrentUser,
 	Description: `#### 获取当前登录用户`,
 }
@@ -18,7 +18,7 @@ var currentUser = &graphql.Field{
 ---------------------------------- */
 
 var signIn = &graphql.Field{
-	Type: graphql.String,
+	Type: userType,
 	Args: graphql.FieldConfigArgument{
 		"phone":    GenArg(graphql.String, "手机号", false),
 		"password": GenArg(graphql.String, "密码", false),

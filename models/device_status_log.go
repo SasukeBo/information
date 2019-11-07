@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/SasukeBo/information/models/errors"
+	"github.com/astaxie/beego/orm"
 	"time"
 )
 
@@ -14,35 +14,19 @@ var DeviceStatus = struct {
 
 // DeviceStatusLog 设备运行状态变更模型
 type DeviceStatusLog struct {
-	ID        int       `orm:"auto;pk;column(id)"`
-	Status    int       // 设备运行状态
-	Reason    string    `orm:"null"` // 状态变更原因
-	Device    *Device   `orm:"rel(fk);on_delete()"`
-	CreatedAt time.Time `orm:"auto_now;type(datetime)"`
-}
-
-// Insert _
-func (dsl *DeviceStatusLog) Insert() error {
-	if _, err := Repo.Insert(dsl); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "device_status_log insert error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
+	ID       int           `orm:"auto;pk;column(id)"`
+	Status   int           // 设备运行状态
+	Reasons  []*StopReason `orm:"null;rel(m2m)"` // 停机原因IDs
+	Device   *Device       `orm:"rel(fk);on_delete()"`
+	BeginAt  time.Time     `orm:"type(datetime)"`
+	FinishAt time.Time     `orm:"type(datetime)"`
 }
 
 // LoadDevice _
 func (dsl *DeviceStatusLog) LoadDevice() (*Device, error) {
-	if _, err := Repo.LoadRelated(dsl, "Device"); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "device_status_log load device error",
-			OriErr:  err,
-		}
+	o := orm.NewOrm()
+	if _, err := o.LoadRelated(dsl, "Device"); err != nil {
+		return nil, Error{Message: "load related device failed.", OriErr: err}
 	}
-
 	return dsl.Device, nil
 }

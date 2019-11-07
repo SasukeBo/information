@@ -1,0 +1,10 @@
+query productOverview($id: Int!) {
+  overview: productOverview(id: $id) {
+    deviceTotalCount
+    deviceProdCount
+    instanceCount
+    qualifiedCount
+    todayInstanceCount
+    todayQualifiedCount
+  }
+}

@@ -1,47 +1,16 @@
 import 'css/app.scss';
-import NProgress from 'js/utils/nprogress';
-window.NProgress = NProgress;
-import Vue from 'vue';
-import apolloProvider from './apollo-provider';
+import './utils/use-element';
 
+import Vue from 'vue';
 import Vuex from 'vuex';
 import VueRouter from 'vue-router';
+import apolloProvider from './utils/apollo-provider';
+import NProgress from 'js/utils/nprogress';
+
 Vue.use(VueRouter);
 Vue.use(Vuex);
+window.NProgress = NProgress;
 
-import {
-  Form,
-  FormItem,
-  Button,
-  Input,
-  Checkbox,
-  Message,
-  Row,
-  Col,
-  Tag,
-  Drawer,
-  CheckboxGroup,
-  CheckboxButton,
-  Select,
-  Option,
-  Loading
-} from 'element-ui'
-
-Vue.use(Form);
-Vue.use(FormItem);
-Vue.use(Button);
-Vue.use(Input);
-Vue.use(Checkbox);
-Vue.use(Row);
-Vue.use(Col);
-Vue.use(Tag);
-Vue.use(Drawer);
-Vue.use(CheckboxGroup);
-Vue.use(CheckboxButton);
-Vue.use(Select);
-Vue.use(Option);
-Vue.use(Loading.directive);
-Vue.prototype.$message = Message;
 
 const info = document.querySelector('#vue-entry');
 
@@ -61,9 +30,9 @@ if (info) {
   });
 }
 
-if (process.env.NODE_ENV !== 'production') {
-  var script = document.createElement('script');
-  script.setAttribute('type', 'text/javascript');
-  script.setAttribute('src', 'http://localhost:35729/livereload.js');
-  document.body.appendChild(script);
-}
+// if (process.env.NODE_ENV !== 'production') {
+  // var script = document.createElement('script');
+  // script.setAttribute('type', 'text/javascript');
+  // script.setAttribute('src', 'http://localhost:35729/livereload.js');
+  // document.body.appendChild(script);
+// }

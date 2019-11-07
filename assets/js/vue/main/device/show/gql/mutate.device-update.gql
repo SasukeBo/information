@@ -1,0 +1,19 @@
+mutation (
+  $name: String
+  $number: String
+  $type: String
+  $id: Int!
+  $prodSpeed: Float
+  $address: String
+) {
+  deviceUpdate(
+    id: $id
+    type: $type
+    name: $name
+    number: $number
+    address: $address
+    prodSpeed: $prodSpeed
+  ) {
+    id
+  }
+}

@@ -39,6 +39,7 @@ func (conn *MainController) Get() {
 		}
 
 		conn.Data["AppCSS"] = manifest.App["css"]
+		conn.Data["ElCSS"] = manifest.El["css"]
 		conn.Data["AppJS"] = manifest.App["js"]
 		conn.Data["ElJS"] = manifest.El["js"]
 		conn.Data["VueJS"] = manifest.Vue["js"]
@@ -46,6 +47,7 @@ func (conn *MainController) Get() {
 		conn.Data["VBabelPolyfillJS"] = manifest.BabelV["js"]
 	} else {
 		conn.Data["AppCSS"] = "/css/app.css"
+		conn.Data["ElCSS"] = "/css/element.css"
 		conn.Data["AppJS"] = "/js/app.js"
 		conn.Data["ElJS"] = "/js/element.js"
 		conn.Data["VueJS"] = "/js/vue.js"

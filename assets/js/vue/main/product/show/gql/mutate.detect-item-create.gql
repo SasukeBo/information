@@ -1,0 +1,15 @@
+mutation (
+  $productID: Int!
+  $sign: String!
+  $upperLimit: Float
+  $lowerLimit: Float
+){
+  item: detectItemCreate(
+    productID: $productID
+    sign: $sign
+    upperLimit: $upperLimit
+    lowerLimit: $lowerLimit
+  ) {
+    id
+  }
+}

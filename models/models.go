@@ -2,16 +2,12 @@ package models
 
 import (
 	"fmt"
-
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	// postgres driver
 	_ "github.com/lib/pq"
 )
-
-// Repo is Ormer
-var Repo orm.Ormer
 
 // BaseStatus 基础状态类型
 var BaseStatus = struct {
@@ -45,23 +41,21 @@ func init() {
 		new(Privilege),
 		new(UserLogin),
 		new(Device),
-		new(DeviceCharger),
-		new(DeviceParam),
-		new(DeviceParamValue),
+		new(SystemConf),
 		new(DeviceStatusLog),
+		new(StopReason),
+		new(DeviceProductShip),
+		new(Product),
+		new(ProductIns),
+		new(DetectItem),
+		new(DetectItemValue),
+		// new(DeviceCharger),
 	)
 
 	// 自动建表
 	if err := orm.RunSyncdb("default", false, true); err != nil {
 		logs.Error("Create table failed!", err)
 	}
-
-	Repo = orm.NewOrm()
-}
-
-// NewCond return a orm.Condition
-func NewCond() *orm.Condition {
-	return orm.NewCondition()
 }
 
 func handleError(err error) {

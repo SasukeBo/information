@@ -1,0 +1,21 @@
+query ($id: Int!) {
+  devices: productDevicesGet(id: $id) {
+    id
+    name
+    type
+    number
+    token
+    address
+    status
+    statistics {
+      availability
+      quality
+      oee
+    }
+    user {
+      id
+      name
+      avatarURL
+    }
+  }
+}

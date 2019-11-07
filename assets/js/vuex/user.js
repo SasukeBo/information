@@ -2,7 +2,6 @@ export default {
   namespaced: true,
   state: {
     status: null,
-    uuid: null,
     avatarURL: null,
     phone: null,
     role: null,
@@ -10,21 +9,16 @@ export default {
     email: null
   },
   mutations: {
-    SET_USERUUID: (state, payload) => state.uuid = payload,
     SET_AVATARURL: (state, payload) => state.avatarURL = payload,
     SET_PHONE: (state, payload) => state.phone = payload,
     SET_ROLE: (state, payload) => state.role = payload,
     SET_NAME: (state, payload) => state.name = payload,
     SET_EMAIL: (state, payload) => state.email = payload,
     SET_STATUS: (state, payload) => state.status = payload,
-    LOGOUT: (state, callback) => {
-      state.uuid = null;
-      callback()
-    }
+    LOGOUT: (state) => state.phone = null
   },
   actions: {
     setUserData({ commit }, payload) {
-      commit('SET_USERUUID', payload.uuid)
       commit('SET_AVATARURL', payload.avatarURL)
       commit('SET_PHONE', payload.phone)
       commit('SET_ROLE', payload.role)
@@ -40,8 +34,8 @@ export default {
       commit('SET_EMAIL', null)
       commit('SET_STATUS', null)
     },
-    logout({ commit }, callback) {
-      commit('LOGOUT', callback)
+    logout({ commit }) {
+      commit('LOGOUT')
     }
   }
 };

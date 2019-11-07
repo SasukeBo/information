@@ -17,9 +17,9 @@ var plugins = function () {
       new AssetPlugin({ filename: '../static/manifest.json' }),
     ]
 
-  if (!isProd) {
-    plugins.push(new LiveReloadPlugin({ delay: 200 }))
-  }
+  // if (!isProd) {
+    // plugins.push(new LiveReloadPlugin({ delay: 1000 }))
+  // }
 
   return plugins
 }()

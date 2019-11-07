@@ -6,8 +6,8 @@
   "author": "SasukeBo",
   "license": "MIT",
   "scripts": {
-    "dev:win": "yarn clean && SET NODE_ENV=development && webpack --mode development --watch",
-    "dev:mac": "yarn clean && NODE_ENV=development webpack --mode development --watch",
+    "dev:win": "SET NODE_ENV=development && webpack --mode development --watch",
+    "dev:mac": "NODE_ENV=development webpack --mode development --watch",
     "build": "yarn install && yarn clean && NODE_ENV=production webpack --mode production",
     "clean": "rm -rf ../static"
   },

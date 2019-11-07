@@ -11,80 +11,49 @@ function defaultRoutes() {
         {
           path: 'home',
           name: 'home',
-          component: load('main/pages/home')
+          component: load('main/home')
         },
         {
-          path: 'devices',
-          name: 'device-list',
-          component: load('main/pages/devices')
-        },
-        {
-          path: 'device/new',
-          name: 'device-new',
-          component: load('main/pages/device/new')
-        },
-        {
-          path: 'device/:uuid',
-          name: 'device-show',
-          props: true,
-          component: load('main/pages/device'),
-          redirect: { name: 'device-details' },
+          path: 'product',
+          component: load('main/product'),
           children: [
             {
-              path: 'realtime',
-              name: 'device-realtime',
-              props: true,
-              component: load('main/pages/device/realtime')
+              path: 'new',
+              name: 'product-new',
+              component: load('main/product/new')
             },
             {
-              path: 'charges',
-              name: 'device-charges',
+              path: ':id/show',
+              name: 'product-show',
               props: true,
-              component: load('main/pages/device/charge')
+              component: load('main/product/show')
             },
             {
-              path: 'params',
-              name: 'device-params',
-              props: true,
-              component: load('main/pages/device/params')
-            },
-            {
-              path: 'details',
-              name: 'device-details',
-              props: true,
-              component: load('main/pages/device/details')
-            },
-            {
-              path: 'status-log',
-              name: 'device-status-log',
-              props: true,
-              component: load('main/pages/device/status-log')
-            },
-            {
-              path: 'config',
-              name: 'device-config',
-              props: true,
-              component: load('main/pages/device/_config')
+              path: 'list',
+              name: 'product-list',
+              component: load('main/product/list')
             }
           ]
         },
         {
-          path: 'device/:uuid/charge',
-          name: 'device-charge',
-          props: true,
-          component: load('main/pages/charge'),
+          path: 'device',
+          component: load('main/device'),
           children: [
             {
+              path: 'list',
+              name: 'device-list',
+              component: load('main/device/list')
+            },
+            {
               path: ':id/show',
-              name: 'charge-show',
+              name: 'device-show',
               props: true,
-              component: load('main/pages/charge/_show.vue')
+              component: load('main/device/show')
             },
             {
               path: 'new',
-              name: 'charge-new',
-              props: true,
-              component: load('main/pages/charge/_new.vue')
+              name: 'device-new',
+              component: load('main/device/new')
             }
           ]
         }
@@ -92,28 +61,44 @@ function defaultRoutes() {
     },
     {
       path: '/auth',
-      component: load('authenticate'),
+      component: load('auth'),
       beforeEnter: denyIfLoggedIn(),
       children: [
         {
           path: 'register',
           alias: '/register',
           name: 'register',
-          component: load('authenticate/register')
+          component: load('auth/register')
         },
         {
           path: 'login',
           alias: '/login',
           name: 'login',
-          component: load('authenticate/login')
+          component: load('auth/login')
         },
         {
           path: 'reset_password',
           alias: '/reset_password',
           name: 'reset_password',
-          component: load('authenticate/reset')
+          component: load('auth/reset')
         }
       ]
+    },
+    {
+      path: '/admin',
+      component: load('admin'),
+      children: [
+        {
+          path: 'settings',
+          name: 'system-conf',
+          component: load('admin/settings')
+        }
+      ]
+    },
+    {
+      path: '/*',
+      name: 'error-page',
+      component: load('errors/404.vue')
     }
   ]
 }

@@ -1,0 +1,10 @@
+query ($id: Int!) {
+  detectItemList(productID: $id) {
+    detectItems {
+      id
+      sign
+      lowerLimit
+      upperLimit
+    }
+  }
+}

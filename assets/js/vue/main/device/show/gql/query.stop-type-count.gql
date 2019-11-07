@@ -1,0 +1,18 @@
+query(
+  $deviceID: Int!
+  $beginTime: DateTime!
+  $endTime: DateTime!
+) {
+  stopTypeCount: deviceStopTypeCount(
+    deviceID: $deviceID
+    beginTime: $beginTime
+    endTime: $endTime
+  ) {
+    counts {
+      name
+      numbers
+    }
+    days
+    types
+  }
+}

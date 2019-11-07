@@ -64,3 +64,44 @@ a {
 body .el-message {
   top: 70px !important;
 }
+
+.list-table {
+  display: table;
+  width: 100%;
+  border: 1px solid $--color-theme__light;
+  border-bottom: none;
+
+  .table-row {
+    display: table-row;
+  }
+
+  .table-cell {
+    display: table-cell;
+    width: auto;
+    padding: 15px 10px;
+    border-bottom: 1px solid $--color-theme__light;
+  }
+
+  .data-row .table-cell {
+    height: 70px;
+    vertical-align: middle;
+    padding: 10px;
+    cursor: pointer;
+  }
+
+  .header-row {
+    background-image: linear-gradient(141deg, #aca0f2 20%, #0286c2 50%, #aca0f2 70%);
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .data-row {
+    color: $--color-font__gray;
+  }
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}

@@ -1,9 +1,0 @@
-fragment deviceCharger on DeviceCharger {
-  createdAt
-  department
-  id
-  jobNumber
-  name
-  phone
-  updatedAt
-}

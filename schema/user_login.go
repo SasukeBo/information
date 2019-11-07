@@ -8,9 +8,9 @@ import (
 /* 					 types
 ------------------------------ */
 
-// UserLogin 用户登录类型
-var UserLogin = graphql.NewObject(graphql.ObjectConfig{
-	Name: "UserLogin",
+var userLoginType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "UserLogin",
+	Description: "用户登录类型",
 	Fields: graphql.Fields{
 		"id":        &graphql.Field{Type: graphql.Int},
 		"userAgent": &graphql.Field{Type: graphql.String, Description: "UA"},
@@ -22,14 +22,18 @@ var UserLogin = graphql.NewObject(graphql.ObjectConfig{
 })
 
 func init() {
-	UserLogin.AddFieldConfig("user", &graphql.Field{Type: User, Description: "用户", Resolve: resolver.LoadUser})
+	userLoginType.AddFieldConfig("user", &graphql.Field{
+		Type:        userType,
+		Description: "用户",
+		Resolve:     resolver.LoadUser,
+	})
 }
 
 /* 					query
 ------------------------------ */
 
 var userLoginList = &graphql.Field{
-	Type: graphql.NewList(UserLogin),
+	Type: graphql.NewList(userLoginType),
 	Args: graphql.FieldConfigArgument{
 		"limit":      GenArg(graphql.Int, "单次查询最大返回条数"),
 		"offset":     GenArg(graphql.Int, "返回条数的偏移量"),
@@ -41,13 +45,13 @@ var userLoginList = &graphql.Field{
 }
 
 var userLoginLast = &graphql.Field{
-	Type:        UserLogin,
+	Type:        userLoginType,
 	Description: "获取用户非本session的最近一次登录记录。",
 	Resolve:     resolver.LastUserLogin,
 }
 
 var userLoginThis = &graphql.Field{
-	Type:        UserLogin,
+	Type:        userLoginType,
 	Description: "获取用户此次登录记录。",
 	Resolve:     resolver.ThisUserLogin,
 }

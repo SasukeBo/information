@@ -1,0 +1,13 @@
+query($deviceID: Int!) {
+  device: deviceGet(id: $deviceID) {
+    id
+    product {
+      id
+      name
+      detectItems {
+        id
+        sign
+      }
+    }
+  }
+}

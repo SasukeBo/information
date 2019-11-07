@@ -1,15 +1,15 @@
 package resolver
 
 import (
-	"github.com/graphql-go/graphql"
-
 	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/models/errors"
+	"github.com/astaxie/beego/orm"
+	"github.com/graphql-go/graphql"
 )
 
 // ListPrivilege get list of privilege
 func ListPrivilege(params graphql.ResolveParams) (interface{}, error) {
-	qs := models.Repo.QueryTable("privilege")
+	o := orm.NewOrm()
+	qs := o.QueryTable("privilege")
 
 	if privType := params.Args["privType"]; privType != nil {
 		qs = qs.Filter("priv_type", privType)
@@ -21,11 +21,7 @@ func ListPrivilege(params graphql.ResolveParams) (interface{}, error) {
 
 	var privs []*models.Privilege
 	if _, err := qs.All(&privs); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "get privilege list error",
-			OriErr:  err,
-		}
+		return nil, models.Error{Message: "list privilege failed.", OriErr: err}
 	}
 
 	return privs, nil
@@ -38,10 +34,11 @@ func LoadPrivilege(params graphql.ResolveParams) (interface{}, error) {
 		return v.LoadPrivilege()
 	case *models.RolePriv:
 		return v.LoadPrivilege()
+	case models.Role:
+		return v.LoadPrivilege()
+	case *models.Role:
+		return v.LoadPrivilege()
 	default:
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Message: "load related source type unmatched error",
-		}
+		return nil, models.Error{Message: "load related privilege failed."}
 	}
 }

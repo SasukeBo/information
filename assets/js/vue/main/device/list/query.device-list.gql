@@ -1,0 +1,36 @@
+query (
+  $limit: Int
+  $offset: Int
+  $search: String
+  $status: DeviceStatus
+  $self: Boolean
+) {
+  deviceList(
+    limit: $limit
+    offset: $offset
+    search: $search
+    status: $status
+    self: $self
+  ){
+    total
+    devices {
+      id
+      name
+      type
+      number
+      token
+      address
+      status
+      statistics {
+        availability
+        quality
+        oee
+      }
+      user {
+        id
+        name
+        avatarURL
+      }
+    }
+  }
+}

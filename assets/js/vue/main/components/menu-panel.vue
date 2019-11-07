@@ -10,21 +10,31 @@
     </a>
 
     <a
-      href="devices"
-      :class="['menu-item', $route.name == 'user-device' ? 'is-active': '']"
+      href="/device/list"
+      :class="['menu-item', $route.name == 'device-list' ? 'is-active': '']"
       @click.prevent="directTo('device-list')"
     >
       <i class="iconfont icon-shebei"></i>
-      <span>我的设备</span>
+      <span>设备</span>
     </a>
 
     <a
-      href="device/new"
-      :class="['menu-item', $route.name == 'device-new' ? 'is-active': '']"
-      @click.prevent="directTo('device-new')"
+      href="/product/list"
+      :class="['menu-item', $route.name == 'product-list' ? 'is-active': '']"
+      @click.prevent="directTo('product-list')"
     >
-      <i class="iconfont icon-shebei"></i>
-      <span>注册设备</span>
+      <i class="iconfont icon-chanpin"></i>
+      <span>产品</span>
+    </a>
+
+    <a
+      href="/settings"
+      v-if="false"
+      :class="['menu-item', $route.name == 'system-conf' ? 'is-active': '']"
+      @click.prevent="directTo('system-conf')"
+    >
+      <i class="el-icon-s-tools"></i>
+      <span>系统设置</span>
     </a>
   </div>
 </template>

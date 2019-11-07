@@ -2,13 +2,11 @@ package resolver
 
 import (
 	"encoding/json"
-
+	"github.com/SasukeBo/information/models"
+	"github.com/SasukeBo/information/utils"
 	"github.com/astaxie/beego"
 	"github.com/graphql-go/graphql"
-
-	"github.com/SasukeBo/information/models"
-	"github.com/SasukeBo/information/models/errors"
-	"github.com/SasukeBo/information/utils"
+	"regexp"
 )
 
 type sendSmsCodeResponse struct {
@@ -23,20 +21,14 @@ func SendSmsCode(p graphql.ResolveParams) (interface{}, error) {
 	rootValue := p.Info.RootValue.(map[string]interface{})
 	var response sendSmsCodeResponse
 
+	// validate phone
 	phone := p.Args["phone"].(string)
-	user := models.User{Phone: phone}
-	if err := user.GetBy("phone"); err == nil {
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "phone",
-			Message: "phone has already been registered.",
-		}
+	pattern := `^(?:\+?86)?1(?:3\d{3}|5[^4\D]\d{2}|8\d{3}|7(?:[35678]\d{2}|4(?:0\d|1[0-2]|9\d))|9[189]\d{2}|66\d{2})\d{6}$`
+	reg := regexp.MustCompile(pattern)
+	if !reg.Match([]byte(phone)) {
+		return nil, models.Error{Message: "invalid phone number."}
 	}
 
-	// validate phone
-	if err := utils.ValidatePhone(phone); err != nil {
-		return nil, err
-	}
 	smsCode := utils.GenSmsCode()
 
 	if disableSend, _ := beego.AppConfig.Bool("DisableSend"); disableSend {
@@ -67,19 +59,12 @@ func SendSmsCode(p graphql.ResolveParams) (interface{}, error) {
 // 仅在测试环境下有效
 func GetSmsCode(p graphql.ResolveParams) (interface{}, error) {
 	if beego.AppConfig.String("runmode") != "dev" {
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Message: "this api only work on dev environment.",
-		}
+		return nil, models.Error{Message: "this api only work on dev environment."}
 	}
 	rootValue := p.Info.RootValue.(map[string]interface{})
 	smsCode := rootValue["smsCode"]
 	if smsCode == nil {
-		return nil, errors.LogicError{
-			Type:    "Resolver",
-			Field:   "smsCode",
-			Message: "smsCode not found.",
-		}
+		return nil, models.Error{Message: "smsCode not found."}
 	}
 
 	return smsCode.(string), nil
