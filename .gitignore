@@ -12,3 +12,4 @@ assets/css/fonts/demo*
 information.exe
 information
 nohup.out
+proto/*.pb.go
