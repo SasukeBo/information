@@ -1,0 +1,7 @@
+query ($filter: String) {
+  count: deviceStatusCount(filter: $filter) {
+    offline
+    stop
+    prod
+  }
+}

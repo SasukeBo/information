@@ -1,5 +1,5 @@
 .com-header {
-  z-index: 2019;
+  z-index: 200;
   background: linear-gradient(
     141deg,
     $--color-theme__info 0%,
@@ -114,8 +114,7 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      border: 1px solid $--color-theme__main;
-      box-shadow: 0px 0px 10px darken($--color-theme__main, 15%);
+      box-shadow: 0px 0px 10px #5d6061;
     }
 
     .topbar-body {
@@ -142,10 +141,10 @@
 
       .avatar {
         width: 40px;
+        height: 40px;
         cursor: pointer;
         border-radius: 50%;
-        border: 1px solid $--color-theme__main;
-        box-shadow: 0px 0px 10px darken($--color-theme__main, 15%);
+        box-shadow: 0px 0px 10px #5d6061;
       }
     }
 

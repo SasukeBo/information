@@ -1,3 +1,0 @@
-mutation ($id: Int!) {
-  ability: deviceChargePrivDelete(id: $id)
-}

@@ -1,0 +1,25 @@
+query ($id: Int!) {
+  product: productGet(id: $id) {
+    id
+    register {
+      id
+      name
+      phone
+      avatarURL
+    }
+    createdAt
+    productor
+    productorContact
+    orderNum
+    customer
+    customerContact
+    total
+    token
+    finishTime
+    detectItems {
+      sign
+      lowerLimit
+      upperLimit
+    }
+  }
+}

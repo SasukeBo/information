@@ -1,0 +1,11 @@
+mutation signIn(
+  $phone: String!
+  $password: String!
+  $remember: Boolean
+) {
+  signIn(
+    phone: $phone
+    password: $password
+    remember: $remember
+  ) { id }
+}

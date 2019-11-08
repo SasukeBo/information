@@ -43,12 +43,12 @@
     padding-bottom: 0.5rem;
   }
 
-  .icon-shebei {
-    color: $--color-theme__main;
+  .icon-running {
+    color: $--color-theme__success;
   }
 
-  .icon-on-line {
-    color: $--color-theme__success;
+  .icon-stopping {
+    color: $--color-theme__danger;
   }
 
   .icon-off-line {

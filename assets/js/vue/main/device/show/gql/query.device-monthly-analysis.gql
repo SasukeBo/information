@@ -1,0 +1,11 @@
+query (
+  $deviceID: Int!
+  $format: String
+) {
+  statistics: deviceMonthlyStatistics(id: $deviceID) {
+    yield
+    runningTime(format: $format)
+    activation
+    yieldRate
+  }
+}

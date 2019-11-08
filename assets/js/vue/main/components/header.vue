@@ -13,18 +13,22 @@
       </div>
     </div>
     <div class="com-header__center">
-      <el-input placeholder="搜索" prefix-icon="el-icon-search"></el-input>
+      <el-input placeholder="搜索" style="display: none;" prefix-icon="el-icon-search"></el-input>
     </div>
 
     <div class="com-header__right">
       <div class="topbar-entry">
-        <img class="topbar-entry__avatar" src="~images/avatar.jpg" />
+        <img class="topbar-entry__avatar" :src="avatarURL ? avatarURL : '~images/avatar.jpg'" />
 
         <div class="topbar-body global-card">
           <div class="topbar-body__header">
-            <img src="~images/avatar.jpg" class="avatar" />
-            <span style="font-size: 1.5rem">{{ userExtend.name ? userExtend.name : phone }}</span>
-            <el-tag :type="role.isAdmin ? 'warning' : 'success'" size="mini">{{ role.roleName }}</el-tag>
+            <img :src="avatarURL ? avatarURL : '~images/avatar.jpg'" class="avatar" />
+            <span style="font-size: 1.5rem">{{ name ? name : phone }}</span>
+            <el-tag
+              :type="role.isAdmin ? 'warning' : 'success'"
+              size="mini"
+              v-if="role"
+            >{{ role.roleName }}</el-tag>
           </div>
 
           <div class="topbar-body__item">
@@ -33,9 +37,9 @@
             <span class="hover-show">点击修改</span>
           </div>
 
-          <div class="topbar-body__item" v-if="userExtend.email">
+          <div class="topbar-body__item" v-if="email">
             <i class="iconfont icon-185078emailmailstreamline"></i>
-            <span>{{ userExtend.email }}</span>
+            <span>{{ email }}</span>
             <span class="hover-show">点击修改</span>
           </div>
 
@@ -64,7 +68,8 @@ export default {
       avatarURL: state => state.user.avatarURL,
       phone: state => state.user.phone,
       role: state => state.user.role,
-      userExtend: state => state.user.userExtend
+      name: state => state.user.name,
+      email: state => state.user.email
     })
   },
   methods: {
@@ -72,17 +77,16 @@ export default {
       this.$apollo
         .mutate({
           mutation: gql`
-            mutation logout {
-              logout
+            mutation signOut {
+              signOut
             }
           `
         })
         .then(() => {
-          this.$store.dispatch('user/logout', () => null);
-
+          this.$store.dispatch('user/logout');
           this.$router.push({
             name: 'login',
-            query: { return_to: this.$route.name, params: this.$route.params }
+            query: { return_to: this.$route.name, ...this.$route.params }
           });
         });
     }

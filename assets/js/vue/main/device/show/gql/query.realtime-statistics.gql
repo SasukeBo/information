@@ -1,0 +1,19 @@
+query(
+  $deviceID: Int!
+  $productID: Int!
+  $floatPrecision: Int!
+  $afterTime: DateTime!
+  $limit: Int!
+) {
+  itemsUpdate: realTimeStatistics(
+    deviceID: $deviceID
+    productID: $productID
+    floatPrecision: $floatPrecision
+    afterTime: $afterTime
+    limit: $limit
+  ) {
+    sign
+    time
+    value
+  }
+}

@@ -1,10 +1,8 @@
 package models
 
 import (
-	"fmt"
+	"github.com/astaxie/beego/orm"
 	"time"
-
-	"github.com/SasukeBo/information/models/errors"
 )
 
 // Role 角色模型
@@ -13,93 +11,41 @@ type Role struct {
 	RoleName  string      `orm:"unique"`         // 角色名称
 	Status    int         `orm:"default(0)"`     // 基础状态
 	IsAdmin   bool        `orm:"default(false)"` // 是否为管理员角色
-	RolePriv  []*RolePriv `orm:"reverse(many)"`  // 角色权限关联关系
+	RolePrivs []*RolePriv `orm:"reverse(many)"`  // 角色权限关联关系
 	CreatedAt time.Time   `orm:"auto_now_add;type(datetime)"`
 	UpdatedAt time.Time   `orm:"auto_now;type(datetime)"`
 }
 
-// GetBy _
-func (r *Role) GetBy(col string) error {
-	if err := Repo.Read(r, col); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Field:   col,
-			Message: fmt.Sprintf("get role by %s error", col),
-			OriErr:  err,
-		}
+// LoadPrivilege _
+func (r *Role) LoadPrivilege() ([]*Privilege, error) {
+	o := orm.NewOrm()
+	if _, err := o.LoadRelated(r, "RolePrivs"); err != nil {
+		return nil, Error{Message: "load related role_priv failed.", OriErr: err}
 	}
 
-	return nil
+	rolePrivs := r.RolePrivs
+	privs := []*Privilege{}
+	for _, p := range rolePrivs {
+		if _, err := o.LoadRelated(p, "Privilege"); err != nil {
+			return nil, Error{Message: "load related privilege failed.", OriErr: err}
+		}
+		privs = append(privs, p.Privilege)
+	}
+
+	return privs, nil
 }
 
-// Insert _
-func (r *Role) Insert() error {
-	if _, err := Repo.Insert(r); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "insert role error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// Delete _
-func (r *Role) Delete() error {
-	if err := r.GetBy("id"); err != nil {
-		return err
-	}
-
-	if _, err := Repo.Delete(r); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "delete role error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// Update _
-func (r *Role) Update(cols ...string) error {
-	if _, err := Repo.Update(r, cols...); err != nil {
-		return errors.LogicError{
-			Type:    "Model",
-			Message: "update role error",
-			OriErr:  err,
-		}
-	}
-
-	return nil
-}
-
-// LoadRolePriv _
-func (r *Role) LoadRolePriv() ([]*RolePriv, error) {
-	if _, err := Repo.LoadRelated(r, "RolePriv"); err != nil {
-		return nil, errors.LogicError{
-			Type:    "Model",
-			Message: "role load role_priv error",
-			OriErr:  err,
-		}
-	}
-
-	return r.RolePriv, nil
-}
-
-// Validate _
-func (r *Role) Validate(sign string, privType int) error {
-	qs := Repo.QueryTable("role_priv").Filter("role_id", r.ID).Filter("privilege__sign", sign).Filter("privilege__priv_type", privType)
+// Validate 校验角色是否具备权限
+// sign - 权限sign
+// privType - 权限类型 see models.PrivType
+func (r *Role) Validate(sign string, privType int) bool {
+	o := orm.NewOrm()
+	qs := o.QueryTable("role_priv").Filter("role_id", r.ID).Filter("privilege__sign", sign).Filter("privilege__priv_type", privType)
 
 	var rp RolePriv
 	if err := qs.One(&rp, "id"); err != nil {
-		return errors.LogicError{
-			Type:    "Validate",
-			Message: fmt.Sprintf("can't access without %s ability", sign),
-			OriErr:  err,
-		}
+		return false
 	}
 
-	return nil
+	return true
 }

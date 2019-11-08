@@ -1,4 +1,4 @@
-@import 'css/vars.scss';
+@import "css/vars.scss";
 
 .device-new {
   height: calc(100% - 50px);
@@ -10,7 +10,7 @@
   font-size: 1.5rem;
   width: 600px;
   margin-bottom: 2rem;
-  padding-bottom: 0.5rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid $--color-theme__black;
 }
 
@@ -20,6 +20,7 @@
 
 .device-new .device-form {
   width: 600px;
+  padding-bottom: 1rem;
 }
 
 .device-new .device-form {
@@ -46,6 +47,36 @@
 
   &:hover {
     background: darken($--color-theme__main, 15%);
+  }
+}
+
+.device-new .deploy-order {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $--color-theme__bg;
+  padding: 1rem 2rem;
+  box-shadow: 0px -2px 2px lighten($--color-theme__bg, 10%);
+
+  .label {
+    width: 100px;
+    text-align: center;
+    line-height: 40px;
+    display: inline-block;
+  }
+
+  .el-input-number {
+    margin-right: 3rem;
+  }
+
+  .el-input-number i {
+    line-height: 38px;
+  }
+
+  .deploy-order__body {
+    display: flex;
+    width: 600px;
   }
 }
 

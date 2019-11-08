@@ -1,0 +1,23 @@
+query (
+  $deviceID: Int!
+  $beginTime: DateTime
+  $endTime: DateTime
+  $offset: Int
+  $limit: Int
+) {
+  logList: deviceStopLogList(
+    deviceID: $deviceID
+    beginTime: $beginTime
+    endTime: $endTime
+    offset: $offset
+    limit: $limit
+  ) {
+    total
+    logs {
+      id
+      status
+      finishAt
+      beginAt
+    }
+  }
+}

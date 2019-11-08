@@ -34,7 +34,7 @@ func (conn *GQLController) Post() {
 		gqlGetSession(&conn.Controller, rootObject, params.RootFieldName)
 
 		gqlParams := graphql.Params{
-			Schema:         schema.PublicSchema,
+			Schema:         schema.Root,
 			RequestString:  params.Query,
 			OperationName:  params.OperationName,
 			VariableValues: params.Variables,

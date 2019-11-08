@@ -1,0 +1,14 @@
+query deviceStatusStatistics(
+  $deviceID: Int!
+  $daysCount: Int!
+) {
+  statistics: deviceStatusStatistics(
+    id: $deviceID
+    daysCount: $daysCount
+  ) {
+    days
+    prod
+    stop
+    offline
+  }
+}

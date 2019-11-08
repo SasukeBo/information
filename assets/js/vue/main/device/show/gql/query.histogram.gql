@@ -1,0 +1,18 @@
+query(
+  $id: Int!
+  $detectItemID: Int!
+  $deviceID: Int
+  $lowerTime: DateTime
+  $upperTime: DateTime
+) {
+  histogram: productHistogram(
+    id: $id
+    detectItemID: $detectItemID
+    deviceID: $deviceID
+    lowerTime: $lowerTime
+    upperTime: $upperTime
+  ) {
+    seriesData
+    xAxisData
+  }
+}
