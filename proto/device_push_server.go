@@ -8,7 +8,6 @@ import (
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	"google.golang.org/grpc"
-	"io"
 	"net"
 )
 
@@ -17,9 +16,9 @@ type devicePushServer struct {
 }
 
 // PushStatus 当接收到客户端发送来的设备状态更新，做出响应
-func (d *devicePushServer) PushStatus(ctx context.Context, req *Device) (*Response, error) {
+func (d *devicePushServer) PushStatus(ctx context.Context, req *Status) (*Response, error) {
 	o := orm.NewOrm()
-	device := models.Device{ID: int(req.Id)}
+	device := models.Device{ID: int(req.DeviceId)}
 	if err := o.Read(&device); err != nil {
 		return &Response{Ok: false, Message: fmt.Sprintf("%v", err)}, nil
 	}
@@ -28,17 +27,9 @@ func (d *devicePushServer) PushStatus(ctx context.Context, req *Device) (*Respon
 	return &Response{Ok: true}, nil
 }
 
-func (d *devicePushServer) PushProducts(stream DevicePush_PushProductsServer) error {
-	for {
-		product, err := stream.Recv()
-		if err == io.EOF {
-			return stream.SendAndClose(&Response{Ok: true})
-		}
-		if err != nil {
-			return err
-		}
-		logs.Info("device with id %d produce product %d", product.DeviceId, product.InstanceId)
-	}
+func (d *devicePushServer) PushProduct(ctx context.Context, req *Product) (*Response, error) {
+	logs.Info("device with id %d produce product %d", req.DeviceId, req.InstanceId)
+	return &Response{Ok: true}, nil
 }
 
 // Run start gRPC server

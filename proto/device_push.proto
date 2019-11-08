@@ -11,12 +11,12 @@ service DevicePush {
   // A simple RPC.
   //
   // Push a device status change to web server when tcp server record device status change
-  rpc PushStatus(Device) returns (Response) {}
+  rpc PushStatus(Status) returns (Response) {}
 
   // A client-to-server streaming RPC.
   //
   // Push products produced by device
-  rpc PushProducts(stream Product) returns (Response) {}
+  rpc PushProduct(Product) returns (Response) {}
 }
 
 message Product {
@@ -24,8 +24,8 @@ message Product {
   int32 device_id = 2;
 }
 
-message Device {
-  int32 id = 1;
+message Status {
+  int32 device_id = 1;
 }
 
 message Response {
