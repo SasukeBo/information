@@ -3,7 +3,7 @@ package main
 import (
 	_ "github.com/SasukeBo/information/models"
 	"github.com/SasukeBo/information/proto"
-	_ "github.com/SasukeBo/information/routers"
+	_ "github.com/SasukeBo/information/router"
 	"github.com/astaxie/beego"
 )
 

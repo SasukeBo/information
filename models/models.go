@@ -20,7 +20,7 @@ var BaseStatus = struct {
 func init() {
 	env := beego.AppConfig.String
 	if env("runmode") == "dev" {
-		orm.Debug = true
+		orm.Debug = false
 	}
 
 	dbconfig := fmt.Sprintf(

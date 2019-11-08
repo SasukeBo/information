@@ -230,3 +230,16 @@ var deviceDelete = &graphql.Field{
 	},
 	Resolve: resolver.DeleteDevice,
 }
+
+/*					 subscription
+----------------------------------- */
+
+// TODO: 重构subscription的resolver
+var deviceStatusUpdate = &graphql.Field{
+	Type: deviceType,
+	Args: graphql.FieldConfigArgument{
+		"id": GenArg(graphql.Int, "设备ID", false),
+	},
+	Description: "刷新设备状态",
+	Resolve:     resolver.GetDevice,
+}

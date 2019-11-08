@@ -76,6 +76,7 @@
   </div>
 </template>
 <script>
+import gql from 'graphql-tag';
 import deviceQuery from './gql/query.device.gql';
 import deviceStatusQuery from './gql/query.device-status-update.gql';
 // components
@@ -96,6 +97,22 @@ export default {
       query: deviceQuery,
       variables() {
         return { id: this.id };
+      },
+      subscribeToMore: {
+        document: gql`
+          subscription deviceStatus($id: Int!) {
+            deviceStatusUpdate(id: $id) {
+              id
+              status
+            }
+          }
+        `,
+        variables() {
+          return { id: parseInt(this.id) };
+        },
+        updateQuery: (previousResult, { subscriptionData }) => {
+          console.log(previousResult, subscriptionData);
+        }
       }
     }
   },
@@ -133,18 +150,18 @@ export default {
   },
   mounted() {
     NProgress.done();
-    var _this = this;
-    _this.statusUpdater = setInterval(() => {
-      _this.$apollo
-        .query({
-          query: deviceStatusQuery,
-          variables: { id: _this.id },
-          fetchPolicy: 'network-only'
-        })
-        .then(({ data }) => {
-          _this.device.status = data.device.status;
-        });
-    }, 1000);
+    // var _this = this;
+    // _this.statusUpdater = setInterval(() => {
+    // _this.$apollo
+    // .query({
+    // query: deviceStatusQuery,
+    // variables: { id: _this.id },
+    // fetchPolicy: 'network-only'
+    // })
+    // .then(({ data }) => {
+    // _this.device.status = data.device.status;
+    // });
+    // }, 1000);
   }
 };
 </script>

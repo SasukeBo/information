@@ -82,8 +82,7 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 var Subscription = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Subscription",
 	Fields: graphql.Fields{
-		// "deviceParamValueSub": deviceParamValueAdd,
-		"deviceStatusRefresh": deviceStatusRefresh,
+		"deviceStatusUpdate": deviceStatusUpdate,
 	},
 })
 

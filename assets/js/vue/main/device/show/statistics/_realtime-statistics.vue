@@ -179,8 +179,8 @@ export default {
   mounted() {
     this.initChart();
     this.renderChart(this.options);
-    // this.fetchData();
-    this.updater = setInterval(() => this.fetchData(), 1000);
+    this.fetchData();
+    // this.updater = setInterval(() => this.fetchData(), 1000);
   },
   beforeDestroy() {
     clearInterval(this.updater);
