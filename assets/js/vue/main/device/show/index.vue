@@ -101,7 +101,7 @@ export default {
       subscribeToMore: {
         document: gql`
           subscription deviceStatus($id: Int!) {
-            deviceStatusUpdate(id: $id) {
+            device: deviceStatusUpdate(id: $id) {
               id
               status
             }
@@ -110,8 +110,8 @@ export default {
         variables() {
           return { id: parseInt(this.id) };
         },
-        updateQuery: (previousResult, { subscriptionData }) => {
-          console.log(previousResult, subscriptionData);
+        updateQuery: ({ device }, { subscriptionData: { data } }) => {
+          device.status = data.device.status;
         }
       }
     }
