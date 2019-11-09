@@ -122,6 +122,14 @@ var deviceStatusStatisticsResponse = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+var detectItemChartInitData = graphql.NewObject(graphql.ObjectConfig{
+	Name: "DetectItemChartInitData",
+	Fields: graphql.Fields{
+		"detectItems": &graphql.Field{Type: graphql.NewList(detectItemType), Description: "检测项"},
+		"timestamps":  &graphql.Field{Type: graphql.NewList(graphql.DateTime), Description: "产品生产时间戳"},
+	},
+})
+
 /* 				   query
 ------------------------------ */
 
@@ -135,17 +143,15 @@ var deviceStatusStatistics = &graphql.Field{
 	Resolve:     resolver.CountStatusDailyDuration,
 }
 
-var realTimeStatistics = &graphql.Field{
-	Type: graphql.NewList(itemDataType),
+var getDetectItemChartInitData = &graphql.Field{
+	Type: detectItemChartInitData,
 	Args: graphql.FieldConfigArgument{
-		"deviceID":       GenArg(graphql.Int, "设备ID", false),
-		"productID":      GenArg(graphql.Int, "产品ID", false),
-		"floatPrecision": GenArg(graphql.Int, "浮点数值精度", false),
-		"afterTime":      GenArg(graphql.DateTime, "获取时间下限值", false),
-		"limit":          GenArg(graphql.Int, "数量限制", false),
+		"deviceID":  GenArg(graphql.Int, "设备ID", false),
+		"productID": GenArg(graphql.Int, "产品ID", false),
+		"limit":     GenArg(graphql.Int, "数量限制", false),
 	},
-	Description: `设备生产实时数据`,
-	Resolve:     resolver.GetRealTimeStatistics,
+	Description: `获取设备检测项图表初始化数据`,
+	Resolve:     resolver.GetDetectItemChartInitData,
 }
 
 var deviceMonthlyStatistics = &graphql.Field{
@@ -234,8 +240,7 @@ var deviceDelete = &graphql.Field{
 /*					 subscription
 ----------------------------------- */
 
-// TODO: 重构subscription的resolver
-var deviceStatusUpdate = &graphql.Field{
+var deviceStatusChange = &graphql.Field{
 	Type: deviceType,
 	Args: graphql.FieldConfigArgument{
 		"id": GenArg(graphql.Int, "设备ID", false),

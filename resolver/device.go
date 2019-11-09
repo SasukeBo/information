@@ -180,52 +180,48 @@ func durationToInt(duration string) int {
 	return s
 }
 
-// GetRealTimeStatistics 获取设备实时数据
-func GetRealTimeStatistics(params graphql.ResolveParams) (interface{}, error) {
+// GetDetectItemChartInitData 获取设备检测项图表初始化数据
+func GetDetectItemChartInitData(params graphql.ResolveParams) (interface{}, error) {
 	o := orm.NewOrm()
+	var (
+		deviceID  = params.Args["deviceID"]
+		productID = params.Args["productID"]
+		limit     = params.Args["limit"]
+	)
 
-	deviceID := params.Args["deviceID"].(int)
-	productID := params.Args["productID"].(int)
-	floatPrecision := params.Args["floatPrecision"].(int)
-	afterTime := params.Args["afterTime"].(time.Time)
-	limit := params.Args["limit"].(int)
-
-	dps := models.DeviceProductShip{Device: &models.Device{ID: deviceID}, Product: &models.Product{ID: productID}}
-	if err := o.Read(&dps, "device_id", "product_id"); err != nil {
-		return nil, models.Error{Message: "product not producing on this device", OriErr: err}
+	var detectItems []*models.DetectItem
+	if _, err := o.QueryTable("DetectItem").Filter("product_id", productID).All(&detectItems); err != nil {
+		return nil, models.Error{Message: "Get product detect_items failed.", OriErr: err}
 	}
 
-	var signs []string
-	sql1 := `SELECT sign FROM detect_item where detect_item.product_id = ?`
-	if _, err := o.Raw(sql1, productID).QueryRows(&signs); err != nil {
-		return nil, models.Error{Message: "get product detect_items failed.", OriErr: err}
-	}
-
-	type seriesData struct {
-		Sign  string
-		Value float64
-		Time  time.Time
-	}
-	seriesDatas := []seriesData{}
-
-	sql2 := `
-	select pi.created_at as time, round(div.value::numeric, ?) as value
-	from detect_item_value as div
-	join product_ins as pi on div.product_ins_id = pi.id
-	join device_product_ship as dps on pi.device_product_ship_id = dps.id
-	join detect_item as di on di.id = div.detect_item_id
-	where dps.id = ? and di.sign = ? and pi.created_at > ? order by time desc limit ?;
+	detectItemValuesSQL := `
+	SELECT div.value FROM detect_item_value div
+	JOIN product_ins pi ON div.product_ins_id = pi.id
+	JOIN device_product_ship dps ON pi.device_product_ship_id = dps.id
+	WHERE dps.device_id = ? AND dps.product_id = ? AND div.detect_item_id = ? ORDER BY pi.created_at DESC LIMIT ?;
 	`
-	for _, s := range signs {
-		var data seriesData
-		if err := o.Raw(sql2, floatPrecision, dps.ID, s, afterTime, limit).QueryRow(&data); err != nil {
-			return nil, models.Error{Message: "get seriesData failed.", OriErr: err}
+	for _, di := range detectItems {
+		var values []*models.DetectItemValue
+		if _, err := o.Raw(detectItemValuesSQL, deviceID, productID, di.ID, limit).QueryRows(&values); err != nil {
+			return nil, models.Error{Message: "get detect_item_values failed.", OriErr: err}
 		}
-		data.Sign = s
-		seriesDatas = append(seriesDatas, data)
+		di.Values = values
 	}
 
-	return seriesDatas, nil
+	productCreateTimestampSQL := `
+	SELECT created_at FROM product_ins pi
+	JOIN device_product_ship dps ON pi.device_product_ship_id = dps.id
+	WHERE dps.device_id = ? AND dps.product_id = ? ORDER BY created_at DESC LIMIT ?;
+	`
+	var times []time.Time
+	if _, err := o.Raw(productCreateTimestampSQL, deviceID, productID, limit).QueryRows(&times); err != nil {
+		return nil, models.Error{Message: "get product_ins create timestamp failed.", OriErr: err}
+	}
+
+	return struct {
+		DetectItems []*models.DetectItem
+		Timestamps  []time.Time
+	}{detectItems, times}, nil
 }
 
 // MonthlyAnalyzeDeviceFormatTime 格式化时间长度

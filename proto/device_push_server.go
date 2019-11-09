@@ -22,7 +22,11 @@ func (d *devicePushServer) PushStatus(ctx context.Context, req *Status) (*Respon
 }
 
 func (d *devicePushServer) PushProduct(ctx context.Context, req *Product) (*Response, error) {
-	message := channel.Message{IDName: "productInsID", IDValue: int(req.InstanceId)}
+	message := channel.Message{
+		IDName:  "deviceID",
+		IDValue: int(req.DeviceId),
+		Payload: map[string]interface{}{"productInsID": int(req.InstanceId)},
+	}
 	channel.Publish("productIns", message)
 	return &Response{Ok: true}, nil
 }

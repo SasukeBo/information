@@ -22,6 +22,7 @@ type channel struct {
 type Message struct {
 	IDName  string
 	IDValue int
+	Payload map[string]interface{}
 }
 
 // subscription struct:

@@ -16,9 +16,11 @@ func BroadcastDeviceStatus(message Message) {
 		logs.Error(err)
 	}
 
-	logs.Info("deviceStatus channel subs:", c.Subscriptions)
 	for _, sub := range c.Subscriptions {
-		broadcast(sub, message)
+		if ok := isMatched(sub.Variables[message.IDName], message.IDValue); !ok {
+			return
+		}
+		broadcast(sub, map[string]interface{}{"id": message.IDValue})
 	}
 }
 
@@ -30,15 +32,18 @@ func BroadcastProductIns(message Message) {
 	}
 
 	for _, sub := range c.Subscriptions {
-		broadcast(sub, message)
+		if ok := isMatched(sub.Variables[message.IDName], message.IDValue); !ok {
+			return
+		}
+		broadcast(sub, map[string]interface{}{
+			"id":       message.Payload["productInsID"],
+			"deviceID": message.IDValue,
+		})
 	}
 }
 
 // handle graphql subscription query broadcast
-func broadcast(sub subscription, message Message) {
-	if ok := isMatched(sub.Variables[message.IDName], message.IDValue); !ok {
-		return
-	}
+func broadcast(sub subscription, variables map[string]interface{}) {
 
 	if sub.Query == "" {
 		return
@@ -47,7 +52,7 @@ func broadcast(sub subscription, message Message) {
 	result := graphql.Do(graphql.Params{
 		Schema:         schema.Root,
 		RequestString:  sub.Query,
-		VariableValues: map[string]interface{}{"id": message.IDValue},
+		VariableValues: variables,
 	})
 
 	data, err := json.Marshal(map[string]interface{}{

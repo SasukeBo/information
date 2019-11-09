@@ -101,7 +101,7 @@ export default {
       subscribeToMore: {
         document: gql`
           subscription deviceStatus($id: Int!) {
-            device: deviceStatusUpdate(id: $id) {
+            device: deviceStatusChange(id: $id) {
               id
               status
             }
