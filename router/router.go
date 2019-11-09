@@ -1,8 +1,9 @@
-package routers
+package router
 
 import (
 	"golang.org/x/net/websocket"
 
+	"github.com/SasukeBo/information/channel"
 	"github.com/SasukeBo/information/controllers"
 	"github.com/astaxie/beego"
 )
@@ -18,5 +19,5 @@ func init() {
 	// beego.Router("/admin_graphql", &controllers.AdminGQLController{})
 	// beego.InsertFilter("/admin_graphql", beego.BeforeExec, controllers.HandleAdminGraphql)
 
-	beego.Handler("/websocket", websocket.Handler(controllers.Connect))
+	beego.Handler("/subscription", websocket.Handler(channel.ApolloSubscribe))
 }

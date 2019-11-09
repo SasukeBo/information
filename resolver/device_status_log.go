@@ -128,14 +128,3 @@ func ListDeviceStopLogs(params graphql.ResolveParams) (interface{}, error) {
 		Logs  []*models.DeviceStatusLog
 	}{total, logs}, nil
 }
-
-// RefreshDeviceStatus _
-func RefreshDeviceStatus(params graphql.ResolveParams) (interface{}, error) {
-	o := orm.NewOrm()
-	device := models.Device{ID: params.Args["deviceID"].(int)}
-	if err := o.Read(&device, "id"); err != nil {
-		return nil, models.Error{Message: "get device failed.", OriErr: err}
-	}
-
-	return device, nil
-}

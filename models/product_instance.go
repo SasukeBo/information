@@ -23,3 +23,11 @@ func (pi *ProductIns) LoadDetectItemValues() ([]*DetectItemValue, error) {
 
 	return pi.DetectItemValues, nil
 }
+
+// Get get product_ins by id
+func (pi *ProductIns) Get(o orm.Ormer) error {
+	if err := o.Read(pi); err != nil {
+		return Error{Message: "Get product_ins by id failed.", OriErr: err}
+	}
+	return nil
+}

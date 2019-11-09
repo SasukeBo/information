@@ -42,5 +42,15 @@ var productInsListResponse = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-/* 				   query
+/* 				subscription
 ------------------------------ */
+
+var productInsAdd = &graphql.Field{
+	Type: productInsType,
+	Args: graphql.FieldConfigArgument{
+		"id":       GenArg(graphql.Int, "productIns ID", false),
+		"deviceID": GenArg(graphql.Int, "device ID", false),
+	},
+	Description: "订阅生产信息",
+	Resolve:     resolver.GetProductIns,
+}

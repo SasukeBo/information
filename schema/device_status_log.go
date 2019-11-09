@@ -84,16 +84,3 @@ var deviceStopTypeCount = &graphql.Field{
 	Description: "获取设备停机类型次数统计",
 	Resolve:     resolver.CountDeviceStopType,
 }
-
-/*						mutation
------------------------------------ */
-
-// TODO: 重构subscription的resolver
-var deviceStatusRefresh = &graphql.Field{
-	Type: deviceType,
-	Args: graphql.FieldConfigArgument{
-		"deviceID": GenArg(graphql.Int, "设备ID", false),
-	},
-	Description: "刷新设备状态",
-	Resolve:     resolver.RefreshDeviceStatus,
-}

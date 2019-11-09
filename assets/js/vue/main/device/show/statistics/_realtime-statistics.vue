@@ -1,20 +1,74 @@
 <template>
   <div class="realtime">
-    <div ref="chart" class="chart"></div>
+    <div
+      ref="chart"
+      class="chart"
+      v-loading="$apollo.queries.chartData.loading"
+      element-loading-background="unset"
+    ></div>
   </div>
 </template>
 <script>
-import realtimeQuery from '../gql/query.realtime-statistics.gql';
+import chartInitQuery from '../gql/query.get-detectitem-chart-data.gql';
 import { timeFormatter } from 'js/utils';
 import echarts from 'echarts';
+import gql from 'graphql-tag';
 
 export default {
   name: 'realtime',
   props: ['deviceID', 'product'],
+  apollo: {
+    chartData: {
+      query: chartInitQuery,
+      variables() {
+        return {
+          deviceID: this.deviceID,
+          productID: this.product.id,
+          limit: 100
+        };
+      }
+    },
+    $subscribe: {
+      productIns: {
+        query: gql`
+          subscription productIns($deviceID: Int!, $id: Int!) {
+            productIns: productInsAdd(id: $id, deviceID: $deviceID) {
+              createdAt
+              detectItemValues {
+                detectItem {
+                  sign
+                }
+                value
+              }
+            }
+          }
+        `,
+        variables() {
+          return {
+            deviceID: this.deviceID
+          };
+        },
+        result({ data: { productIns } }) {
+          this.options.xAxis.data.shift();
+          this.options.xAxis.data.push(this.formatTime(productIns.createdAt));
+          productIns.detectItemValues.forEach(v =>
+            this.options.series.forEach(s => {
+              if (s.name === v.detectItem.sign) {
+                s.data.shift();
+                s.data.push(v.value.toFixed(3));
+              }
+            })
+          );
+          this.chart.setOption(this.options);
+        }
+      }
+    }
+  },
   data() {
     return {
       limit: 50,
       chart: null,
+      chartData: {},
       options: {
         title: {
           top: 10,
@@ -55,7 +109,7 @@ export default {
           }
         },
         xAxis: {
-          type: 'time',
+          type: 'category',
           name: '生产时间',
           nameLocation: 'center',
           nameGap: 30,
@@ -70,7 +124,8 @@ export default {
           splitLine: {
             show: true,
             lineStyle: { color: '#666' }
-          }
+          },
+          data: []
         },
         yAxis: {
           type: 'value',
@@ -88,102 +143,35 @@ export default {
             show: true,
             lineStyle: { color: '#666' }
           }
-        }
-      },
-      updater: undefined,
-      items: {}
+        },
+        series: []
+      }
     };
   },
-  methods: {
-    initChart() {
-      this.chart = echarts.init(this.$refs.chart);
+  watch: {
+    chartData(newVal) {
       this.options.title.text = `${this.product.name}生产数据`;
       this.options.legend.data = this.product.detectItems.map(i => i.sign);
-      var data = this.makeFakeData();
-      this.product.detectItems.forEach(di => {
-        this.items[di.sign] = {
-          name: di.sign,
+      this.options.xAxis.data = newVal.timestamps.reverse().map(t => this.formatTime(t));
+      var series = newVal.items.map(item => {
+        return {
           type: 'line',
-          data: data.slice()
+          name: item.sign,
+          data: item.values.reverse().map(v => v.value.toFixed(3))
         };
       });
-    },
-    renderChart(options) {
-      this.chart.setOption(options);
-    },
-    fetchData() {
-      var now = new Date();
-      now.setSeconds(now.getSeconds() - 2);
-
-      this.$apollo
-        .query({
-          query: realtimeQuery,
-          variables: {
-            deviceID: this.deviceID,
-            productID: this.product.id,
-            floatPrecision: 3,
-            afterTime: now.toISOString(),
-            limit: 1
-          },
-          fetchPolicy: 'network-only'
-        })
-        .then(({ data }) => {
-          this.updateItems(data.itemsUpdate);
-          this.updateOptions();
-        })
-        .catch(e => {
-          console.log(e.message);
-        });
-    },
-    updateOptions() {
-      var series = [];
-      Object.keys(this.items).forEach(k => {
-        series.push(this.items[k]);
-      });
-      this.renderChart({ series });
-    },
-    updateItems(newItems) {
-      newItems.forEach(i => {
-        var old = this.items[i.sign];
-        var data = this.formatData(i);
-        // 去除重复点
-        if (old.data.length && old.data[old.data.length - 1].name === data.name)
-          return;
-        if (old.data.length >= this.limit) {
-          old.data.shift();
-        }
-        old.data.push(data);
-      });
-    },
-    formatData(item) {
-      return {
-        name: timeFormatter(item.time, '%timestring'),
-        value: [timeFormatter(item.time, '%y/%m/%d %timestring'), item.value]
-      };
-    },
-    makeFakeData() {
-      var now = new Date().toISOString();
-      var fakeData = [];
-      var value = 0;
-      for (var i = this.limit; i > 0; i--) {
-        var time = new Date(now);
-        time.setSeconds(time.getSeconds() - i);
-        fakeData.push(this.formatData({ time, value }));
-      }
-      return fakeData;
-    },
-    stopFetch() {
-      clearInterval(this.updater);
+      this.options.series = series;
+      this.chart.setOption(this.options);
+    }
+  },
+  methods: {
+    formatTime(timeString) {
+      var time = new Date(timeString);
+      return `${time.toTimeString().slice(0, 8)}+${time.getMilliseconds()}ms`;
     }
   },
   mounted() {
-    this.initChart();
-    this.renderChart(this.options);
-    // this.fetchData();
-    this.updater = setInterval(() => this.fetchData(), 1000);
-  },
-  beforeDestroy() {
-    clearInterval(this.updater);
+    this.chart = echarts.init(this.$refs.chart);
   }
 };
 </script>
@@ -196,7 +184,7 @@ export default {
     border: 1px solid $--color-border__0;
     box-shadow: $--shadow__global-card;
     width: 100%;
-    height: 300px;
+    height: 400px;
   }
 }
 </style>
