@@ -34,14 +34,14 @@ var QueryRoot = graphql.NewObject(graphql.ObjectConfig{
 		"logStopReasonsGet":       logStopReasonsGet,       // 停机日志获取停机原因
 
 		// product
-		"productGet":         productGet,         // 获取产品
-		"productList":        productList,        // 获取产品列表
-		"productHistogram":   productHistogram,   // 获取产品检测参数直方图
-		"detectItemGet":      detectItemGet,      // 产品检测项获取
-		"detectItemList":     detectItemList,     // 产品检测项列表
-		"realTimeStatistics": realTimeStatistics, // 产品实时数据
-		"productOverview":    productOverview,    // 产品总览数据
-		"productDevicesGet":  productDevicesGet,  // 产品关联设备获取
+		"productGet":                 productGet,                 // 获取产品
+		"productList":                productList,                // 获取产品列表
+		"detectItemGet":              detectItemGet,              // 产品检测项获取
+		"detectItemList":             detectItemList,             // 产品检测项列表
+		"productOverview":            productOverview,            // 产品总览数据
+		"productHistogram":           productHistogram,           // 获取产品检测参数直方图
+		"productDevicesGet":          productDevicesGet,          // 产品关联设备获取
+		"getDetectItemChartInitData": getDetectItemChartInitData, // 产品检测项数据图表初始化数据获取
 	},
 })
 
@@ -82,8 +82,8 @@ var MutateRoot = graphql.NewObject(graphql.ObjectConfig{
 var Subscription = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Subscription",
 	Fields: graphql.Fields{
-		// "deviceParamValueSub": deviceParamValueAdd,
-		"deviceStatusRefresh": deviceStatusRefresh,
+		"deviceStatusChange": deviceStatusChange,
+		"productInsAdd":      productInsAdd,
 	},
 })
 

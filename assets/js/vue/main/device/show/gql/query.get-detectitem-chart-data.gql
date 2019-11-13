@@ -1,0 +1,19 @@
+query(
+  $deviceID: Int!
+  $productID: Int!
+  $limit: Int!
+) {
+  chartData: getDetectItemChartInitData(
+    deviceID: $deviceID
+    productID: $productID
+    limit: $limit
+  ) {
+    items: detectItems {
+      sign
+      values {
+        value
+      }
+    }
+    timestamps
+  }
+}

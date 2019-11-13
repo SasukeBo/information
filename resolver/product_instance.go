@@ -9,9 +9,13 @@ import (
 
 // ProductInsLoadDetectItemValues _
 func ProductInsLoadDetectItemValues(params graphql.ResolveParams) (interface{}, error) {
-	productIns := params.Source.(*models.ProductIns)
-	values, _ := productIns.LoadDetectItemValues()
-	return values, nil
+	switch v := params.Source.(type) {
+	case *models.ProductIns:
+		return v.LoadDetectItemValues()
+	case models.ProductIns:
+		return v.LoadDetectItemValues()
+	}
+	return nil, nil
 }
 
 // LoadProductIns _
@@ -37,4 +41,16 @@ func CurrentProductInsCount(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	return res[0]["count"], nil
+}
+
+// GetProductIns _
+func GetProductIns(params graphql.ResolveParams) (interface{}, error) {
+	o := orm.NewOrm()
+	var id = params.Args["id"].(int)
+	instance := models.ProductIns{ID: id}
+	if err := instance.Get(o); err != nil {
+		return nil, err
+	}
+
+	return instance, nil
 }

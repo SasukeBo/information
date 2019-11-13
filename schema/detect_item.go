@@ -17,6 +17,7 @@ var detectItemType = graphql.NewObject(graphql.ObjectConfig{
 		"upperLimit": &graphql.Field{Type: graphql.Float, Description: "值上限"},
 		"lowerLimit": &graphql.Field{Type: graphql.Float, Description: "值下限"},
 		"createdAt":  &graphql.Field{Type: graphql.DateTime},
+		"values":     &graphql.Field{Type: graphql.NewList(detectItemValueType)},
 		"updatedAt":  &graphql.Field{Type: graphql.DateTime},
 	},
 })
