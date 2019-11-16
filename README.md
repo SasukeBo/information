@@ -2,9 +2,7 @@
 
 web服务器，设备资讯化管理系统
 
-## 数据库设计
-
-### 用户
+### 数据库设计
 
 #### 用户表 users
 
@@ -13,39 +11,15 @@ web服务器，设备资讯化管理系统
 | 字段 | 类型 | 描述 |
 |:----:|:----:|:----:|
 | id | int | 唯一标识 |
-| uuid | string | 通用唯一标识 |
+| name | string | 真实姓名 |
 | phone | string | 手机号 |
 | password | string | 密码 |
 | avatar_url | string | 头像链接 |
+| email | string | 邮箱 |
 | role_id | int | 角色ID |
-| user_extend_id | int | 用户拓展信息ID |
 | status | int | 基础状态 |
 | createdAt | datetime | 创建时间 |
 | updatedAt | datetime | 更新时间 |
-
-#### 用户信息 user_extends
-
-> 用户存储拓展用户信息，例如
-
-| 字段 | 类型 | 说明 |
-|:----:|:----:|:----:|
-| id | int | 唯一标识 |
-| user_id | int | 用户ID |
-| name | string | 真实姓名 |
-| email | string | 邮箱 |
-
-#### 第三方用户信息表 oauths
-
-> 未来开发第三方登录可能需要
-
-| 字段 | 类型 | 说明 |
-|:----:|:----:|:----:|
-| id | int | 唯一标识 |
-| user_id | int | 用户ID |
-| oauth_type | int | 第三方登录类型 |
-| oauth_id | string | 第三方uid、openid等 |
-
-### 权限
 
 #### 角色表 roles
 
@@ -56,6 +30,7 @@ web服务器，设备资讯化管理系统
 | id | int | 唯一标识 |
 | role_name | string | 角色名称 |
 | status | int | 基础状态 |
+| is_admin | bool | 是否为管理员 |
 | inserted_at | datetime | 创建时间 |
 | updated_at | datetime | 更新时间 |
 
@@ -66,25 +41,9 @@ web服务器，设备资讯化管理系统
 | 字段 | 类型 | 说明 |
 |:----:|:----:|:----:|
 | id | int | 唯一标识 |
-| priv_name | string | 权限名称 |
+| name | string | 权限名称 |
 | priv_type | int | 权限类型 |
-| status | int | 基础状态 |
-| inserted_at | datetime | 创建时间 |
-| updated_at | datetime | 更新时间 |
-
-**权限**
-各项读写权限
-
-#### 角色与权限关联表 role_abilities
-
-> 存储角色与权限关联信息
-
-| 字段 | 类型 | 说明 |
-|:----:|:----:|:----:|
-| role_id | int | 角色ID |
-| priv_id | int | 权限ID |
-
-### 设备
+| sign | string | 权限标识 |
 
 #### 设备表 devices
 
@@ -93,76 +52,101 @@ web服务器，设备资讯化管理系统
 | 字段 | 类型 | 说明 |
 |:----:|:----:|:----:|
 | id | int | pkey |
-| uuid | string | 设备UUID |
 | type | string | 设备类型 |
 | name | string | 设备名称 |
-| user_id | int | 注册人id |
-| description | string | 设备描述 |
-| mac | string | 设备mac地址 |
+| prod_speed | float | 理论最大生产速率 |
+| address | string | 设备地址 |
+| number | string | 设备编号 |
+| remote_ip | string | 接入IP |
 | token | string | 设备唯一token，用于加密传输内容 |
 | status | int | 基础状态 |
-| inserted_at | datetime | 创建时间 |
+| user_id | int | 注册人id |
+| created_at | datetime | 创建时间 |
+| updated_at | datetime | 更新时间 |
+| status_change_at | datetime | 状态变更时间 |
+
+#### 用户登录记录表
+
+| 字段 | 类型 | 说明 |
+|:----:|:----:|:----:|
+| id | int | pkey |
+| encrypted_passwd | string | 加密后的密码 |
+| user_agent | string | 用户代理 |
+| user_id | int | 用户id |
+| remote_ip | string | 登录IP |
+| session_id | string | session id |
+| remembered | bool | 记住登录 |
+| logout | bool | 是否已登出 |
+| created_at | datetime | 创建时间 |
 | updated_at | datetime | 更新时间 |
 
-#### 设备负责人表 device_charge
-
-> 存储设备和负责人关系记录
+#### 设备状态变更日志表
 
 | 字段 | 类型 | 说明 |
 |:----:|:----:|:----:|
 | id | int | pkey |
-| user_id | int | 用户ID |
-| device_id | int | 设备ID |
-| inserted_at | datetime | 创建时间 |
-| updated_at | datetime | 更新时间 |
+| status | int | 设备运行状态 |
+| device_id | int | 设备id |
+| begin_at | datetime | 状态开始时间 |
+| finish_at | datetime | 状态结束时间 |
 
-#### 设备负责人权限表 device_charge_abilities
-
-> 存储负责人权限记录
-
-| 字段 | 类型 | 说明 |
-|:----:|:----:|:----:|
-| id | int | pk |
-| device_user_id | int | 设备负责人关系ID |
-| priv_id | int | 权限ID |
-
-
-#### 设备参数表 device_params
-
-> 存储设备的参数内容
-
-| 字段 | 类型 | 说明 |
-|:----:|:----:|:----:|
-| id | int | pkey |
-| name | string | 参数名 |
-| sign | string | 标识 |
-| type | string | 值类型 |
-| author_id | int | 创建人ID |
-| inserted_at | datetime | 创建时间 |
-
-#### 设备参数值表 device_param_values
-
-> 存储设备参数的值
-
-| 字段 | 类型 | 说明 |
-|:----:|:----:|:----:|
-| id | int | pkey |
-| device_param_id | int | 设备参数ID |
-| value | string | 值 |
-| inserted_at | datetime | 插入时间 |
-
-
-#### 设备运行状态表 device_status
-
-> 存储设备运行状态变更记录
+#### 设备停机原因表
 
 | 字段 | 类型 | 说明 |
 |:----:|:----:|:----:|
 | id | int | pkey |
 | device_id | int | 设备id |
-| status | int | 运行状态 |
-| change_at | datetime | 状态变更时间 |
+| word_index | int | 约定第n个停机原因字 |
+| bit_pos | int | 停机原因字约定的bit位 |
+| content | string | 原因 |
 
+#### 产品表
+
+| 字段 | 类型 | 说明 |
+|:----:|:----:|:----:|
+| id | int | pkey |
+| name | string | 产品名称 |
+| token | string | 产品Token |
+| productor_contact | string | 生产负责人联系方式 |
+| productor | string | 生产负责人名称 |
+| register_id | int | 产品注册人ID |
+| finish_time | datetime | 产品交期 |
+| total | int | 指标生产总量 |
+| order_num | string | 订单编号 |
+| customer_contact | string | 订货人联系方式 |
+| customer | string | 订货人名称 |
+| created_at | datetime | 创建时间 |
+| updated_at | datetime | 更新时间 |
+
+#### 产品实例表
+
+| 字段 | 类型 | 说明 |
+|:----:|:----:|:----:|
+| id | int | pkey |
+| qualified | bool | 是否合格 |
+| device_product_ship_id | int | 设备产品关联关系id |
+| created_at | datetime | 生产时间 |
+
+#### 产品检测项表
+
+| 字段 | 类型 | 说明 |
+|:----:|:----:|:----:|
+| id | int | pkey |
+| sign | string | 检测项标识 |
+| product_id | int | 产品id |
+| upper_limit | float | 检测值上限 |
+| lower_limit | float | 检测值下限 |
+| created_at | datetime | 创建时间 |
+| updated_at | datetime | 更新时间 |
+
+#### 产品检测值表
+
+| 字段 | 类型 | 说明 |
+|:----:|:----:|:----:|
+| id | int | pkey |
+| detect_item_id | int | 检测项id |
+| product_ins_id | int | 产品实例id |
+| value | float | 检测值 |
 
 ### 硬件需求预估
 
