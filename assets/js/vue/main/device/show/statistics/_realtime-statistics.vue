@@ -24,7 +24,7 @@ export default {
         return {
           deviceID: this.deviceID,
           productID: this.product.id,
-          limit: 100
+          limit: 50
         };
       }
     },
@@ -157,6 +157,7 @@ export default {
         return {
           type: 'line',
           name: item.sign,
+	  symbol: 'none',
           data: item.values.reverse().map(v => v.value.toFixed(3))
         };
       });
