@@ -24,7 +24,7 @@ export default {
         return {
           deviceID: this.deviceID,
           productID: this.product.id,
-          limit: 50
+          limit: this.limit
         };
       }
     },
@@ -54,7 +54,7 @@ export default {
           productIns.detectItemValues.forEach(v =>
             this.options.series.forEach(s => {
               if (s.name === v.detectItem.sign) {
-                s.data.shift();
+                if (s.data.length >= this.limit) s.data.shift();
                 s.data.push(v.value.toFixed(3));
               }
             })
